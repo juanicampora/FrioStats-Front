@@ -1,0 +1,7 @@
+templates/
+          accounts/
+                    login.html
+                    register.html
+          home/
+               index.html
+               profile.html
