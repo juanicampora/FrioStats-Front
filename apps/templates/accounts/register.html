@@ -15,13 +15,13 @@
             <div class="card">
                 <div class="card-body text-center">
 
-                    <h3 class="mb-4">Sign UP</h3>
+                    <h3 class="mb-4">Registro</h3>
 
                     <span class="mb-2 text-muted">
                         {% if msg %}
                             <span class="text-danger">{{ msg | safe }}</span>
                         {% else %}
-                            Add your credentials
+                            Ingresá tus credenciales
                         {% endif %} 
                     </span>
 
@@ -30,7 +30,7 @@
 
                     <!-- Hide the form on success -->
                     {% if success %}
-                        <a href="{{ url_for('authentication_blueprint.login') }}" class="btn btn-primary shadow-2 mb-4">Sign IN</a>
+                        <a href="{{ url_for('authentication_blueprint.login') }}" class="btn btn-primary shadow-2 mb-4">Ingresar</a>
                     {% else %}
 
                         <form role="form" method="post" action="">
@@ -38,7 +38,7 @@
                             {{ form.hidden_tag() }}                    
 
                             <div class="input-group mb-3">
-                                {{ form.username(placeholder="Username", class="form-control") }}
+                                {{ form.username(placeholder="Usuario", class="form-control") }}
                             </div>
                             
                             <div class="input-group mb-3">
@@ -46,14 +46,14 @@
                             </div>
 
                             <div class="input-group mb-4">
-                                {{ form.password(placeholder="Password", class="form-control", type="password") }}
+                                {{ form.password(placeholder="Contraseña", class="form-control", type="password") }}
                             </div>
                             
-                            <button type="submit" name="register" class="btn btn-primary shadow-2 mb-4">Register</button>
+                            <button type="submit" name="register" class="btn btn-primary shadow-2 mb-4">Registrarme</button>
 
                         </form>
                         
-                        <p class="mb-0 text-muted">Already have an account? <a href="{{ url_for('authentication_blueprint.login') }}">Login</a></p>
+                        <p class="mb-0 text-muted">¿Ya tienes una cuenta? <a href="{{ url_for('authentication_blueprint.login') }}">Ingresar</a></p>
                        
 
                     {% endif %}

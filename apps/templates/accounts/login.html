@@ -21,7 +21,7 @@
                         {% if msg %}
                             <span class="text-danger">{{ msg | safe }}</span>
                         {% else %}
-                            Add your credentials
+                            Iniciar Sesión
                         {% endif %} 
                     </span>
 
@@ -33,18 +33,18 @@
                         {{ form.hidden_tag() }}                    
 
                         <div class="input-group mb-3">
-                            {{ form.username(placeholder="Username or eMail", class="form-control") }}
+                            {{ form.username(placeholder="Usuario o Email", class="form-control") }}
                         </div>
                         
                         <div class="input-group mb-4">
-                            {{ form.password(placeholder="Password", class="form-control", type="password") }}
+                            {{ form.password(placeholder="Contraseña", class="form-control", type="password") }}
                         </div>
                         
-                        <button type="submit" name="login" class="btn btn-primary shadow-2 mb-4">Login</button>
+                        <button type="submit" name="login" class="btn btn-primary shadow-2 mb-4">Ingresar</button>
 
                     </form>
 
-                    <p class="mb-0 text-muted">Don’t have an account? <a href="{{ url_for('authentication_blueprint.register') }}" >Sign UP</a></p>
+                    <p class="mb-0 text-muted">¿No estás registrado? <a href="{{ url_for('authentication_blueprint.register') }}" >Registrarme</a></p>
                     
                     {% if config.SOCIAL_AUTH_GITHUB %}
                         <div class="mx-2">

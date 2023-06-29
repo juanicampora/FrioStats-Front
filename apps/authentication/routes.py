@@ -52,7 +52,7 @@ def login():
 
             if not user:
                 return render_template( 'accounts/login.html',
-                                        msg='Unknown User or Email',
+                                        msg='Usuario o Email no encontrado (respetar Mayúsculas y Minúsculas)',
                                         form=login_form)
 
         # Check the password
@@ -63,7 +63,7 @@ def login():
 
         # Something (user or pass) is not ok
         return render_template('accounts/login.html',
-                               msg='Wrong user or password',
+                               msg='Usuario o contraseña incorrectos',
                                form=login_form)
 
     if not current_user.is_authenticated:
@@ -84,7 +84,7 @@ def register():
         user = Users.query.filter_by(username=username).first()
         if user:
             return render_template('accounts/register.html',
-                                   msg='Username already registered',
+                                   msg='Nombre de usuario ya utilizado',
                                    success=False,
                                    form=create_account_form)
 
@@ -92,7 +92,7 @@ def register():
         user = Users.query.filter_by(email=email).first()
         if user:
             return render_template('accounts/register.html',
-                                   msg='Email already registered',
+                                   msg='Email ya utilizado',
                                    success=False,
                                    form=create_account_form)
 
@@ -105,7 +105,7 @@ def register():
         logout_user()
 
         return render_template('accounts/register.html',
-                               msg='User created successfully.',
+                               msg='Usuario creado correctamente.',
                                success=True,
                                form=create_account_form)
 
