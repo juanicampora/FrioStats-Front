@@ -14,14 +14,16 @@
             </div>
             <div class="card">
                 <div class="card-body text-center">
-
-                    <h3 class="mb-4">Login</h3>
+                    <div class="mb-4">
+                        <i class="feather icon-unlock auth-icon"></i>
+                    </div>
+                    <h3 class="mb-4">Iniciar Sesión</h3>
 
                     <span class="mb-0 text-muted">
                         {% if msg %}
                             <span class="text-danger">{{ msg | safe }}</span>
                         {% else %}
-                            Iniciar Sesión
+                            Ingrese sus credenciales
                         {% endif %} 
                     </span>
 

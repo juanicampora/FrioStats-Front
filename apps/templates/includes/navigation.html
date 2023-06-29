@@ -6,7 +6,7 @@
             <div class="b-bg">
                 <i class="feather icon-trending-up"></i>
             </div>
-            <span class="b-title">Datta Able</span>
+            <span class="b-title">FrioStats</span>
         </a>
     </div>
     <a class="mobile-menu" id="mobile-header" href="javascript:">
@@ -51,15 +51,15 @@
                             class="icon feather icon-bell"></i></a>
                     <div class="dropdown-menu dropdown-menu-right notification">
                         <div class="noti-head">
-                            <h6 class="d-inline-block m-b-0">Notifications</h6>
+                            <h6 class="d-inline-block m-b-0">Notificaciones</h6>
                             <div class="float-right">
-                                <a href="javascript:" class="m-r-10">mark as read</a>
-                                <a href="javascript:">clear all</a>
+                                <a href="javascript:" class="m-r-10">marcar como leidas</a>
+                                <a href="javascript:">borrar todas</a>
                             </div>
                         </div>
                         <ul class="noti-body">
                             <li class="n-title">
-                                <p class="m-b-0">NEW</p>
+                                <p class="m-b-0">NUEVAS</p>
                             </li>
                             <li class="notification">
                                 <div class="media">
@@ -73,7 +73,7 @@
                                 </div>
                             </li>
                             <li class="n-title">
-                                <p class="m-b-0">EARLIER</p>
+                                <p class="m-b-0">ANTERIORES</p>
                             </li>
                             <li class="notification">
                                 <div class="media">
@@ -111,19 +111,19 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-right profile-notification">
                         <div class="pro-head">
-                            <img src="{{ config.ASSETS_ROOT }}/images/user/avatar-1.jpg" class="img-radius" alt="User-Profile-Image">
+                            <img src="{{ config.ASSETS_ROOT }}/images/user/avatar-2.jpg" class="img-radius" alt="User-Profile-Image">
                             <span>
                                 {{ current_user.username }}    
                             </span>
-                            <a href="/auth-signin.html" class="dud-logout" title="Logout">
+                            <a href="{{ url_for('authentication_blueprint.logout') }}" class="dud-logout" title="Logout">
                                 <i class="feather icon-log-out"></i>
                             </a>
                         </div>
                         <ul class="pro-body">
                             <li><a href="/profile.html" class="dropdown-item"><i class="feather icon-user"></i>
-                                Profile</a></li>
+                                Perfil</a></li>
                             <li><a href="{{ url_for('authentication_blueprint.logout') }}" class="dropdown-item">
-                                <i class="feather icon-lock"></i> Logout</a>
+                                <i class="feather icon-lock"></i> Cerrar sesión</a>
                             </li>
                         </ul>
                     </div>
