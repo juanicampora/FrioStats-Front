@@ -20,62 +20,67 @@
                                 <div class="col-sm-8">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Edit Info</h5>
+                                            <h5>Editar Información</h5>
                                         </div>
                                         <div class="card-block">
                                             <div class="row">
                                                 <div class="col-sm-6 mb-4">
                                                     <div class="form-group">
-                                                        <label for="exampleInputUsername">Username</label>
+                                                        <label for="exampleInputUsername">Usuario</label>
                                                         <input class="form-control" id="exampleInputUsername" readonly 
                                                                value="{{ current_user.username }}"
-                                                               aria-describedby="userHelp" placeholder="Enter email">
+                                                               aria-describedby="userHelp" placeholder="Ingresar Usuario">
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6 mb-4">
                                                     <div class="form-group">
                                                         <label {% if not current_user.email %} class="text-danger" {% endif %} 
-                                                               for="exampleInputEmail1">Email address</label>
+                                                               for="exampleInputEmail1">Dirección Email</label>
                                                         <input type="email"
                                                                {% if current_user.email %} readonly value="{{ current_user.email }}" {% endif %}  
-                                                               class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                                                               class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Ingresar email">
                                                         {% if not current_user.email %}       
                                                             <small id="emailHelp" class="form-text text-danger">
-                                                                You don't have an email address associated with this account.
+                                                                No tenes un email asociado a esta cuenta.
                                                             </small>
                                                         {% endif %}    
                                                     </div>
                                                 </div>                                                
                                                 <div class="col-sm-6 mb-4">
                                                     <div class="form-group">
-                                                        <label for="fn">First Name</label>
-                                                        <input type="email" class="form-control" id="fn" aria-describedby="emailHelp" placeholder="Your name">
+                                                        <label for="fn">Nombre/s</label>
+                                                        <input type="email" class="form-control" id="fn" aria-describedby="emailHelp" placeholder="Tu nombre">
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6 mb-4">
                                                     <div class="form-group">
-                                                        <label for="ln">Last Name</label>
-                                                        <input type="email" class="form-control" id="ln" aria-describedby="emailHelp" placeholder="Your last name">
+                                                        <label for="ln">Apellido/s</label>
+                                                        <input type="email" class="form-control" id="ln" aria-describedby="emailHelp" placeholder="Tu apellido">
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-12 mb-4">
                                                     <div class="form-group">
-                                                        <label for="add">Address</label>
-                                                        <input type="email" class="form-control" id="add" aria-describedby="emailHelp" placeholder="Full address here">
-                                                        <small id="addd" class="form-text text-muted">This is your shipments address</small>
+                                                        <label for="add">ID Telegram</label>
+                                                        <input type="email" class="form-control" id="add" aria-describedby="emailHelp" placeholder="Ejemplo: Av Argentina 123">
+                                                        <small id="addd" class="form-text text-muted">ID de la app Telegram para envíarle notificaciones.</small>
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-12 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="abt">About Info</label>
-                                                        <textarea type="email" class="form-control" id="abt" aria-describedby="emailHelp" placeholder="Bio"></textarea>
-                                                        <small id="abf" class="form-text text-muted">We'll show this on your profile.</small>
-                                                    </div>
+                                                <div class="form-check col-sm-12 mb-4">
+                                                    <fieldset>
+                                                        <legend>Recibir notificaciones por Telegram</legend>
+                                                        <label>
+                                                            <input type="radio" name="notificacionTelegram" id="notificacionTelegram" value="1">Si
+                                                        </label>
+                                                        <br>
+                                                        <label>
+                                                            <input type="radio" name="notificacionTelegram" id="notificacionTelegram" value="0">No
+                                                        </label>
+                                                    </fieldset>
                                                 </div>
 
                                                 <div class="col-sm-12 mb-2">
                                                     <div class="form-group">
-                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                        <button type="submit" class="btn btn-primary">Enviar</button>
                                                     </div>
                                                 </div>                                                
                                                 
@@ -99,31 +104,6 @@
                                                         {% if current_user.email %} {{ current_user.email }} {% endif %}
                                                     </p>
                                                 </div>
-                                            </div>
-
-                                            <div class="small font-weight-light mt-4 text-center text-muted">
-                                                <p>
-                                                    This page is your private space.
-                                                    <br />
-                                                </p>
-                                            </div>
-                                            <div class="d-flex justify-content-center align-items-center">
-                                            
-                                                <a href="https://github.com/app-generator/app-generator" 
-                                                   target="_blank" 
-                                                   class="h6 text-muted d-block m-1"><i
-                                                   class="icon feather icon-github"></i></a>
-
-                                                <a href="https://twitter.com/webappseed" 
-                                                   target="_blank" 
-                                                   class="h6 text-muted d-block m-1"><i
-                                                   class="icon feather icon-twitter"></i></a>
-
-                                                <a href="https://appseed.us/support/" 
-                                                   target="_blank" 
-                                                   class="h6 text-muted d-block m-1"><i
-                                                   class="icon feather icon-help-circle"></i></a>
-
                                             </div>
                                         </div>
                                     </div>
