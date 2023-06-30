@@ -1,0 +1,28 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% block title %} Login {% endblock %}
+
+{% block content %}   
+
+    <div class="auth-wrapper">
+        <div class="auth-content">
+            <div class="auth-bg">
+                <span class="r"></span>
+                <span class="r s"></span>
+                <span class="r s"></span>
+                <span class="r"></span>
+            </div>
+            <div class="card">
+                <div class="card-body text-center">
+                    <h1>Mensaje de la API:</h1>
+                    <p>{{ data["id"] }}</p>
+                    <p>{{ data["nombre"] }}</p>
+                    <p>{{ data["apellido"] }}</p>
+                    <p>{{ data["message"] }}</p>
+                    <p>{{ data["message"] }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

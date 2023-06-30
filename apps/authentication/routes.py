@@ -1,8 +1,5 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
+import requests
 from flask import render_template, redirect, request, url_for
 from flask_login import (
     current_user,
@@ -11,12 +8,12 @@ from flask_login import (
 )
 from flask_dance.contrib.github import github
 
-from apps import db, login_manager
+from apps import  login_manager    #, db
 from apps.authentication import blueprint
 from apps.authentication.forms import LoginForm, CreateAccountForm
 from apps.authentication.models import Users
 
-from apps.authentication.util import verify_pass
+#from apps.authentication.util import verify_pass
 
 @blueprint.route('/')
 def route_default():
@@ -37,10 +34,11 @@ def login_github():
 def login():
     login_form = LoginForm(request.form)
     if 'login' in request.form:
-
         # read form data
-        user_id  = request.form['username'] # we can have here username OR email
+        user_id  = request.form['username']
         password = request.form['password']
+
+        respuestaAPI= requests.get('http://ljragusa.com.ar:3001/usuario')
 
         # Locate user
         user = Users.find_by_username(user_id)
@@ -58,6 +56,15 @@ def login():
         # Check the password
         if verify_pass(password, user.password):
 
+        #    <script>
+        #        // Obtén el token del usuario desde la respuesta de la API y guárdalo en el LocalStorage
+        #        var token = 'token_del_usuario'; // Aquí debes obtener el token de la respuesta de la API
+        #        localStorage.setItem('userToken', token);
+        #    </script>
+
+        # esto tengo que usar en el HTML para meter el token en el navegador
+
+
             login_user(user)
             return redirect(url_for('authentication_blueprint.route_default'))
 
@@ -71,6 +78,15 @@ def login():
                                form=login_form)
     return redirect(url_for('home_blueprint.index'))
 
+
+@blueprint.route('/prueba', methods=['GET', 'POST'])
+def prueba():
+    response = requests.get('http://ljragusa.com.ar:3001/usuario')
+
+    if response.status_code == 200:
+        data = response.json()
+        ##mensaje = data["message"]
+        return render_template('accounts/prueba.html',data=data)
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():
