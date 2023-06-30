@@ -2,9 +2,6 @@
 
 from flask_login import UserMixin
 
-from sqlalchemy.orm import relationship
-from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
-
 from apps import db, login_manager
 
 class Users(db.Model, UserMixin):
@@ -14,3 +11,4 @@ class Users(db.Model, UserMixin):
     id            = db.Column(db.Integer, primary_key=True)
     email         = db.Column(db.String(64), unique=True)
     nombre        = db.Column(db.String(64))
+
