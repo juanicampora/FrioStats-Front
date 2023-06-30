@@ -35,27 +35,20 @@ def login():
     login_form = LoginForm(request.form)
     if 'login' in request.form:
         # read form data
-        user_id  = request.form['username']
+        email  = request.form['email']
         password = request.form['password']
 
-        respuestaAPI= requests.get('http://ljragusa.com.ar:3001/usuario')
+        url = "ljragusa.com.ar:3001/usuario/login"
+        payload='email='+email+'&password='+password
+        headers = {}
+        respuesta= requests.request("POST", url, headers=headers, data=payload)
 
-        # Locate user
-        user = Users.find_by_username(user_id)
-
-        # if user not found
-        if not user:
-
-            user = Users.find_by_email(user_id)
-
-            if not user:
-                return render_template( 'accounts/login.html',
-                                        msg='Usuario o Email no encontrado (respetar Mayúsculas y Minúsculas)',
-                                        form=login_form)
-
-        # Check the password
-        if verify_pass(password, user.password):
-
+        print(respuesta.text)
+        
+        if 1==2:    #aca si es incorrecto
+            return render_template( 'accounts/login.html',
+                                    msg='Usuario o Email no encontrado (respetar Mayúsculas y Minúsculas)',
+                                    form=login_form)
         #    <script>
         #        // Obtén el token del usuario desde la respuesta de la API y guárdalo en el LocalStorage
         #        var token = 'token_del_usuario'; // Aquí debes obtener el token de la respuesta de la API
@@ -65,8 +58,8 @@ def login():
         # esto tengo que usar en el HTML para meter el token en el navegador
 
 
-            login_user(user)
-            return redirect(url_for('authentication_blueprint.route_default'))
+        login_user(user)
+        return redirect(url_for('authentication_blueprint.route_default'))
 
         # Something (user or pass) is not ok
         return render_template('accounts/login.html',
