@@ -3,7 +3,9 @@
 {% block title %} Profile {% endblock %} 
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="../static/assets/css/switchlindo.css">
+{% endblock stylesheets %}
 
 {% block content %}
 
@@ -26,10 +28,16 @@
                                             <div class="row">
                                                 <div class="col-sm-6 mb-4">
                                                     <div class="form-group">
-                                                        <label for="exampleInputUsername">Usuario</label>
-                                                        <input class="form-control" id="exampleInputUsername" readonly 
-                                                               value="{{ current_user.username }}"
-                                                               aria-describedby="userHelp" placeholder="Ingresar Usuario">
+                                                        <label {% if not current_user.nombre %} class="text-danger" {% endif %} 
+                                                                for="exampleInputNombre">Nombre</label>
+                                                        <input type="text" 
+                                                            {% if current_user.nombre %} readonly value="{{ current_user.nombre }}" {% endif %}
+                                                            class="form-control" id="exampleInputEmail1" aria-describedby="nombreHelp" placeholder="Ingresar nombre">
+                                                        {% if not current_user.nombre %}
+                                                        <small id="nombreHelp" class="form-text text-danger">
+                                                            No tenes un nombre asociado a esta cuenta.
+                                                        </small>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-6 mb-4">
@@ -45,37 +53,30 @@
                                                             </small>
                                                         {% endif %}    
                                                     </div>
-                                                </div>                                                
-                                                <div class="col-sm-6 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="fn">Nombre/s</label>
-                                                        <input type="email" class="form-control" id="fn" aria-describedby="emailHelp" placeholder="Tu nombre">
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6 mb-4">
-                                                    <div class="form-group">
-                                                        <label for="ln">Apellido/s</label>
-                                                        <input type="email" class="form-control" id="ln" aria-describedby="emailHelp" placeholder="Tu apellido">
-                                                    </div>
-                                                </div>
+                                                </div>                                       
                                                 <div class="col-sm-12 mb-4">
                                                     <div class="form-group">
-                                                        <label for="add">ID Telegram</label>
-                                                        <input type="email" class="form-control" id="add" aria-describedby="emailHelp" placeholder="Ejemplo: Av Argentina 123">
-                                                        <small id="addd" class="form-text text-muted">ID de la app Telegram para envíarle notificaciones.</small>
+                                                        <label for="idTelegram">ID Telegram</label>
+                                                        <input class="form-control" id="idTelegram" aria-describedby="idTelegramHelp" placeholder="Ingrese su ID de Telegram">                                                
                                                     </div>
-                                                </div>
-                                                <div class="form-check col-sm-12 mb-4">
-                                                    <fieldset>
-                                                        <legend>Recibir notificaciones por Telegram</legend>
-                                                        <label>
-                                                            <input type="radio" name="notificacionTelegram" id="notificacionTelegram" value="1">Si
-                                                        </label>
+                                                </div>                                                
+                                                <div class="row col-sm-12 ml-5 mb-4 ">
+                                                    <div style="width: 50%; float:left">
+                                                        <label>Recibir notificaciones por Telegram</label>
                                                         <br>
-                                                        <label>
-                                                            <input type="radio" name="notificacionTelegram" id="notificacionTelegram" value="0">No
+                                                        <label class="switch">
+                                                            <input id="notificarPorTelegram" type="checkbox">
+                                                            <span class="slider round"></span>
                                                         </label>
-                                                    </fieldset>
+                                                    </div>
+                                                    <div style="width: 50%; float:right">
+                                                        <label>Recibir notificaciones por Email</label>
+                                                        <br>
+                                                        <label class="switch">
+                                                            <input id="notificarPorEmail" type="checkbox">
+                                                            <span class="slider round"></span>
+                                                        </label>
+                                                    </div>
                                                 </div>
 
                                                 <div class="col-sm-12 mb-2">
