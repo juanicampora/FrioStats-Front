@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
-from wtforms.validators import Email, DataRequired
+from wtforms.validators import Email, DataRequired,Length,Regexp
 
 # login and registration
 
@@ -25,4 +25,7 @@ class CreateAccountForm(FlaskForm):
                              validators=[DataRequired()])
     name = StringField('Name',
                         id='name_create',
-                        validators=[DataRequired()])
+                        validators=[DataRequired(),Length(min=3, max=50),Regexp('^[A-Za-z]+$')])
+    surname = StringField('Surname',
+                        id='surname_create',
+                        validators=[DataRequired(),Length(min=3, max=50),Regexp('^[A-Za-z]+$')])

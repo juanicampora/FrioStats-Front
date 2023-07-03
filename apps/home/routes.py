@@ -13,7 +13,7 @@ def index():
 
 @blueprint.route('/roles')          #Hay que implementarlo (es para que un admin cambie los roles de los usuarios)
 @login_required
-@role_required('admin')
+@role_required('Admin')
 def roles():
     return render_template('home/roles.html', segment='roles')  #CHEQUEAR LO DE SEGMENT
 
