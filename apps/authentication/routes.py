@@ -6,12 +6,11 @@ from flask_login import (
     login_user,
     logout_user
 )
-from flask_dance.contrib.github import github
 
 from apps import  login_manager
 from apps.authentication import blueprint
 from apps.authentication.forms import LoginForm, CreateAccountForm
-from apps.authentication.models import Users
+from apps.authentication.models import User
 
 #from apps.authentication.util import verify_pass
 
@@ -21,15 +20,6 @@ def route_default():
 
 # Login & Registration
 
-@blueprint.route("/github")
-def login_github():
-    """ Github login """
-    if not github.authorized:
-        return redirect(url_for("github.login"))
-
-    res = github.get("/user")
-    return redirect(url_for('home_blueprint.index'))
-
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm(request.form)
@@ -38,17 +28,25 @@ def login():
         email  = request.form['email']
         password = request.form['password']
 
-        url = "http://ljragusa.com.ar:3001/usuario/login"
-        payload='email='+email+'&password='+password
+        url = "http://ljragusa.com.ar:3001/User/login"
+        payload={
+            "email": "admin@gmail.com",
+            "password": "admin125"
+        }
         headers = {}
-        respuesta= requests.request("POST", url, headers=headers, data=payload)
-
-        print(respuesta.text)
-
-        if 1==2:    #aca si es incorrecto
+        respuesta = requests.request("POST", url, headers=headers, data=payload)
+        if respuesta.status_code == 404:        
             return render_template( 'accounts/login.html',
-                                    msg='Usuario o Email no encontrado (respetar Mayúsculas y Minúsculas)',
+                                    msg='Email o contraseña incorrectos (respetar Mayúsculas y Minúsculas)',
                                     form=login_form)
+        elif respuesta.status_code == 200:
+            respuestajson=respuesta.json()
+            usuario= User(respuestajson["id"],respuestajson["email"],respuestajson["nombre"],respuestajson["rol"])
+            login_user(usuario)
+            return redirect(url_for('authentication_blueprint.route_default'))
+        else:
+            print("El error obtenido es distinto a 404 y es:")
+            print(respuesta.status_code)   
         #    <script>
         #        // Obtén el token del usuario desde la respuesta de la API y guárdalo en el LocalStorage
         #        var token = 'token_del_usuario'; // Aquí debes obtener el token de la respuesta de la API
@@ -56,20 +54,10 @@ def login():
         #    </script>
 
         # esto tengo que usar en el HTML para meter el token en el navegador
-
-
-        login_user(user)
-        return redirect(url_for('authentication_blueprint.route_default'))
-
-        # Something (user or pass) is not ok
-        return render_template('accounts/login.html',
-                               msg='Usuario o contraseña incorrectos',
-                               form=login_form)
-
     if not current_user.is_authenticated:
         return render_template('accounts/login.html',
                                form=login_form)
-    return redirect(url_for('home_blueprint.index'))
+    #return redirect(url_for('home_blueprint.index'))
 
 
 @blueprint.route('/prueba', methods=['GET', 'POST'])
@@ -90,7 +78,7 @@ def register():
         email = request.form['email']
 
         # Check usename exists
-        user = Users.query.filter_by(username=username).first()
+        user = User.query.filter_by(username=username).first()
         if user:
             return render_template('accounts/register.html',
                                    msg='Nombre de usuario ya utilizado',
@@ -98,7 +86,7 @@ def register():
                                    form=create_account_form)
 
         # Check email exists
-        user = Users.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
         if user:
             return render_template('accounts/register.html',
                                    msg='Email ya utilizado',
@@ -106,9 +94,7 @@ def register():
                                    form=create_account_form)
 
         # else we can create the user
-        user = Users(**request.form)
-        db.session.add(user)
-        db.session.commit()
+        user = User(**request.form)
 
         # Delete user from session
         logout_user()
