@@ -8,7 +8,7 @@ from flask_login import (
 )
 from flask_dance.contrib.github import github
 
-from apps import  login_manager    #, db
+from apps import  login_manager
 from apps.authentication import blueprint
 from apps.authentication.forms import LoginForm, CreateAccountForm
 from apps.authentication.models import Users
@@ -38,13 +38,13 @@ def login():
         email  = request.form['email']
         password = request.form['password']
 
-        url = "ljragusa.com.ar:3001/usuario/login"
+        url = "http://ljragusa.com.ar:3001/usuario/login"
         payload='email='+email+'&password='+password
         headers = {}
         respuesta= requests.request("POST", url, headers=headers, data=payload)
 
         print(respuesta.text)
-        
+
         if 1==2:    #aca si es incorrecto
             return render_template( 'accounts/login.html',
                                     msg='Usuario o Email no encontrado (respetar Mayúsculas y Minúsculas)',

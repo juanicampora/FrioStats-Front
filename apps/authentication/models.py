@@ -2,13 +2,16 @@
 
 from flask_login import UserMixin
 
-from apps import db, login_manager
+from apps import login_manager
 
-class Users(db.Model, UserMixin):
+class Users(UserMixin):
+    def __init__(self, id, email,nombre=''):
+        self.id = id
+        self.email = email
+        self.nombre= nombre
 
-    __tablename__ = 'users'
-
-    id            = db.Column(db.Integer, primary_key=True)
-    email         = db.Column(db.String(64), unique=True)
-    nombre        = db.Column(db.String(64))
-
+    def get_id(self):
+        return str(self.id)
+    
+    def is_authenticated(self):
+        return True  
