@@ -1,16 +1,25 @@
 # -*- encoding: utf-8 -*-
 import requests
 from flask import render_template, redirect, request, url_for
-from flask_login import (
-    current_user,
-    login_user,
-    logout_user
-)
-
+from flask_login import (current_user,login_user,logout_user,login_required)
+from functools import wraps
 from apps import  login_manager
 from apps.authentication import blueprint
 from apps.authentication.forms import LoginForm, CreateAccountForm
 from apps.authentication.models import User
+
+
+def role_required(rol):         # Creo un decorador para verificar el rol del usuario
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect(url_for('authentication_blueprint.login'))  # Redirige al login si el usuario no está autenticado
+            if current_user.rol != rol:
+                return redirect(url_for('authentication_blueprint.internal_error'))  # Redirige a una página de acceso no autorizado si el rol no coincide
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 @blueprint.route('/')
 def route_default():
@@ -49,6 +58,7 @@ def login():
         else:
             print("El error obtenido es distinto a 404 y es:")
             print(respuesta.status_code)   
+            return redirect(url_for('authentication_blueprint.internal_error'))
 
     if not current_user.is_authenticated:
         return render_template('accounts/login.html',
@@ -67,6 +77,8 @@ def store_token(token):
     '''.format(token)
 
 @blueprint.route('/register', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def register():
     create_account_form = CreateAccountForm(request.form)
     if 'register' in request.form:

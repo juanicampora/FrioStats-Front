@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-
+from apps.authentication import role_required
 from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
@@ -11,6 +11,11 @@ from jinja2 import TemplateNotFound
 def index():
     return render_template('home/index.html', segment='index')
 
+@blueprint.route('/roles')          #Hay que implementarlo (es para que un admin cambie los roles de los usuarios)
+@login_required
+@role_required('admin')
+def roles():
+    return render_template('home/roles.html', segment='roles')  #CHEQUEAR LO DE SEGMENT
 
 @blueprint.route('/<template>')
 @login_required
