@@ -1,7 +1,5 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
+
 
 import os
 
@@ -47,13 +45,12 @@ def configure_database(app):
     def shutdown_session(exception=None):
         db.session.remove()
 
-from apps.authentication.oauth import github_blueprint
+
 
 def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
     register_extensions(app)
-    register_blueprints(app)
-    app.register_blueprint(github_blueprint, url_prefix="/login")    
+    register_blueprints(app)  
     configure_database(app)
     return app

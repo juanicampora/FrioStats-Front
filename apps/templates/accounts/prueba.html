@@ -1,6 +1,6 @@
 {% extends "layouts/base-fullscreen.html" %}
 
-{% block title %} 403 Page {% endblock %}
+{% block title %} Login {% endblock %}
 
 {% block content %}   
 
@@ -14,17 +14,12 @@
             </div>
             <div class="card">
                 <div class="card-body text-center">
-                    <div class="mb-4">
-                        <i class="feather x-circle"></i>
-                    </div>
-                    <h3 class="mb-4">Error 403</h3>
-
-                    <br />
-
-                    <span class="mb-0 text-muted">
-                        Acceso denegado - <a href="/">Ir al Inicio</a> 
-                    </span>
-
+                    <h1>Mensaje de la API:</h1>
+                    <p>{{ data["id"] }}</p>
+                    <p>{{ data["nombre"] }}</p>
+                    <p>{{ data["apellido"] }}</p>
+                    <p>{{ data["message"] }}</p>
+                    <p>{{ data["message"] }}</p>
                 </div>
             </div>
         </div>

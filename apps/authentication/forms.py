@@ -8,8 +8,8 @@ from wtforms.validators import Email, DataRequired
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Username',
-                         id='username_login',
+    email = StringField('Email',
+                         id='Email_login',
                          validators=[DataRequired()])
     password = PasswordField('Password',
                              id='pwd_login',
@@ -17,12 +17,12 @@ class LoginForm(FlaskForm):
 
 
 class CreateAccountForm(FlaskForm):
-    username = StringField('Username',
-                         id='username_create',
-                         validators=[DataRequired()])
     email = StringField('Email',
-                      id='email_create',
-                      validators=[DataRequired(), Email()])
+                        id='email_create',
+                        validators=[DataRequired(), Email()])
     password = PasswordField('Password',
                              id='pwd_create',
                              validators=[DataRequired()])
+    name = StringField('Name',
+                        id='name_create',
+                        validators=[DataRequired()])
