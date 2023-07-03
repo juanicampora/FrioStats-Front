@@ -5,3 +5,6 @@ templates/
           home/
                index.html
                profile.html
+               page-403.html
+               page-404.html
+               page-500.html
