@@ -12,8 +12,6 @@ from apps.authentication import blueprint
 from apps.authentication.forms import LoginForm, CreateAccountForm
 from apps.authentication.models import User
 
-#from apps.authentication.util import verify_pass
-
 @blueprint.route('/')
 def route_default():
     return redirect(url_for('authentication_blueprint.login'))
@@ -46,32 +44,27 @@ def login():
             if User.find_by_id(usuario.id) is None:
                 usuario.save()
             login_user(usuario)
-            print("LOGUEADO CORRECTAMENTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            return redirect(url_for('authentication_blueprint.route_default'))
+            token=respuestajson["token"]
+            return redirect(url_for('authentication_blueprint.store_token',token=token))
         else:
             print("El error obtenido es distinto a 404 y es:")
             print(respuesta.status_code)   
-        #    <script>
-        #        // Obtén el token del usuario desde la respuesta de la API y guárdalo en el LocalStorage
-        #        var token = 'token_del_usuario'; // Aquí debes obtener el token de la respuesta de la API
-        #        localStorage.setItem('userToken', token);
-        #    </script>
 
-        # esto tengo que usar en el HTML para meter el token en el navegador
     if not current_user.is_authenticated:
         return render_template('accounts/login.html',
                                form=login_form)
     return redirect(url_for('home_blueprint.index'))
-
-
-@blueprint.route('/prueba', methods=['GET', 'POST'])
-def prueba():
-    response = requests.get('http://ljragusa.com.ar:3001/usuario')
-
-    if response.status_code == 200:
-        data = response.json()
-        ##mensaje = data["message"]
-        return render_template('accounts/prueba.html',data=data)
+    
+@blueprint.route('/store_token/<token>')
+def store_token(token):
+    return '''
+        <script>
+            var token = '{}';
+            localStorage.setItem('token', token);
+            // Redirigir a la página de destino
+            window.location.href = '/index';
+        </script>
+    '''.format(token)
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():
