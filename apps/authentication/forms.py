@@ -18,8 +18,11 @@ class LoginForm(FlaskForm):
 
 class CreateAccountForm(FlaskForm):
     email = StringField('Email',
-                      id='email_create',
-                      validators=[DataRequired(), Email()])
+                        id='email_create',
+                        validators=[DataRequired(), Email()])
     password = PasswordField('Password',
                              id='pwd_create',
                              validators=[DataRequired()])
+    name = StringField('Name',
+                        id='name_create',
+                        validators=[DataRequired()])
