@@ -28,21 +28,25 @@ def login():
         email  = request.form['email']
         password = request.form['password']
 
-        url = "http://ljragusa.com.ar:3001/User/login"
+        url = "http://ljragusa.com.ar:3001/users/login"
         payload={
-            "email": "admin@gmail.com",
-            "password": "admin125"
+            "email": email,
+            "password": password
         }
         headers = {}
         respuesta = requests.request("POST", url, headers=headers, data=payload)
+        
         if respuesta.status_code == 404:        
             return render_template( 'accounts/login.html',
-                                    msg='Email o contraseña incorrectos (respetar Mayúsculas y Minúsculas)',
+                                    msg='Email o contraseña incorrectos',
                                     form=login_form)
         elif respuesta.status_code == 200:
             respuestajson=respuesta.json()
-            usuario= User(respuestajson["id"],respuestajson["email"],respuestajson["nombre"],respuestajson["rol"])
+            usuario= User(respuestajson["user"]["id"],respuestajson["user"]["email"],respuestajson["user"]["nombre"],respuestajson["user"]["Rol"]["descripcion"])
+            if User.find_by_id(usuario.id) is None:
+                usuario.save()
             login_user(usuario)
+            print("LOGUEADO CORRECTAMENTE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             return redirect(url_for('authentication_blueprint.route_default'))
         else:
             print("El error obtenido es distinto a 404 y es:")
@@ -57,7 +61,7 @@ def login():
     if not current_user.is_authenticated:
         return render_template('accounts/login.html',
                                form=login_form)
-    #return redirect(url_for('home_blueprint.index'))
+    return redirect(url_for('home_blueprint.index'))
 
 
 @blueprint.route('/prueba', methods=['GET', 'POST'])
