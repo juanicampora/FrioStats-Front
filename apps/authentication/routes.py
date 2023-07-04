@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 import requests
-from flask import render_template, redirect, request, url_for
+from flask import render_template, redirect, request, url_for, abort, make_response
 from flask_login import (current_user,login_user,logout_user,login_required)
 
 from apps import  login_manager
@@ -23,46 +23,43 @@ def login():
         email  = request.form['email']
         password = request.form['password']
 
-        url = "http://ljragusa.com.ar:3001/users/login"
-        payload={
-            "email": email,
-            "password": password
-        }
-        headers = {}
-        respuesta = requests.request("POST", url, headers=headers, data=payload)
-        
-        if respuesta.status_code == 404:        
+        try:
+            url = "http://ljragusa.com.ar:3001/users/login"
+            payload={
+                "email": email,
+                "password": password
+            }
+            headers = {}
+            respuesta = requests.request("POST", url, headers=headers, data=payload)
+        except requests.exceptions.RequestException as e:
+            print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+            return abort(500)
+
+
+        if respuesta.status_code == 401:        
             return render_template( 'accounts/login.html',
                                     msg='Email o contraseña incorrectos',
                                     form=login_form)
         elif respuesta.status_code == 200:
             respuestajson=respuesta.json()
-            usuario= User(respuestajson["user"]["id"],respuestajson["user"]["email"],respuestajson["user"]["nombre"],respuestajson["user"]["Rol"]["descripcion"])
+            usuario= User(respuestajson["user"]["id"],respuestajson["user"]["email"],respuestajson["user"]["nombre"],respuestajson["user"]["apellido"],respuestajson["user"]["Rol"]["descripcion"],respuestajson["token"])
             if User.find_by_id(usuario.id) is None:
                 usuario.save()
             login_user(usuario)
             token=respuestajson["token"]
-            return redirect(url_for('authentication_blueprint.store_token',token=token))
+            response = make_response(redirect('/index'))    
+            response.set_cookie('token', token)             #guardar en una cookie el token
+            return response
         else:
             print("El error obtenido es distinto a 404 y es:")
             print(respuesta.status_code)   
-            return redirect(url_for('authentication_blueprint.internal_error'))
+            return abort(500)
 
     if not current_user.is_authenticated:
         return render_template('accounts/login.html',
                                form=login_form)
     return redirect(url_for('home_blueprint.index'))
     
-@blueprint.route('/store_token/<token>')
-def store_token(token):
-    return '''
-        <script>
-            var token = '{}';
-            localStorage.setItem('token', token);
-            // Redirigir a la página de destino
-            window.location.href = '/index';
-        </script>
-    '''.format(token)
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 @login_required
@@ -103,6 +100,10 @@ def register():
 
     else:
         return render_template('accounts/register.html', form=create_account_form)
+
+@blueprint.route('/mailconfirmation')
+def mailconfirmation():
+    return render_template('accounts/mail_confirmation.html')
 
 
 @blueprint.route('/logout')
