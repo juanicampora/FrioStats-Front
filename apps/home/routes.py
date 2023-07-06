@@ -1,15 +1,15 @@
 # -*- encoding: utf-8 -*-
 import requests
 from apps.authentication import role_required
+from apps.authentication.forms import ProfileForm
 from apps.home import blueprint
-from flask import abort, render_template, request
+from flask import abort, render_template,redirect, request, url_for
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 
-@blueprint.route('/prueba')
+@blueprint.route('/prueba',methods=['GET', 'POST'])
 def prueba():
-    token = request.cookies.get('token')
-    print(token)
+
     return render_template('home/prueba.html', segment='prueba')
 
 @blueprint.route('/index')
@@ -26,51 +26,54 @@ def roles():
 @blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    profile_form = ProfileForm(request.form)
     if request.method=='POST':
-        idTelegram = request.form['idTelegram']
-        recibirTelegram=request.form['recibirTelegram']
-        recibirEmail=request.form['recibirEmail']
+        idTelegram = request.form['idTelegram'] 
+        if request.form.get('recibirTelegram') == None: recibirTelegram='false' 
+        else: recibirTelegram='true'
+        if request.form.get('recibirEmail') == None: recibirEmail = 'false' 
+        else: recibirEmail = 'true'
         token = request.cookies.get('token')
-        #enviar al api idtelegram, recibirTelegram y recibirEmail
+
+        
+        print(request.form.get('recibirEmail'))
+        print(request.form.get('recibirTelegram'))
         try:
             url = "http://ljragusa.com.ar:3001/users"
             payload={
                 "telegramId": idTelegram,
-                "recibirTelegram": recibirTelegram,
-                "recibirEmail": recibirEmail
+                "recibeNotiTelegram": recibirTelegram,
+                "recibeNotiMail": recibirEmail
             }
             headers = {
                 'user-token': token
             }
-            respuesta = requests.request("POST", url, headers=headers, data=payload)
-            
+            respuesta = requests.request("PATCH", url, headers=headers, data=payload)
+            print(respuesta.text)
+            datos=getOne(token)
+            idTelegram = datos[0]
+            recibirTelegram = datos[1]
+            recibirEmail = datos[2]
+            return render_template('accounts/profile.html', segment='profile', idTelegram=idTelegram, recibirTelegram=recibirTelegram, recibirEmail=recibirEmail, form=profile_form,
+                               msg='Datos actualizados correctamente.',
+                               success=True)
+
         except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
-
-        return render_template('accounts/profile.html', segment='profile')
     else:
-        #pedir al api idtelegram, recibirTelegram y recibirEmail
         token = request.cookies.get('token')
-        print(token)
         try:
-            url = "http://ljragusa.com.ar:3001/users"
-            headers = {
-                'user-token': token
-            }
-            respuesta = requests.request("POST", url, headers=headers)
-            datos = respuesta.json()
-            idTelegram = datos['telegramId']
-            recibirTelegram = datos['recibirTelegram']
-            recibirEmail = datos['recibirEmail']
-            confirmadoTelegram = datos['confirmadoTelegram']
-            confirmadoEmail = datos['confirmadoEmail']
+            datos=getOne(token)
+            idTelegram = datos[0]
+            recibirTelegram = datos[1]
+            recibirEmail = datos[2]
         except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
-        return render_template('accounts/profile.html', segment='profile', idTelegram=idTelegram, recibirTelegram=recibirTelegram, recibirEmail=recibirEmail, confirmadoTelegram=confirmadoTelegram, confirmadoEmail=confirmadoEmail)
+        return render_template('accounts/profile.html', segment='profile', idTelegram=idTelegram, recibirTelegram=recibirTelegram, recibirEmail=recibirEmail, form=profile_form)
 
-@blueprint.route('/<template>')
+@blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route
 @login_required
 def route_template(template):
 
@@ -106,3 +109,20 @@ def get_segment(request):
 
     except:
         return None
+
+
+#Funciones usadas varias veces
+
+def getOne(token):
+    url = "http://ljragusa.com.ar:3001/users/getOne"
+    payload={}
+    headers = {
+    'user-token': token
+    }
+    respuesta = requests.request("GET", url, headers=headers, data=payload)
+    print(respuesta.text)
+    datos = respuesta.json()
+    idTelegram = datos['elemt']['telegramId']
+    recibirTelegram = datos['elemt']['recibeNotiTelegram']
+    recibirEmail = datos['elemt']['recibeNotiMail']
+    return idTelegram, recibirTelegram, recibirEmail

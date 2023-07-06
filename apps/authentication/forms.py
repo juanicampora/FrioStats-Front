@@ -29,3 +29,9 @@ class CreateAccountForm(FlaskForm):
     surname = StringField('Surname',
                         id='surname_create',
                         validators=[DataRequired(),Length(min=3, max=50),Regexp('^[A-Za-z]+$')])
+
+
+class ProfileForm(FlaskForm):
+    idTelegram = StringField('idTelegram',id='idTelegram')
+    recibirTelegram = StringField('recibirTelegram',id='recibirTelegram')
+    recibirEmail = StringField('recibirEmail',id='recibirEmail')
