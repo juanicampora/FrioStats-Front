@@ -21,7 +21,11 @@
 
                     <span class="mb-2 text-muted">
                         {% if msg %}
-                            <span class="text-danger">{{ msg | safe }}</span>
+                            {% if success %}
+                                <span class="text-success">{{ msg | safe }}</span>
+                            {% else %}
+                                <span class="text-danger">{{ msg | safe }}</span>
+                            {% endif %}
                         {% else %}
                             Ingresá las credenciales del nuevo usuario
                         {% endif %} 
@@ -32,7 +36,7 @@
 
                     <!-- Hide the form on success -->
                     {% if success %}
-                        <a href="{{ url_for('authentication_blueprint.login') }}" class="btn btn-primary shadow-2 mb-4">Ingresar</a>
+                        
                     {% else %}
 
                         <form role="form" method="post" action="">
@@ -58,8 +62,8 @@
 
                             <div class="form-group text-left mb-4">
                                 <div class="checkbox checkbox-fill d-inline">
-                                    <input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-1" checked="">
-                                    <label for="checkbox-fill-1" class="cr"> Enviar notificaciones por email</label>
+                                    <input type="checkbox" name="recibirEmail" id="recibirEmail" checked="">
+                                    <label for="recibirEmail" class="cr"> Enviar notificaciones por email</label>
                                 </div>
                             </div>
 

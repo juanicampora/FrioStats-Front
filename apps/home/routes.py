@@ -34,10 +34,6 @@ def profile():
         if request.form.get('recibirEmail') == None: recibirEmail = 'false' 
         else: recibirEmail = 'true'
         token = request.cookies.get('token')
-
-        
-        print(request.form.get('recibirEmail'))
-        print(request.form.get('recibirTelegram'))
         try:
             url = "http://ljragusa.com.ar:3001/users"
             payload={
@@ -49,7 +45,6 @@ def profile():
                 'user-token': token
             }
             respuesta = requests.request("PATCH", url, headers=headers, data=payload)
-            print(respuesta.text)
             datos=getOne(token)
             idTelegram = datos[0]
             recibirTelegram = datos[1]
@@ -120,7 +115,6 @@ def getOne(token):
     'user-token': token
     }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
-    print(respuesta.text)
     datos = respuesta.json()
     idTelegram = datos['elemt']['telegramId']
     recibirTelegram = datos['elemt']['recibeNotiTelegram']

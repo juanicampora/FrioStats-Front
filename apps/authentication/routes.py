@@ -50,8 +50,12 @@ def login():
             response = make_response(redirect('/index'))    
             response.set_cookie('token', token)             #guardar en una cookie el token
             return response
+        elif respuesta.status_code == 403:
+            return render_template( 'accounts/login.html',
+                                    msg='No confirmó su mail, por favor revise su casilla de correo',
+                                    form=login_form)
         else:
-            print("El error obtenido es distinto a 404 y es:")
+            print("El error obtenido es distinto a 200,401,403 y es:")
             print(respuesta.status_code)   
             return abort(500)
 
@@ -67,31 +71,31 @@ def login():
 def register():
     create_account_form = CreateAccountForm(request.form)
     if 'register' in request.form:
-
-        username = request.form['username']
         email = request.form['email']
+        password = request.form['password']
+        nombre = request.form['name']
+        apellido = request.form['surname']
+        if request.form.get('recibirEmail') == None: recibirEmail = 'false' 
+        else: recibirEmail = 'true'
+        token = request.cookies.get('token')
+        url = "http://ljragusa.com.ar:3001/users/register"
+        payload={
+                "email": email,
+                "password": password,
+                "nombre": nombre,
+                "apellido": apellido,
+                "telegramId": "",
+                "recibeNoti": recibirEmail,
+                "idSucursal": 1
+            }
+        headers = {
+        'user-token': token
+        }
 
-        # Check usename exists
-        user = User.query.filter_by(username=username).first()
-        if user:
-            return render_template('accounts/register.html', segment='register',
-                                   msg='Nombre de usuario ya utilizado',
-                                   success=False,
-                                   form=create_account_form)
+        response = requests.request("POST", url, headers=headers, data=payload)
 
-        # Check email exists
-        user = User.query.filter_by(email=email).first()
-        if user:
-            return render_template('accounts/register.html', segment='register',
-                                   msg='Email ya utilizado',
-                                   success=False,
-                                   form=create_account_form)
-
-        # else we can create the user
-        user = User(**request.form)
-
-        # Delete user from session
-        logout_user()
+        print(response.text)
+        
 
         return render_template('accounts/register.html', segment='register',
                                msg='Usuario creado correctamente.',
@@ -100,6 +104,40 @@ def register():
 
     else:
         return render_template('accounts/register.html', segment='register', form=create_account_form)
+
+@blueprint.route('/roles', methods=['GET', 'POST'])
+@login_required
+@role_required('Admin')
+def roles():
+    roles_form = RolesForm(request.form)
+    if 'roles' in request.form:
+        
+        idUsuario = request.form['idUsuario']
+        idRol = request.form['idRol']
+        token = request.cookies.get('token')
+
+        url = "http://ljragusa.com.ar:3001/users/"+idUsuario
+        payload={
+                "idUsuario": idUsuario,
+                "idRol": idRol,
+            }
+        headers = {
+        'user-token': token
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+
+        print(response.text)
+        
+
+        return render_template('accounts/roles.html', segment='roles',
+                               msg='Rol asignado correctamente.',
+                               success=True,
+                               form=roles_form)
+
+    else:
+        return render_template('accounts/roles.html', segment='roles', form=roles_form)
+
 
 @blueprint.route('/mailconfirmation')
 def mailconfirmation():

@@ -1,0 +1,119 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Perfil {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <div class="pcoded-wrapper">
+
+            <div class="pcoded-content">
+                <div class="pcoded-inner-content">
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <!-- [ Main Content ] start -->
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Asignar Roles</h5>
+                                        </div>                                       
+
+                                        <div class="card-block">
+                                            <span class="mb-0 text-muted">
+                                                {% if msg %}
+                                                {% if success %}
+                                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                        <strong>{{ msg | safe }}</strong>
+                                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                                                aria-hidden="true">×</span></button>
+                                                    </div>
+                                                {% else %}
+                                                    <span class="text-danger">{{ msg | safe }}</span>
+                                                {% endif %}
+                                                {% endif %}
+                                            </span>
+
+                                            <div class="row mt-4">
+                                                <div class="col-sm-6 mb-4">
+                                                    <label {% if not current_user.nombre %} class="text-danger" {% endif %} 
+                                                            for="exampleInputNombre">Nombre</label>
+                                                    <input type="text" 
+                                                        {% if current_user.nombre %} readonly value="{{ current_user.nombre }}" {% endif %}
+                                                        class="form-control" id="exampleInputEmail1" aria-describedby="nombreHelp" placeholder="Ingresar nombre">                                                       
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <label {% if not current_user.nombre %} class="text-danger" {% endif %} for="exampleInputNombre">Apellido</label>
+                                                    <input type="text" {% if current_user.nombre %} readonly value="{{ current_user.apellido }}" {% endif %}
+                                                        class="form-control" id="exampleInputEmail1" aria-describedby="nombreHelp" placeholder="Ingresar Apellido">
+                                                </div>
+                                                <div class="col-sm-6 mb-4">
+                                                    <label {% if not current_user.nombre %} class="text-danger" {% endif %}
+                                                        for="exampleInputNombre">Rol</label>
+                                                    <input type="text" {% if current_user.nombre %} readonly value="{{ current_user.rol }}" {% endif %}
+                                                        class="form-control" id="exampleInputEmail1" aria-describedby="nombreHelp" placeholder="Rolo">
+                                                </div>
+                                                <div class="col-sm-12 mb-4">
+                                                    <label {% if not current_user.email %} class="text-danger" {% endif %} 
+                                                            for="exampleInputEmail1">Dirección Email</label>
+                                                    <input type="email"
+                                                            {% if current_user.email %} readonly value="{{ current_user.email }}" {% endif %}  
+                                                            class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Ingresar email">  
+                                                </div>   
+                                                
+                                                    <form role="form" method="POST" action="/profile">
+                                                        {{ form.hidden_tag() }}
+                                                        <div class="col-sm-12 mb-4">
+                                                            <div class="checkbox checkbox-fill d-inline">
+                                                                {% if recibirEmail==True %}
+                                                                {{ form.recibirEmail(type="checkbox",checked="") }}
+                                                                {% else %}
+                                                                {{ form.recibirEmail(type="checkbox") }}
+                                                                {% endif %}
+                                                                <label for="recibirEmail" class="cr"> Recibir notificaciones por Email</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12 mb-4">
+                                                                <label for="idTelegram">ID Telegram</label>
+                                                                <input class="form-control" id="idTelegram" name="idTelegram" placeholder="Ingrese su ID de Telegram"
+                                                                        {% if idTelegram is not none %} value="{{ idTelegram }}" {% endif %} >                                                
+                                                        </div>                                                
+                                                        <div class="col-sm-12 mb-4">
+                                                            <div class="checkbox checkbox-fill d-inline">                                                    
+                                                                {% if recibirTelegram==True %}
+                                                                {{ form.recibirTelegram(type="checkbox",checked="") }}
+                                                                {% else %}
+                                                                {{ form.recibirTelegram(type="checkbox") }}
+                                                                {% endif %}
+                                                                <label for="recibirTelegram" class="cr"> Recibir notificaciones por Telegram</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-12 mb-2">                                    
+                                                            <button type="submit" class="btn btn-primary">Enviar</button>
+                                                        </div>     
+                                                    </form>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                
+                            </div>
+                            <!-- [ Main Content ] end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
