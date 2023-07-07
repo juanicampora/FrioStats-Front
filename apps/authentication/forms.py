@@ -35,3 +35,7 @@ class ProfileForm(FlaskForm):
     idTelegram = StringField('idTelegram',id='idTelegram')
     recibirTelegram = StringField('recibirTelegram',id='recibirTelegram')
     recibirEmail = StringField('recibirEmail',id='recibirEmail')
+
+class RolesForm(FlaskForm):
+    idUsuario = StringField('idUsuario',id='idUsuario')
+    idRol = StringField('idRol',id='idRol')
