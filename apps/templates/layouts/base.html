@@ -3,7 +3,7 @@
 
 <head>
     <title>
-        FrioStats - {% block title %}{% endblock %}
+        {% block title %}{% endblock %}
     </title>
     <!-- HTML5 Shim and Respond.js IE11 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -43,7 +43,7 @@
 
     {% include 'includes/sidebar.html' %}
 
-    {% include 'includes/navigation.html' %}
+    <!--  include 'includes/navigation.html'                   Lo saque para que quede mejor -->
 
 
     {% block content %}{% endblock content %}

@@ -74,7 +74,7 @@ def register():
         # Check usename exists
         user = User.query.filter_by(username=username).first()
         if user:
-            return render_template('accounts/register.html',
+            return render_template('accounts/register.html', segment='register',
                                    msg='Nombre de usuario ya utilizado',
                                    success=False,
                                    form=create_account_form)
@@ -82,7 +82,7 @@ def register():
         # Check email exists
         user = User.query.filter_by(email=email).first()
         if user:
-            return render_template('accounts/register.html',
+            return render_template('accounts/register.html', segment='register',
                                    msg='Email ya utilizado',
                                    success=False,
                                    form=create_account_form)
@@ -93,13 +93,13 @@ def register():
         # Delete user from session
         logout_user()
 
-        return render_template('accounts/register.html',
+        return render_template('accounts/register.html', segment='register',
                                msg='Usuario creado correctamente.',
                                success=True,
                                form=create_account_form)
 
     else:
-        return render_template('accounts/register.html', form=create_account_form)
+        return render_template('accounts/register.html', segment='register', form=create_account_form)
 
 @blueprint.route('/mailconfirmation')
 def mailconfirmation():
