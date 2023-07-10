@@ -5,7 +5,7 @@ from flask_login import (current_user,login_user,logout_user,login_required)
 
 from apps import  login_manager
 from apps.authentication import blueprint, role_required
-from apps.authentication.forms import LoginForm, CreateAccountForm
+from apps.authentication.forms import LoginForm, CreateAccountForm, RolesForm
 from apps.authentication.models import User
 
 
@@ -108,36 +108,55 @@ def register():
 @blueprint.route('/roles', methods=['GET', 'POST'])
 @login_required
 @role_required('Admin')
-def roles():
-    roles_form = RolesForm(request.form)
-    if 'roles' in request.form:
-        
-        idUsuario = request.form['idUsuario']
-        idRol = request.form['idRol']
-        token = request.cookies.get('token')
-
-        url = "http://ljragusa.com.ar:3001/users/"+idUsuario
-        payload={
-                "idUsuario": idUsuario,
-                "idRol": idRol,
-            }
-        headers = {
-        'user-token': token
-        }
-
-        response = requests.request("POST", url, headers=headers, data=payload)
-
-        print(response.text)
-        
-
+def roles(exito=None):
+    print(exito)
+    if exito=='si':
         return render_template('accounts/roles.html', segment='roles',
-                               msg='Rol asignado correctamente.',
-                               success=True,
-                               form=roles_form)
-
+                            msg='Rol asignado correctamente.',
+                            success=True)
+    elif exito=='no':
+        return render_template('accounts/roles.html', segment='roles',
+                            msg='Hubo un error intente nuevamente.',
+                            success=False)
     else:
-        return render_template('accounts/roles.html', segment='roles', form=roles_form)
+        return render_template('accounts/roles.html', segment='roles')
 
+@blueprint.route('/roles/email_conocido', methods=['GET', 'POST'])
+@login_required
+@role_required('Admin')
+def roles_email_conocido():
+    if (request.method == 'GET'):
+        data_roles=getRoles()
+        return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles)
+    elif (request.method == 'POST'):
+        
+        email = request.form['email']
+        #PEDIR A LUCHO UNA API PARA PONER ACA QUE VERIFIQUE QUE EL EMAIL EXISTE. si existe que mande 
+        idUsuario=email
+        if idUsuario==None:
+            data_roles=getRoles()
+            return render_template('accounts/roles.html', segment='roles', data_roles=data_roles,msg='El email ingresado no existe en el sistema')
+        else:
+            idRol = request.form['rolSeleccionado']
+            respuesta= asignarRol(idUsuario,idRol)
+            print(respuesta.text)   #BORRAR
+            redirect(url_for('authentication_blueprint.roles',exito='si'))
+            
+
+
+
+@blueprint.route('/roles/lista', methods=['GET'])
+@login_required
+@role_required('Admin')
+def roles_lista():
+    return True
+
+@blueprint.route('/roles/lista/seleccionado', methods=['GET'])
+@login_required
+@role_required('Admin')
+def roles_lista_seleccionado():
+    return True
+    
 
 @blueprint.route('/mailconfirmation')
 def mailconfirmation():
@@ -169,3 +188,27 @@ def not_found_error(error):
 @blueprint.errorhandler(500)
 def internal_error(error):
     return render_template('home/page-500.html'), 500
+
+
+# Funciones utilizadas varias veces
+def getRoles():
+    url = "http://ljragusa.com.ar:3001/roles/getRoles"
+    payload={}
+    headers = {
+    'user-token': request.cookies.get('token')
+    }
+    roles = requests.request("GET", url, headers=headers, data=payload)
+    data_roles = roles.json()
+    return data_roles
+
+def asignarRol(idUsuario,idRol):
+    url = "http://ljragusa.com.ar:3001/users/"+idUsuario
+    payload={
+            "idUsuario": idUsuario,
+            "idRol": idRol,
+        }
+    headers = {
+    'user-token': request.cookies.get('token')
+    }
+    response = requests.request("POST", url, headers=headers, data=payload)
+    return response

@@ -1,0 +1,86 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Roles {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+  <div class="pcoded-wrapper">
+    <div class="pcoded-content">
+      <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col-md-12">
+                <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                  <li class="breadcrumb-item"><a href="/roles">Opciones</a></li>
+                  <li class="breadcrumb-item"><a href="/roles/email_conocido">Asignar Rol con Email Conocido</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+          <div class="page-wrapper">
+            <!-- [ Main Content ] start -->
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>Asignar Rol con Email Conocido</h5>
+                  </div>
+                  <div class="card-block">
+                    
+                    {% if msg %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                      <strong>{{ msg | safe }}</strong>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    {% endif %}
+
+                    <form role="form" method="POST" action="/roles">                      
+                      <div class="col-sm-12 mb-4">
+                        <label for="email">Email del Usuario</label>
+                        <input class="form-control" id="email" name="email" placeholder="Ingrese el email del Usuario">
+                      </div>
+                      
+                      <div class="col-sm-12 form-group">
+                        <label for="exampleFormControlSelect1">Rol a Asignar</label>
+                        <select class="form-control" id="rolSeleccionado">
+                          {% for rol in data_roles['elemts'] %}
+                            <option value="{{ rol['id'] }}">{{ rol['descripcion'] }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                      <div class="col-sm-12 mb-2">
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                      </div>
+                    </form>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- [ Main Content ] end -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
