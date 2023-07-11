@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-from flask import Blueprint
+from flask import Blueprint, abort
 from functools import wraps
 from flask_login import current_user
 from flask import redirect, url_for
@@ -18,7 +18,7 @@ def role_required(rol):         # Creo un decorador para verificar el rol del us
             if not current_user.is_authenticated:
                 return redirect(url_for('authentication_blueprint.login'))  # Redirige al login si el usuario no está autenticado
             if current_user.rol != rol:
-                return redirect(url_for('authentication_blueprint.internal_error'))  # Redirige a una página de acceso no autorizado si el rol no coincide
+                return abort(403)  # Redirige a una página de acceso no autorizado si el rol no coincide
             return func(*args, **kwargs)
         return wrapper
     return decorator

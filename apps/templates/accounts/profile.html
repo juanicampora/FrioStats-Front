@@ -72,37 +72,38 @@
                                                             class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Ingresar email">  
                                                 </div>   
                                                 
-                                                    <form role="form" method="POST" action="/profile">
-                                                        {{ form.hidden_tag() }}
-                                                        <div class="col-sm-12 mb-4">
-                                                            <div class="checkbox checkbox-fill d-inline">
-                                                                {% if recibirEmail==True %}
-                                                                {{ form.recibirEmail(type="checkbox",checked="") }}
-                                                                {% else %}
-                                                                {{ form.recibirEmail(type="checkbox") }}
-                                                                {% endif %}
-                                                                <label for="recibirEmail" class="cr"> Recibir notificaciones por Email</label>
-                                                            </div>
+                                                <form role="form" method="POST" action="/profile">
+                                                    {{ form.hidden_tag() }}
+                                                    <div class="col-sm-12 mb-4">
+                                                        <div class="checkbox checkbox-fill d-inline">
+                                                            {% if recibirEmail==True %}
+                                                            {{ form.recibirEmail(type="checkbox",checked="") }}
+                                                            {% else %}
+                                                            {{ form.recibirEmail(type="checkbox") }}
+                                                            {% endif %}
+                                                            <label for="recibirEmail" class="cr"> Recibir notificaciones por Email</label>
                                                         </div>
+                                                    </div>
+                                                    {% if idTelegram is not none %}
                                                         <div class="col-sm-12 mb-4">
                                                                 <label for="idTelegram">ID Telegram</label>
-                                                                <input class="form-control" id="idTelegram" name="idTelegram" placeholder="Ingrese su ID de Telegram"
-                                                                        {% if idTelegram is not none %} value="{{ idTelegram }}" {% endif %} >                                                
-                                                        </div>                                                
-                                                        <div class="col-sm-12 mb-4">
-                                                            <div class="checkbox checkbox-fill d-inline">                                                    
-                                                                {% if recibirTelegram==True %}
-                                                                {{ form.recibirTelegram(type="checkbox",checked="") }}
-                                                                {% else %}
-                                                                {{ form.recibirTelegram(type="checkbox") }}
-                                                                {% endif %}
-                                                                <label for="recibirTelegram" class="cr"> Recibir notificaciones por Telegram</label>
-                                                            </div>
+                                                                <input class="form-control" id="idTelegram" name="idTelegram" placeholder="Ingrese su ID de Telegram" readonly value="{{ idTelegram }}"  >                                                
+                                                        </div>   
+                                                    {% endif %}
+                                                    <div class="col-sm-12 mb-4">
+                                                        <div class="checkbox checkbox-fill d-inline">                                                    
+                                                            {% if recibirTelegram==True %}
+                                                            {{ form.recibirTelegram(type="checkbox",checked="") }}
+                                                            {% else %}
+                                                            {{ form.recibirTelegram(type="checkbox") }}
+                                                            {% endif %}
+                                                            <label for="recibirTelegram" class="cr"> Recibir notificaciones por Telegram</label>
                                                         </div>
-                                                        <div class="col-sm-12 mb-2">                                    
-                                                            <button type="submit" class="btn btn-primary">Enviar</button>
-                                                        </div>     
-                                                    </form>
+                                                    </div>
+                                                    <div class="col-sm-12 mb-2">                                    
+                                                        <button type="submit" class="btn btn-primary">Enviar</button>
+                                                    </div>     
+                                                </form>
                                                 
                                             </div>
                                         </div>

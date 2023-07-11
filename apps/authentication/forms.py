@@ -25,10 +25,10 @@ class CreateAccountForm(FlaskForm):
                              validators=[DataRequired()])
     name = StringField('Name',
                         id='name_create',
-                        validators=[DataRequired(),Length(min=3, max=50),Regexp('^[A-Za-z]+$')])
+                        validators=[DataRequired(),Length(min=3, max=50),Regexp(r'^[a-zA-Z]+$', message='Ingrese solo letras.')])
     surname = StringField('Surname',
                         id='surname_create',
-                        validators=[DataRequired(),Length(min=3, max=50),Regexp('^[A-Za-z]+$')])
+                        validators=[DataRequired(),Length(min=3, max=50),Regexp(r'^[a-zA-Z]+$', message='Ingrese solo letras.')])
 
 
 class ProfileForm(FlaskForm):

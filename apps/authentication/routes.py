@@ -22,14 +22,14 @@ def login():
         # read form data
         email  = request.form['email']
         password = request.form['password']
-
-        try:
-            url = "http://ljragusa.com.ar:3001/users/login"
-            payload={
-                "email": email,
-                "password": password
-            }
-            headers = {}
+        
+        url = "http://ljragusa.com.ar:3001/users/login"
+        payload={
+            "email": email,
+            "password": password
+        }
+        headers = {}
+        try:    
             respuesta = requests.request("POST", url, headers=headers, data=payload)
         except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
@@ -84,24 +84,32 @@ def register():
                 "password": password,
                 "nombre": nombre,
                 "apellido": apellido,
-                "telegramId": "",
-                "recibeNoti": recibirEmail,
+                "recibeNotiMail": recibirEmail,
                 "idSucursal": 1
             }
         headers = {
         'user-token': token
         }
 
-        response = requests.request("POST", url, headers=headers, data=payload)
-
-        print(response.text)
+        try: 
+            response = requests.request("POST", url, headers=headers, data=payload)
+        except requests.exceptions.RequestException as e:
+            print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+            return abort(500)
         
+        print(response.text)
+        print(response.status_code)
 
-        return render_template('accounts/register.html', segment='register',
-                               msg='Usuario creado correctamente.',
-                               success=True,
-                               form=create_account_form)
-
+        if response.status_code == 201:
+            return render_template('accounts/register.html', segment='register',
+                                            msg='Usuario creado correctamente.',
+                                            success=True,
+                                            form=create_account_form)
+        elif response.status_code == 400:
+            return render_template('accounts/register.html', segment='register',
+                                msg=response.json()['message'],
+                                success=False,
+                                form=create_account_form)
     else:
         return render_template('accounts/register.html', segment='register', form=create_account_form)
 
@@ -197,7 +205,11 @@ def getRoles():
     headers = {
     'user-token': request.cookies.get('token')
     }
-    roles = requests.request("GET", url, headers=headers, data=payload)
+    try:
+        roles = requests.request("GET", url, headers=headers, data=payload)
+    except requests.exceptions.RequestException as e:
+            print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+            return abort(500)    
     data_roles = roles.json()
     return data_roles
 
@@ -210,5 +222,9 @@ def asignarRol(idUsuario,idRol):
     headers = {
     'user-token': request.cookies.get('token')
     }
-    response = requests.request("POST", url, headers=headers, data=payload)
+    try:
+        response = requests.request("POST", url, headers=headers, data=payload)
+    except requests.exceptions.RequestException as e:
+            print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+            return abort(500)
     return response
