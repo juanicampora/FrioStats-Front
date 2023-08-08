@@ -15,7 +15,15 @@ def prueba():
 @blueprint.route('/index')
 @login_required
 def index():
-    return render_template('home/index.html', segment='index')  #segment se usa en sidebar.html
+    token = request.cookies.get('token')
+    url = "http://ljragusa.com.ar:3001/locals/getLocals"
+    payload={}
+    headers = {
+    'user-token': token
+    }
+    respuesta = requests.request("GET", url, headers=headers, data=payload)
+    supermercados = respuesta.json()
+    return render_template('home/index.html', segment='index',supermercados=supermercados)  #segment se usa en sidebar.html
 
 @blueprint.route('/roles')          #Hay que implementarlo (es para que un admin cambie los roles de los usuarios)
 @login_required
@@ -114,6 +122,12 @@ def profile_telegram():
                                 success=False)
     else:
         return render_template('accounts/profile_telegram.html', segment='profile')
+
+@blueprint.route('/panel/<int:id_super>', methods=['GET','POST'])
+@login_required
+def panel(id_super):
+    return render_template('home/panel.html', segment='panel', id_super=id_super)
+
 
 @blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route
 @login_required
