@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <link rel="stylesheet" href="../static/assets/css/mapadark.css">
+<link rel="stylesheet" href="../static/assets/css/cursormanito.css">
+
 {% endblock stylesheets %}
 
 {% block content %}
@@ -39,7 +41,7 @@
                                         </div>
                                         <div class="card-block table-border-style">
                                             <div class="table-responsive">
-                                                <table class="table table-hover">
+                                                <table class="table table-hover tabla-con-mano">
                                                     <thead>
                                                         <tr>
                                                             <th>Acción</th>
@@ -53,7 +55,7 @@
                                                     </thead>
                                                     <tbody>                                                        
                                                         {% for super in supermercados['elemts'] %}
-                                                            <tr data-id={{ super['id'] | safe }}>
+                                                            <tr class="tabla-con-mano" data-id={{ super['id'] | safe }}>
                                                                 <td><a href="/panel/{{super['id']}}"><button type="button" class="btn-sm btn-primary">Abrir en Panel</button></td></a>
                                                                 <td>{{ super['id'] }}</td>
                                                                 <td>{{ super['nombre'] }}</td>
@@ -98,7 +100,7 @@
     var coordenadas_array = coordenadas.split(', ');
     var latitude = parseFloat(coordenadas_array[0]);
     var longitude = parseFloat(coordenadas_array[1]);
-    var marker = L.marker([latitude, longitude]);
+    var marker = L.marker([latitude, longitude], { icon: customIcon });
     marker.addTo(map);
     marker.on('click', function () {
         var supermercadoId = {{ super['id'] }};
@@ -136,21 +138,44 @@
     }
 </script>
 
+<script>
+    var supermercadosList = {{ supermercados['elemts'] | tojson | safe }};
+    function getCoordinatesById(id) {
+        for (var i = 0; i < supermercadosList.length; i++) {
+            if (supermercadosList[i].id === id) {
+                var coordinates = supermercadosList[i].coordenadas.split(', ');
+                var latitude = parseFloat(coordinates[0]);
+                var longitude = parseFloat(coordinates[1]);
+                return { lat: latitude, lng: longitude };
+            }
+        }
+        return null;
+    }
+</script>
 
 <script>
     $(document).ready(function () {
         $("tr").click(function () {
             var id = $(this).data("id");
-            window.location.href = "/panel/" + id;
+            $('#tabla tr').removeClass('bg-primary bg-opacity-25'); // Eliminar resaltado de otras filas
+            $('#tabla tr[data-id="' + id + '"]').addClass('bg-primary bg-opacity-25');
+            coordenadas = getCoordinatesById(id);
+            if (coordenadas) {
+                console.log('Latitud:', coordenadas.lat);
+                console.log('Longitud:', coordenadas.lng);
+            } else {
+                console.log('Supermercado no encontrado');
+            }
+            var latitud = coordenadas.lat;
+            var longitud = coordenadas.lng;
+            var mapaElement = document.getElementById('mapa');
+            if (mapaElement) {
+                mapaElement.scrollIntoView({ behavior: 'smooth' });
+            }
+            map.flyTo([latitud, longitud], 15,{ duration: 2 });
         });
     });
 </script>
-
-
-
-
-
-
 
 
 {% endblock javascripts %}

@@ -22,6 +22,7 @@ def index():
     'user-token': token
     }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
+    print(respuesta.text)
     supermercados = respuesta.json()
     return render_template('home/index.html', segment='index',supermercados=supermercados)  #segment se usa en sidebar.html
 
