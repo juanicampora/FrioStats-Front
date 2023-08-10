@@ -18,13 +18,11 @@ def index():
     token = request.cookies.get('token')
     url = "http://ljragusa.com.ar:3001/locals/getLocals"
     payload={}
-    headers = {
-    'user-token': token
-    }
+    headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
-    print(respuesta.text)
     supermercados = respuesta.json()
-    return render_template('home/index.html', segment='index',supermercados=supermercados)  #segment se usa en sidebar.html
+    notificaciones=[]
+    return render_template('home/index.html', segment='index',supermercados=supermercados,notificaciones=notificaciones)  #segment se usa en sidebar.html
 
 @blueprint.route('/roles')          #Hay que implementarlo (es para que un admin cambie los roles de los usuarios)
 @login_required

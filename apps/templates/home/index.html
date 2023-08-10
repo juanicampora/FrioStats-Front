@@ -63,8 +63,9 @@
                                                                 <td>{{ super['direccion'] }}</td>
                                                                 <td>{{ super['telefono'] }}</td>
                                                                 <td>
-                                                                    <span class="badge badge-pill bg-warning text-dark">13</span>
-                                                                    <span class="badge badge-pill bg-danger text-dark ">2</span>
+                                                                    {% if notificacion %}
+                                                                    <span id="notiGrave" class="badge badge-pill bg-warning text-dark">notificacion</span>
+                                                                    <span id="notiLeve" class="badge badge-pill bg-danger text-dark ">2</span>
                                                                 </td>
                                                             </tr>
                                                         {% endfor %}

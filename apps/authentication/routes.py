@@ -84,8 +84,7 @@ def register():
                 "password": password,
                 "nombre": nombre,
                 "apellido": apellido,
-                "recibeNotiMail": recibirEmail,
-                "idSucursal": 1
+                "recibeNotiMail": recibirEmail
             }
         headers = {
         'user-token': token
