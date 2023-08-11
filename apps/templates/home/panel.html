@@ -1,0 +1,71 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+  <div class="pcoded-wrapper">
+
+    <div class="pcoded-content">
+      <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+          <div class="page-wrapper">
+            <!-- [ Main Content ] start -->
+            <div class="row">
+              <!--[ daily sales section ] start-->
+              <div class="col-xl-6 col-md-6">
+                <div class="card Recent-Users">
+                  <div class="card-header">
+                    <h5>Plano del Supermercado</h5>
+                  </div>
+                  <div class="card-block px-0 py-3">
+                    <img src="{{ url_for('static', filename='assets/images/plano.jpg') }}">
+                  </div>
+                </div>
+              </div>
+              <!--[ daily sales section ] end-->
+              <!--[ Monthly  sales section ] starts-->
+              <div class="col-xl-4 col-md-6">
+                <div class="card Recent-Users">
+                  <div class="card-header">
+                    <h5>Notificaciones</h5>
+                  </div>
+                  <div class="card-block px-0 py-3">
+              
+                  </div>
+                </div>
+
+                <div class="card Recent-Users">
+                  <div class="card-header">
+                    <h5>Recent Users</h5>
+                  </div>
+                  <div class="card-block px-0 py-3">
+                
+                  </div>
+                </div>
+              </div>
+              <!--[ Monthly  sales section ] end-->
+
+            </div>
+            <!-- [ Main Content ] end -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
