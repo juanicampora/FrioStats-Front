@@ -21,7 +21,13 @@ def index():
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     supermercados = respuesta.json()
-    notificaciones=[]
+
+    url = "http://ljragusa.com.ar:3001/notifications/getCantNoti"
+    payload={}
+    headers = { 'user-token': token }
+    respuesta = requests.request("GET", url, headers=headers, data=payload)
+    notificaciones=respuesta.json()
+    
     return render_template('home/index.html', segment='index',supermercados=supermercados,notificaciones=notificaciones)  #segment se usa en sidebar.html
 
 @blueprint.route('/roles')          #Hay que implementarlo (es para que un admin cambie los roles de los usuarios)
