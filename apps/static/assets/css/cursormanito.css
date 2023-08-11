@@ -1,0 +1,3 @@
+.tabla-con-mano tbody tr:hover {
+  cursor: pointer;
+}

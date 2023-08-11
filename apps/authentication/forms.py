@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import StringField, PasswordField, SelectField
 from wtforms.validators import Email, DataRequired,Length,Regexp
 
 # login and registration
@@ -25,7 +25,17 @@ class CreateAccountForm(FlaskForm):
                              validators=[DataRequired()])
     name = StringField('Name',
                         id='name_create',
-                        validators=[DataRequired(),Length(min=3, max=50),Regexp('^[A-Za-z]+$')])
+                        validators=[DataRequired(),Length(min=3, max=50),Regexp(r'^[a-zA-Z]+$', message='Ingrese solo letras.')])
     surname = StringField('Surname',
                         id='surname_create',
-                        validators=[DataRequired(),Length(min=3, max=50),Regexp('^[A-Za-z]+$')])
+                        validators=[DataRequired(),Length(min=3, max=50),Regexp(r'^[a-zA-Z]+$', message='Ingrese solo letras.')])
+
+
+class ProfileForm(FlaskForm):
+    idTelegram = StringField('idTelegram',id='idTelegram')
+    recibirTelegram = StringField('recibirTelegram',id='recibirTelegram')
+    recibirEmail = StringField('recibirEmail',id='recibirEmail')
+
+class RolesForm(FlaskForm):
+    idUsuario = StringField('idUsuario',id='idUsuario')
+    idRol = StringField('idRol',id='idRol')
