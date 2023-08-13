@@ -1,0 +1,14 @@
+.tabla-alerta-amarillo {
+  background-color: #ffcc80;
+    /* Amarillo más oscuro */
+    color: #000;
+    /* Color de texto oscuro para legibilidad */
+}
+
+/* Estilos para la fila de fondo rojo */
+.tabla-alerta-rojo {
+  background-color: #d9534f;
+  /* Rojo más oscuro */
+  color: #fff;
+  /* Color de texto claro para legibilidad */
+}

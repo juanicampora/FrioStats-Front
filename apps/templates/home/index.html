@@ -28,7 +28,7 @@
                                     <div class="card">
                                         <div class="card-header"> <h5>Mapa Supermercados</h5> </div>
                                         <div class="card-block">
-                                            <div id="map" style="height: 600px;"></div>
+                                            <div id="map" style="height: 500px;"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -55,7 +55,7 @@
                                                     </thead>
                                                     <tbody>                                                        
                                                         {% for super in supermercados['elemts'] %}
-                                                            <tr class="tabla-con-mano" data-id={{ super['id'] | safe }}>
+                                                            <tr class="tabla-con-mano" data-id="{{ super['id'] | safe }}">
                                                                 <td><a href="/panel/{{super['id']}}"><button type="button" class="btn-sm btn-primary">Abrir en Panel</button></td></a>
                                                                 <td>{{ super['id'] }}</td>
                                                                 <td>{{ super['nombre'] }}</td>
@@ -63,7 +63,7 @@
                                                                 <td>{{ super['direccion'] }}</td>
                                                                 <td>{{ super['telefono'] }}</td>
                                                                 {% for noti in notificaciones['elemts'] %}
-                                                                    {% if noti['id']==super['id'] %}
+                                                                    {% if noti['idSucursal']==super['id'] %}
                                                                         <td>
                                                                             <span id="notiGrave" class="badge badge-pill bg-danger text-dark">{{ noti['cantGraves'] }}</span>
                                                                             <span id="notiLeve" class="badge badge-pill bg-warning text-dark">{{ noti['cantLeves'] }}</span>

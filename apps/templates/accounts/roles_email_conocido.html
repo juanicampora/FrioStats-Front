@@ -50,7 +50,11 @@
                     <form role="form" method="POST" action="/roles">                      
                       <div class="col-sm-12 mb-4">
                         <label for="email">Email del Usuario</label>
-                        <input class="form-control" id="email" name="email" placeholder="Ingrese el email del Usuario">
+                        {% if email_empleado %}
+                          <input class="form-control" id="email" name="email" placeholder="Ingrese el email del Usuario" value="{{ email_empleado }}">
+                        {% else %}
+                          <input class="form-control" id="email" name="email" placeholder="Ingrese el email del Usuario">
+                        {% endif %}
                       </div>
                       
                       <div class="col-sm-12 form-group">
@@ -63,7 +67,7 @@
                       </div>
 
                       <div class="col-sm-12 mb-2">
-                        <button type="submit" class="btn btn-primary">Enviar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
                       </div>
                     </form>
                     

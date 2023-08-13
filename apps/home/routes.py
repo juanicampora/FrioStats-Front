@@ -16,13 +16,13 @@ def prueba():
 @login_required
 def index():
     token = request.cookies.get('token')
-    url = "http://ljragusa.com.ar:3001/locals/getLocals"
+    url = "http://ljragusa.com.ar:3001/sucursales"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     supermercados = respuesta.json()
 
-    url = "http://ljragusa.com.ar:3001/notifications/getCantNoti"
+    url = "http://ljragusa.com.ar:3001/notificaciones/getCantNoti"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
@@ -131,11 +131,26 @@ def profile_telegram():
 @blueprint.route('/panel/<int:id_super>', methods=['GET','POST'])
 @login_required
 def panel(id_super):
-    return render_template('home/panel.html', segment='panel', id_super=id_super)
+    token = request.cookies.get('token')
+    url = f'http://ljragusa.com.ar:3001/notificaciones/getNotificaciones/{id_super}'
+    print(url)
+    payload={}
+    headers = { 'user-token': token }
+    respuesta = requests.request("GET", url, headers=headers, data=payload)
+    notificaciones = respuesta.json()
+    print(respuesta.text)
+    return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones)
 
+@blueprint.route('/notificacion-leida/<int:id_noti>', methods=['GET','POST'])
+@login_required
+def notificacion_leida(id_noti):
+    url = f'http://ljragusa.com.ar:3001/notificaciones/{id_noti}'
+    payload={}
+    headers = { 'user-token': request.cookies.get('token') }
+    requests.request("PATCH", url, headers=headers, data=payload)
+    
 
 @blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route
-@login_required
 def route_template(template):
 
     try:
@@ -147,7 +162,7 @@ def route_template(template):
         segment = get_segment(request)
 
         # Serve the file (if exists) from app/templates/home/FILE.html
-        return render_template("home/" + template, segment=segment)
+        return render_template("borrar/" + template, segment=segment)
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
@@ -175,7 +190,7 @@ def get_segment(request):
 #Funciones usadas varias veces
 
 def getOne(token):
-    url = "http://ljragusa.com.ar:3001/users/getOne"
+    url = "http://ljragusa.com.ar:3001/users/"
     payload={}
     headers = {
     'user-token': token

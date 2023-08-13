@@ -37,8 +37,36 @@
                     <h5>Lista Usuarios</h5>
                   </div>
                   <div class="card-block">
-
-
+                    <div class="card-block table-border-style">
+                      <div class="table-responsive">
+                        <table class="table table-hover tabla-con-mano">
+                          <thead>
+                            <tr>
+                              <th>Acción</th>
+                              <th>ID</th>
+                              <th>Apellido, Nombre</th>
+                              <th>Email</th>
+                              <th>Sucursal (ciudad-nombre-dirección)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for empleado in empleados['elemts'] %}
+                            <tr class="tabla-con-mano fila-usuario" data-id="{{ empleado['email'] }}">
+                              <td><button type="button" class="btn-sm btn-primary">Seleccionar</button></td>
+                              <td>{{ empleado['id'] }}</td>
+                              <td>{{ empleado['apellido'] }} , {{ empleado['nombre'] }}</td>
+                              <td>{{ empleado['email'] }}</td>
+                              <td>
+                              {% for sucursal in empleado['Sucursals'] %}
+                                {{ sucursal['ciudad'] }} - {{ sucursal['nombre'] }} - {{ sucursal['direccion'] }}<br>
+                              {% endfor %}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -55,4 +83,26 @@
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+  // Esperar a que el documento esté listo
+  document.addEventListener("DOMContentLoaded", function () {
+    // Seleccionar todas las filas de usuario por su clase
+    var filasUsuario = document.querySelectorAll(".fila-usuario");
+
+    // Agregar un controlador de clic a cada fila
+    filasUsuario.forEach(function (fila) {
+      fila.addEventListener("click", function () {
+        // Obtener el valor de data-id de la fila clicada
+        var dataId = fila.getAttribute("data-id");
+
+        // Construir la URL de redirección
+        var url = "/roles/lista/" + dataId;
+
+        // Redirigir a la URL
+        window.location.href = url;
+      });
+    });
+  });
+</script>
+{% endblock javascripts %}
