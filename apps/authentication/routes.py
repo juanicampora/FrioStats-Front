@@ -142,6 +142,7 @@ def roles_email_conocido():
         
         email = request.form['email']
         #PEDIR A LUCHO UNA API PARA PONER ACA QUE VERIFIQUE QUE EL EMAIL EXISTE. si existe que mande 
+        
         idUsuario=email
         if idUsuario==None:
             data_roles=getRoles()
