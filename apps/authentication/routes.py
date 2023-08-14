@@ -78,13 +78,12 @@ def register():
         if request.form.get('recibirEmail') == None: recibirEmail = 'false' 
         else: recibirEmail = 'true'
         token = request.cookies.get('token')
-        url = "http://ljragusa.com.ar:3001/users/register"
+        url = "http://ljragusa.com.ar:3001/users/"
         payload={
                 "email": email,
                 "password": password,
                 "nombre": nombre,
                 "apellido": apellido,
-                "recibeNotiMail": recibirEmail
             }
         headers = {
         'user-token': token
@@ -116,7 +115,6 @@ def register():
 @login_required
 @role_required('Admin')
 def roles(exito=None):
-    print(exito)
     if exito=='si':
         return render_template('accounts/roles.html', segment='roles',
                             msg='Rol asignado correctamente.',
@@ -131,10 +129,15 @@ def roles(exito=None):
 @blueprint.route('/roles/email_conocido', methods=['GET', 'POST'])
 @login_required
 @role_required('Admin')
-def roles_email_conocido():
+def roles_email_conocido(): 
+    email_empleado = request.args.get('email_empleado')
+
     if (request.method == 'GET'):
-        data_roles=getRoles()
+        data_roles=getRoles()   
+        if email_empleado != None:
+            return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles,email_empleado=email_empleado)        
         return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles)
+        
     elif (request.method == 'POST'):
         
         email = request.form['email']
@@ -156,14 +159,20 @@ def roles_email_conocido():
 @login_required
 @role_required('Admin')
 def roles_lista():
-    return True
+    url = "http://ljragusa.com.ar:3001/users/getEmployees"
+    payload={}
+    headers = { 'user-token': request.cookies.get('token') }
+    respuesta = requests.request("GET", url, headers=headers, data=payload)
+    print(respuesta.text)
+    print(respuesta.status_code)
+    empleados=respuesta.json()
+    return render_template('accounts/roles_lista.html', segment='roles', empleados=empleados)
 
-@blueprint.route('/roles/lista/seleccionado', methods=['GET'])
+@blueprint.route('/roles/lista/<string:email_empleado>', methods=['GET'])
 @login_required
 @role_required('Admin')
-def roles_lista_seleccionado():
-    return True
-    
+def roles_lista_seleccionado(email_empleado):
+    return redirect(url_for('authentication_blueprint.roles_email_conocido',email_empleado=email_empleado))
 
 @blueprint.route('/mailconfirmation')
 def mailconfirmation():
@@ -199,11 +208,9 @@ def internal_error(error):
 
 # Funciones utilizadas varias veces
 def getRoles():
-    url = "http://ljragusa.com.ar:3001/roles/getRoles"
+    url = "http://ljragusa.com.ar:3001/roles/"
     payload={}
-    headers = {
-    'user-token': request.cookies.get('token')
-    }
+    headers = { 'user-token': request.cookies.get('token') }
     try:
         roles = requests.request("GET", url, headers=headers, data=payload)
     except requests.exceptions.RequestException as e:

@@ -3,7 +3,9 @@
 {% block title %} Dashboard {% endblock %}
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<link rel="stylesheet" href="../static/assets/css/tablaalerta.css">
+{% endblock stylesheets %}
 
 {% block content %}
 
@@ -21,39 +23,67 @@
             <!-- [ Main Content ] start -->
             <div class="row">
               <!--[ daily sales section ] start-->
-              <div class="col-xl-6 col-md-6">
+              <div class="col-xl-12 col-md-6">
                 <div class="card Recent-Users">
                   <div class="card-header">
                     <h5>Plano del Supermercado</h5>
                   </div>
-                  <div class="card-block px-0 py-3">
+                  <div class="card-block px-0 py-0">
                     <img src="{{ url_for('static', filename='assets/images/plano.jpg') }}">
                   </div>
                 </div>
               </div>
               <!--[ daily sales section ] end-->
               <!--[ Monthly  sales section ] starts-->
-              <div class="col-xl-4 col-md-6">
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-md-6">
                 <div class="card Recent-Users">
                   <div class="card-header">
                     <h5>Notificaciones</h5>
                   </div>
-                  <div class="card-block px-0 py-3">
-              
-                  </div>
-                </div>
-
-                <div class="card Recent-Users">
-                  <div class="card-header">
-                    <h5>Recent Users</h5>
-                  </div>
-                  <div class="card-block px-0 py-3">
-                
+                  <div class="card-block px-0 py-0">
+                      <div class="table-responsive">
+                        <table class="table">
+                          <tbody>
+                            <thead>
+                              <th>Acción</th>
+                              <th>Máquina N°</th>
+                              <th>Detalle de la notificación</th>
+                            </thead>
+                            {% for maquina in notificaciones['elemts'] %}
+                              {% for noti in maquina['Notificaciones'] %}
+                                {% if noti['Tipo']['id']==1 %}
+                                  <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-amarillo">
+                                {% else %}
+                                  <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-rojo">
+                                {% endif %}
+                                <td><button type="button" class="btn-sm btn-secondary" onclick="marcarLeido({{ noti['id'] }})">Leído</button></td>
+                                <td>{{maquina['idMaqSuc']}}</td>
+                                <td>{{noti['descripcion']}}</td>
+                                </tr>
+                              {% endfor %}
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
                   </div>
                 </div>
               </div>
               <!--[ Monthly  sales section ] end-->
 
+            </div>
+            <div class="row">
+              <div class="col-xl-12 col-md-6">
+                <div class="card Recent-Users">
+                  <div class="card-header">
+                    <h5>Tabla de Sensores</h5>
+                  </div>
+                  <div class="card-block px-0 py-3">
+                      
+                  </div>
+                </div>
+              </div>
             </div>
             <!-- [ Main Content ] end -->
           </div>
@@ -68,4 +98,31 @@
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+  function marcarLeido(notificacionId) {
+    var fila = document.getElementById("notificacion-" + notificacionId);
+    fila.parentNode.removeChild(fila);
+
+    var userToken = getCookie("token"); // Obtener el token de la cookie
+
+    var myHeaders = new Headers();
+    myHeaders.append("user-token", userToken);
+
+    var requestOptions = {
+      method: 'PATCH',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+
+    fetch("http://ljragusa.com.ar:3001/notificaciones/" + notificacionId, requestOptions);
+  }
+
+  // Función para obtener el valor de una cookie por su nombre
+  function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+</script>
+{% endblock javascripts %}
