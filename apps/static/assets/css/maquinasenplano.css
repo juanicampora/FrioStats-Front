@@ -1,0 +1,32 @@
+.containerplano {
+  position: relative;
+  width: 800px;
+  /* Ancho fijo del contenedor según tu plano */
+  height: 600px;
+  /* Alto fijo del contenedor según tu plano */
+  margin: 0 auto;
+}
+
+#plano {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.boton-maquina {
+  position: absolute;
+  background-color: #3498db;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 40px;
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+
+  /* Añade estas propiedades para alinear verticalmente el ícono */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

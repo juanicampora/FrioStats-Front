@@ -56,7 +56,7 @@
                                                     <tbody>                                                        
                                                         {% for super in supermercados['elemts'] %}
                                                             <tr class="tabla-con-mano" data-id="{{ super['id'] | safe }}">
-                                                                <td><a href="/panel/{{super['id']}}"><button type="button" class="btn-sm btn-primary">Abrir en Panel</button></td></a>
+                                                                <td><a href="/panel/{{super['id']}}"><button type="button" class="btn-sm btn-primary">Abrir en Panel</button></a></td>
                                                                 <td>{{ super['id'] }}</td>
                                                                 <td>{{ super['nombre'] }}</td>
                                                                 <td>{{ super['ciudad'] }} , {{ super['provincia'] }}</td>

@@ -85,18 +85,13 @@ def register():
                 "nombre": nombre,
                 "apellido": apellido,
             }
-        headers = {
-        'user-token': token
-        }
+        headers = { 'user-token': token }
 
         try: 
             response = requests.request("POST", url, headers=headers, data=payload)
         except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
-        
-        print(response.text)
-        print(response.status_code)
 
         if response.status_code == 201:
             return render_template('accounts/register.html', segment='register',
@@ -150,7 +145,6 @@ def roles_email_conocido():
         else:
             idRol = request.form['rolSeleccionado']
             respuesta= asignarRol(idUsuario,idRol)
-            print(respuesta.text)   #BORRAR
             redirect(url_for('authentication_blueprint.roles',exito='si'))
             
 
@@ -164,8 +158,6 @@ def roles_lista():
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
-    print(respuesta.text)
-    print(respuesta.status_code)
     empleados=respuesta.json()
     return render_template('accounts/roles_lista.html', segment='roles', empleados=empleados)
 
@@ -208,6 +200,12 @@ def internal_error(error):
 
 
 # Funciones utilizadas varias veces
+def verifSesión(respuesta):
+    if respuesta.status_code==403:
+        if respuesta.json()['message']=='Sesion expirada':
+            logout_user()
+            return abort(403)
+
 def getRoles():
     url = "http://ljragusa.com.ar:3001/roles/"
     payload={}
@@ -226,12 +224,11 @@ def asignarRol(idUsuario,idRol):
             "idUsuario": idUsuario,
             "idRol": idRol,
         }
-    headers = {
-    'user-token': request.cookies.get('token')
-    }
+    headers = { 'user-token': request.cookies.get('token') }
     try:
-        response = requests.request("POST", url, headers=headers, data=payload)
+        respuesta = requests.request("POST", url, headers=headers, data=payload)
     except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
-    return response
+    verifSesión(respuesta)
+    return respuesta
