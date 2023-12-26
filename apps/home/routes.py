@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 import requests
-from apps.authentication import role_required
+from apps.authentication import confirm_mail_required
 from apps.authentication.forms import ProfileForm
 from apps.home import blueprint
 from flask import abort, jsonify, render_template,redirect, request, url_for
@@ -12,6 +12,7 @@ def prueba():
     return render_template('home/prueba.html', segment='prueba')
 
 @blueprint.route('/index')
+@confirm_mail_required()
 @login_required
 def index():
     token = request.cookies.get('token')
@@ -30,6 +31,7 @@ def index():
     return render_template('home/index.html', segment='index',supermercados=supermercados,notificaciones=notificaciones)  #segment se usa en sidebar.html
 
 @blueprint.route('/profile', methods=['GET', 'POST'])
+@confirm_mail_required()
 @login_required
 def profile():
     profile_form = ProfileForm(request.form)
@@ -79,6 +81,7 @@ def profile():
         return render_template('accounts/profile.html', segment='profile', idTelegram=idTelegram, recibirTelegram=recibirTelegram, recibirEmail=recibirEmail, form=profile_form)
 
 @blueprint.route('/profile/telegram', methods=['GET', 'POST'])
+@confirm_mail_required()
 @login_required
 def profile_telegram():
     if request.method=='POST': 
@@ -117,6 +120,7 @@ def profile_telegram():
         return render_template('accounts/profile_telegram.html', segment='profile')
 
 @blueprint.route('/panel/<int:id_super>', methods=['GET','POST'])
+@confirm_mail_required()
 @login_required
 def panel(id_super):
     token = request.cookies.get('token')
@@ -129,6 +133,7 @@ def panel(id_super):
     return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones)
 
 @blueprint.route('/medicion/<int:idMaquina>', methods=['GET','POST'])
+@confirm_mail_required()
 @login_required
 def devMediciones(idMaquina):
     url = f'http://ljragusa.com.ar:3001/mediciones/{idMaquina}'
@@ -145,6 +150,7 @@ def devMediciones(idMaquina):
     return jsonify({'tablamediciones': tablamediciones})
     
 blueprint.route('/parametro/<int:idMaquina>/<string:parametro>', methods=['GET','POST'])
+@confirm_mail_required()
 @login_required
 def parametro(idMaquina,parametro):
     if request.method=='GET':
@@ -158,7 +164,7 @@ def parametro(idMaquina,parametro):
         return render_template('home/editarparametro.html', segment='panel', idMaquina=idMaquina, parametros=parametros)
     if request.method=='POST':
         #LEER LAS COSAS DEL POST Y GUARDAR CAMBIOS EN BBDD
-        return redirect(url_for('home.panel', id_super=id_super))
+        return redirect(url_for('home.panel')    )#,id_super=id_super))
 
 
 @blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route
@@ -173,7 +179,7 @@ def route_template(template):
         segment = get_segment(request)
 
         # Serve the file (if exists) from app/templates/home/FILE.html
-        return render_template("borrar/" + template, segment=segment)
+        return render_template("accounts/" + template, segment=segment)
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404

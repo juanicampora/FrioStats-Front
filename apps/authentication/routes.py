@@ -4,7 +4,7 @@ from flask import render_template, redirect, request, url_for, abort, make_respo
 from flask_login import (current_user,login_user,logout_user,login_required)
 
 from apps import  login_manager
-from apps.authentication import blueprint, role_required
+from apps.authentication import blueprint, role_required, confirm_mail_required
 from apps.authentication.forms import LoginForm, CreateAccountForm, RolesForm
 from apps.authentication.models import User
 
@@ -42,7 +42,7 @@ def login():
                                     form=login_form)
         elif respuesta.status_code == 200:
             respuestajson=respuesta.json()
-            usuario= User(respuestajson["user"]["id"],respuestajson["user"]["email"],respuestajson["user"]["nombre"],respuestajson["user"]["apellido"],respuestajson["user"]["Rol"]["descripcion"],respuestajson["token"])
+            usuario= User(respuestajson["user"]["id"],respuestajson["user"]["email"],respuestajson["user"]["nombre"],respuestajson["user"]["apellido"],respuestajson["user"]["Rol"]["descripcion"],respuestajson["token"],respuestajson["user"]["emailConfirmado"])
             if User.find_by_id(usuario.id) is None:
                 usuario.save()
             login_user(usuario)
@@ -64,9 +64,23 @@ def login():
                                form=login_form)
     return redirect(url_for('home_blueprint.index'))
     
+@blueprint.route('/mail_confirmado/<string:email>', methods=['GET'])
+def mail_confirmado(email):
+    url = "http://ljragusa.com.ar:3001/users/confirmEmail"
+    payload={
+        "email": email
+    }
+    headers = {}
+    try:    
+        requests.request("POST", url, headers=headers, data=payload)
+    except requests.exceptions.RequestException as e:
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
+    return render_template('accounts/mail_confirmed.html')
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 @login_required
+@confirm_mail_required()
 @role_required('Admin')
 def register():
     create_account_form = CreateAccountForm(request.form)
@@ -75,8 +89,6 @@ def register():
         password = request.form['password']
         nombre = request.form['name']
         apellido = request.form['surname']
-        if request.form.get('recibirEmail') == None: recibirEmail = 'false' 
-        else: recibirEmail = 'true'
         token = request.cookies.get('token')
         url = "http://ljragusa.com.ar:3001/users/"
         payload={
@@ -98,9 +110,19 @@ def register():
                                             msg='Usuario creado correctamente.',
                                             success=True,
                                             form=create_account_form)
-        elif response.status_code == 400:
+        if response.status_code == 403:
+            respuesta=response.json()
+            #recorrer el arreglo errors y guardar en el arreglo mensaje los 'msg' de cada error
+            mensaje=[]
+            for error in respuesta['errors']:
+                mensaje.append(error['msg'])
             return render_template('accounts/register.html', segment='register',
-                                msg=response.json()['message'],
+                                msg=mensaje,
+                                success=False,
+                                form=create_account_form)
+        else:
+            return render_template('accounts/register.html', segment='register',
+                                msg=response.json(),
                                 success=False,
                                 form=create_account_form)
     else:
@@ -108,6 +130,7 @@ def register():
 
 @blueprint.route('/roles', methods=['GET', 'POST'])
 @login_required
+@confirm_mail_required()
 @role_required('Admin')
 def roles(exito=None):
     if exito=='si':
@@ -123,6 +146,7 @@ def roles(exito=None):
 
 @blueprint.route('/roles/email_conocido', methods=['GET', 'POST'])
 @login_required
+@confirm_mail_required()
 @role_required('Admin')
 def roles_email_conocido(): 
     email_empleado = request.args.get('email_empleado')
@@ -152,6 +176,7 @@ def roles_email_conocido():
 
 @blueprint.route('/roles/lista', methods=['GET'])
 @login_required
+@confirm_mail_required()
 @role_required('Admin')
 def roles_lista():
     url = "http://ljragusa.com.ar:3001/users/getEmployees"
@@ -163,6 +188,7 @@ def roles_lista():
 
 @blueprint.route('/roles/lista/<string:email_empleado>', methods=['GET'])
 @login_required
+@confirm_mail_required()
 @role_required('Admin')
 def roles_lista_seleccionado(email_empleado):
     return redirect(url_for('authentication_blueprint.roles_email_conocido',email_empleado=email_empleado))
