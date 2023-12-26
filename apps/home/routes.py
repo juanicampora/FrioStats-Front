@@ -136,6 +136,7 @@ def devMediciones(idMaquina):
     headers = { 'user-token': request.cookies.get('token') }
     respuesta= requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
+    print(respuesta.text)
     maquinas = respuesta.json()
     archivo_ruta = "apps/templates/home/tablamediciones.html"
     with open(archivo_ruta, 'r') as tabla_file:
@@ -145,14 +146,19 @@ def devMediciones(idMaquina):
     
 blueprint.route('/parametro/<int:idMaquina>/<string:parametro>', methods=['GET','POST'])
 @login_required
-def devMediciones(idMaquina,parametro):
-    url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}/{parametro}'
-    payload={}
-    headers = { 'user-token': request.cookies.get('token') }
-    respuesta= requests.request("GET", url, headers=headers, data=payload)
-    verifSesión(respuesta)
-    parametros = respuesta.json()
-    #ESPERAR A LUCHO PARA CONTINUARLO
+def parametro(idMaquina,parametro):
+    if request.method=='GET':
+        url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}/{parametro}'
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta= requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuesta)
+        parametros = respuesta.json()
+        #ESPERAR A LUCHO PARA CONTINUARLO
+        return render_template('home/editarparametro.html', segment='panel', idMaquina=idMaquina, parametros=parametros)
+    if request.method=='POST':
+        #LEER LAS COSAS DEL POST Y GUARDAR CAMBIOS EN BBDD
+        return redirect(url_for('home.panel', id_super=id_super))
 
 
 @blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route

@@ -17,13 +17,12 @@
             <tbody>
               {% for maquina in maquinas['elemts'] %}
               <tr>
-                <td><button type="button" id-parametro="sensorTempInterna" class="btn-sm btn-primary boton-parametro">Editar parametro</button></td>
+                <td><a href="/parametro/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-primary"> Editar parametro</button></a></td>
                 <td>Sensor Temperatura Interna</td>
                 <td>{{maquina['sensorTempInterna']}}</td>
               </tr>
               <tr>
-                <td><button type="button" id-parametro="sensorTempTrabajoYBulbo"
-                    class="btn-sm btn-primary boton-parametro">Editar parametro</button></td>
+                <td><a href="/parametro/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempTrabajoYBulbo"><button type="button"class="btn-sm btn-primary">Editar parametro</button></a></td>
                 <td>Sensor Temperatura Trabajo y Bulbo</td>
                 <td>{{maquina['sensorTempTrabajoYBulbo']}}</td>
               </tr>
@@ -33,12 +32,12 @@
                 <td>{% if maquina['sensorPuerta']==true %}Abierta{% else %}Cerrada{% endif %}</td>
               </tr>
               <tr>
-                <td><button type="button" id-parametro="sensorCooler" class="btn-sm btn-primary boton-parametro">Editar parametro</button></td>
+                <td><a href="/parametro/{{maquinas['elemts'][0]['idMaquina']}}/sensorCooler"><button type="button" class="btn-sm btn-primary">Editar parametro</button></a></td>
                 <td>Sensor Cooler</td>
                 <td>{{maquina['sensorCooler']}}</td>
               </tr>
               <tr>
-                <td><button type="button" id-parametro="sensorPuntoRocio" class="btn-sm btn-primary boton-parametro">Editar parametro</button></td>
+                <td><a href="/parametro/{{maquinas['elemts'][0]['idMaquina']}}/sensorPuntoRocio"><button type="button" class="btn-sm btn-primary">Editar parametro</button></a></td>
                 <td>Sensor Punto de Rocio</td>
                 <td>{{maquina['sensorPuntoRocio']}}</td>
               </tr>
@@ -48,7 +47,7 @@
                 <td>{% if maquina['sensorLuz']==true %}Encendida{% else %}Apagada{% endif %}</td>
               </tr>
               <tr>
-                <td><button type="button" id-parametro="sensorTempInterna" class="btn-sm btn-primary boton-parametro">Editar parametro</button></td>
+                <td><a href="/parametro/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-primary">Editar parametro</button></a></td>
                 <td>Consumo</td>
                 <td>{{maquina['consumo']}}</td>
               </tr>
@@ -60,43 +59,3 @@
     </div>
   </div>
 </div>
-<div class="modal" id="modalParametro" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Modal title</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Modal body text goes here.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Código JavaScript para manejar los eventos de clic en los botones
-  console.log("ENTREE");
-  const modal = document.getElementById("modalParametro");
-  const openModalButtons = document.querySelectorAll(".boton-parametro");
-
-  openModalButtons.forEach(button => {
-    button.addEventListener("click", async () => {
-      //const parametro = button.getAttribute("id-parametro");
-      //const idMaquina = {{maquinas['elemts'][0]['idMaquina']}}; 
-      //const response = await fetch(`/parametro/${idMaquina}/${parametro}`);
-      //const data = await response.text();
-
-      // Inserta el contenido de la respuesta en el modal
-      //modal.querySelector(".modal-content").innerHTML = data;
-
-      // Abre el modal con un efecto o clase CSS adecuada
-      modal.classList.add("open");
-      console.log("ENTREE");
-    });
-  });
-</script>
