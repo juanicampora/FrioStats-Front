@@ -134,7 +134,7 @@
       fetch('http://ljragusa.com.ar:3001/sucursales/' + sucursalId, {
         method: 'PUT',
         headers: myHeaders,
-        body: JSON.stringify({ idSucursal:sucursalId, asignada: estado })
+        body: JSON.stringify({ id:current_user.id, idSucursal:sucursalId, asignada: estado })
       })
       .then(response => {
         if (response.ok) {

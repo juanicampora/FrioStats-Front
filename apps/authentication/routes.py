@@ -63,20 +63,6 @@ def login():
         return render_template('accounts/login.html',
                                form=login_form)
     return redirect(url_for('home_blueprint.index'))
-    
-@blueprint.route('/mail_confirmado/<string:email>', methods=['GET'])
-def mail_confirmado(email):
-    url = "http://ljragusa.com.ar:3001/users/confirmEmail"
-    payload={
-        "email": email
-    }
-    headers = {}
-    try:    
-        requests.request("POST", url, headers=headers, data=payload)
-    except requests.exceptions.RequestException as e:
-        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
-        return abort(500)
-    return render_template('accounts/mail_confirmed.html')
 
 @blueprint.route('/register', methods=['GET', 'POST'])
 @login_required
@@ -228,6 +214,18 @@ def asignar_sucursales_email_seleccionado(email_empleado):
         asignarRol(idUsuario,idRol)
 
 
+@blueprint.route('/confirmEmail/<string:token>', methods=['GET'])
+def confirmEmail(token):
+    url = "http://ljragusa.com.ar:3001/users/confirmEmail/"+token
+    payload={}
+    headers = {}
+    try:
+        respuesta = requests.request("GET", url, headers=headers, data=payload)
+    except requests.exceptions.RequestException as e:
+        errorGenerico(respuesta.json()['message'])
+    if respuesta.status_code == 200:
+        return render_template('accounts/mail_confirmed',email=respuesta.json()['email'])
+
 @blueprint.route('/logout')
 def logout():
     logout_user()
@@ -254,7 +252,9 @@ def not_found_error(error):
 def internal_error(error):
     return render_template('home/page-500.html'), 500
 
-
+def errorGenerico(mensaje):
+    return render_template('home/page-error-generico.html',mensaje=mensaje), 500
+    
 # Funciones utilizadas varias veces
 def verifSesión(respuesta):
     if respuesta.status_code==403:
