@@ -1,43 +1,40 @@
 # -*- encoding: utf-8 -*-
 import requests
-from apps.authentication import role_required
+from apps.authentication import confirm_mail_required
 from apps.authentication.forms import ProfileForm
 from apps.home import blueprint
-from flask import abort, render_template,redirect, request, url_for
+from flask import abort, jsonify, render_template,redirect, request, url_for
 from flask_login import login_required, logout_user
-from jinja2 import TemplateNotFound
+from jinja2 import Template, TemplateNotFound
 
-@blueprint.route('/prueba',methods=['GET', 'POST'])
+@blueprint.route('/prueba',methods=['GET', 'POST'])     #borrar
 def prueba():
-
     return render_template('home/prueba.html', segment='prueba')
 
 @blueprint.route('/index')
 @login_required
+@confirm_mail_required()
 def index():
     token = request.cookies.get('token')
     url = "http://ljragusa.com.ar:3001/sucursales"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
+    verifSesión(respuesta)
     supermercados = respuesta.json()
-
     url = "http://ljragusa.com.ar:3001/notificaciones/getCantNoti"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
+    verifSesión(respuesta)
     notificaciones=respuesta.json()
-    
+    print(supermercados)
+    print(notificaciones)
     return render_template('home/index.html', segment='index',supermercados=supermercados,notificaciones=notificaciones)  #segment se usa en sidebar.html
-
-@blueprint.route('/roles')          #Hay que implementarlo (es para que un admin cambie los roles de los usuarios)
-@login_required
-@role_required('Admin')
-def roles():
-    return render_template('home/roles.html', segment='roles') 
 
 @blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
+@confirm_mail_required()
 def profile():
     profile_form = ProfileForm(request.form)
     if request.method=='POST': 
@@ -51,21 +48,18 @@ def profile():
             "recibeNotiTelegram": recibirTelegram,
             "recibeNotiMail": recibirEmail
         }
-        headers = {
-            'user-token': token
-        }
+        headers = { 'user-token': token }
         try:
             respuesta = requests.request("PATCH", url, headers=headers, data=payload)
         except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
+        verifSesión(respuesta)
         if respuesta.status_code == 200:
             datos=getOne(token)
             idTelegram = datos[0]
             recibirTelegram = datos[1]
             recibirEmail = datos[2]
-            print(idTelegram)
-            print(recibirTelegram)
             if recibirTelegram == True and idTelegram == None:
                 return render_template('accounts/profile_telegram.html', segment='profile')
             else:    
@@ -90,6 +84,7 @@ def profile():
 
 @blueprint.route('/profile/telegram', methods=['GET', 'POST'])
 @login_required
+@confirm_mail_required()
 def profile_telegram():
     if request.method=='POST': 
         idTelegram = request.form.get('idTelegram')
@@ -108,9 +103,7 @@ def profile_telegram():
             "recibeNotiTelegram": recibirTelegram,
             "recibeNotiMail": recibirEmail
         }
-        headers = {
-            'user-token': token
-        }
+        headers = { 'user-token': token }
         try:
             respuesta = requests.request("PATCH", url, headers=headers, data=payload)
         except requests.exceptions.RequestException as e:
@@ -130,25 +123,51 @@ def profile_telegram():
 
 @blueprint.route('/panel/<int:id_super>', methods=['GET','POST'])
 @login_required
+@confirm_mail_required()
 def panel(id_super):
     token = request.cookies.get('token')
     url = f'http://ljragusa.com.ar:3001/notificaciones/getNotificaciones/{id_super}'
-    print(url)
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
+    verifSesión(respuesta)
     notificaciones = respuesta.json()
-    print(respuesta.text)
     return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones)
 
-@blueprint.route('/notificacion-leida/<int:id_noti>', methods=['GET','POST'])
+@blueprint.route('/medicion/<int:idMaquina>', methods=['GET','POST'])
 @login_required
-def notificacion_leida(id_noti):
-    url = f'http://ljragusa.com.ar:3001/notificaciones/{id_noti}'
+@confirm_mail_required()
+def devMediciones(idMaquina):
+    url = f'http://ljragusa.com.ar:3001/mediciones/{idMaquina}'
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
-    requests.request("PATCH", url, headers=headers, data=payload)
+    respuesta= requests.request("GET", url, headers=headers, data=payload)
+    verifSesión(respuesta)
+    print(respuesta.text)
+    maquinas = respuesta.json()
+    archivo_ruta = "apps/templates/home/tablamediciones.html"
+    with open(archivo_ruta, 'r') as tabla_file:
+        tabla_template = Template(tabla_file.read())
+        tablamediciones = tabla_template.render(maquinas=maquinas)  # Renderizar con Jinja2
+    return jsonify({'tablamediciones': tablamediciones})
     
+blueprint.route('/parametro/<int:idMaquina>/<string:parametro>', methods=['GET','POST'])
+@login_required
+@confirm_mail_required()
+def parametro(idMaquina,parametro):
+    if request.method=='GET':
+        url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}/{parametro}'
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta= requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuesta)
+        parametros = respuesta.json()
+        #ESPERAR A LUCHO PARA CONTINUARLO
+        return render_template('home/editarparametro.html', segment='panel', idMaquina=idMaquina, parametros=parametros)
+    if request.method=='POST':
+        #LEER LAS COSAS DEL POST Y GUARDAR CAMBIOS EN BBDD
+        return redirect(url_for('home.panel')    )#,id_super=id_super))
+
 
 @blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route
 def route_template(template):
@@ -162,7 +181,7 @@ def route_template(template):
         segment = get_segment(request)
 
         # Serve the file (if exists) from app/templates/home/FILE.html
-        return render_template("borrar/" + template, segment=segment)
+        return render_template("accounts/" + template, segment=segment)
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
@@ -188,17 +207,25 @@ def get_segment(request):
 
 
 #Funciones usadas varias veces
+def verifSesión(respuesta):
+    print("EL ERROR QUE DIO ESSSSSSSSSSSSSSSSSSSSSSSSSSS")
+    print(respuesta.status_code)
+    if respuesta.status_code==200:
+        return
+    elif respuesta.status_code==500:
+        if respuesta.json()['message']=='Sesion expirada':
+            logout_user()
+            return abort(403)
+    else:
+        return abort(500)
+
 
 def getOne(token):
     url = "http://ljragusa.com.ar:3001/users/"
     payload={}
-    headers = {
-    'user-token': token
-    }
+    headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
-    if respuesta.status_code == 403:
-        logout_user()
-        return abort(403)
+    verifSesión(respuesta)
     datos = respuesta.json()
     idTelegram = datos['elemt']['telegramId']
     recibirTelegram = datos['elemt']['recibeNotiTelegram']

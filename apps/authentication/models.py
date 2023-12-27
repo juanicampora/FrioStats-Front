@@ -17,14 +17,16 @@ class User(db.Model, UserMixin):
     apellido      = db.Column(db.String(64))
     rol           = db.Column(db.String(64))
     token         = db.Column(db.String(64))
+    confirmado    = db.Column(db.Boolean, default=False)
 
-    def __init__(self, id, email,nombre,apellido,rol,token):
+    def __init__(self, id, email,nombre,apellido,rol,token,confirmado):
         self.id = id
         self.email = email
         self.nombre= nombre
         self.apellido= apellido
         self.rol = rol
         self.token = token
+        self.confirmado = confirmado
 
     def __repr__(self):
         return str(self.username)

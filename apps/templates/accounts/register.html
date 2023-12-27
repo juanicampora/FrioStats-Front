@@ -1,73 +1,83 @@
-{% extends "layouts/base.html" %}
+{% extends "layouts/base.html" %} {% block title %} Registro {% endblock %} {%
+block content %}
 
-{% block title %} Registro {% endblock %}
-
-{% block content %}   
-
-    <div class="auth-wrapper">
-        <div class="auth-content">
-            <div class="auth-bg">
-                <span class="r"></span>
-                <span class="r s"></span>
-                <span class="r s"></span>
-                <span class="r"></span>
-            </div>
-            <div class="card">
-                <div class="card-body text-center">
-                    <div class="mb-4">
-                        <i class="feather icon-user-plus auth-icon"></i>
-                    </div>
-                    <h3 class="mb-4">Registro</h3>
-
-                    <span class="mb-2 text-muted">
-                        {% if msg %}
-                            {% if success %}
-                                <span class="text-success">{{ msg | safe }}</span>
-                            {% else %}
-                                <span class="text-danger">{{ msg | safe }}</span>
-                            {% endif %}
-                        {% else %}
-                            Ingresá las credenciales del nuevo usuario
-                        {% endif %} 
-                    </span>
-
-                    <br />
-                    <br />
-
-                    <!-- Hide the form on success -->
-                    {% if success %}
-                        <a href="/register"><button type="button" class="btn btn-primary"
-                                data-toggle="tooltip">Registrar Otro Usuario</button></a>
-                    {% else %}
-
-                        <form role="form" method="post" action="">
-
-                            {{ form.hidden_tag() }}                    
-                            
-                            <div class="input-group mb-3">
-                                {{ form.email(placeholder="Email", class="input form-control", type="email") }}
-                            </div>
-
-                            <div class="input-group mb-4">
-                                {{ form.password(placeholder="Contraseña", class="form-control", type="password") }}
-                            </div>
-                            
-                            <div class="input-group mt-5">
-                                {{ form.name(placeholder="Nombre", class="form-control", type="name") }}
-                            </div>
-
-                            <div class="input-group mt-3 mb-5">
-                                {{ form.surname(placeholder="Apellido", class="form-control", type="surname") }}
-                            </div>
-
-                            <button type="submit" name="register" class="btn btn-primary shadow-2 mb-4">Registrar</button>
-
-                        </form>
-
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+<div class="auth-wrapper">
+  <div class="auth-content">
+    <div class="auth-bg">
+      <span class="r"></span>
+      <span class="r s"></span>
+      <span class="r s"></span>
+      <span class="r"></span>
     </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="mb-4">
+          <i class="feather icon-user-plus auth-icon"></i>
+        </div>
+        <h3 class="mb-4">Registro</h3>
+
+        <span class="mb-2 text-muted">
+          {% if msg %} {% if success %}
+            <span class="text-success">{{ msg | safe }}</span>
+            <br>
+            <span class="text-warning">Recordar asignar una sucursal al nuevo usuario</span>
+          {% else %} 
+            {% for mensaje in msg %}
+            <span class="text-danger">{{ mensaje }}</span>
+            <br>
+            {% endfor %} 
+          {% endif %} 
+          {% else %} Ingresá las credenciales del nuevo usuario {% endif %}
+        </span>
+
+        <br />
+        <br />
+
+        <!-- Hide the form on success -->
+        {% if success %}
+        <a href="/register"
+          ><button type="button" class="btn btn-primary" data-toggle="tooltip">
+            Registrar Otro Usuario
+          </button></a
+        >
+        {% else %}
+
+        <form role="form" method="post" action="">
+          {{ form.hidden_tag() }}
+
+          <div class="input-group mb-3">
+            {{ form.email(placeholder="Email", class="input form-control",
+            type="email") }}
+          </div>
+
+          <div class="input-group mb-4">
+            {{ form.password(placeholder="Contraseña", class="form-control",
+            type="password") }}
+          </div>
+
+          <div class="input-group mt-5">
+            {{ form.name(placeholder="Nombre", class="form-control",
+            type="name") }}
+          </div>
+
+          <div class="input-group mt-3 mb-5">
+            {{ form.surname(placeholder="Apellido", class="form-control",
+            type="surname") }}
+          </div>
+
+          <button
+            type="submit"
+            name="register"
+            class="btn btn-primary shadow-2 mb-4"
+          >
+            Registrar
+          </button>
+        </form>
+
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock content %}

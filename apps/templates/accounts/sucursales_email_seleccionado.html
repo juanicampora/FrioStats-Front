@@ -1,0 +1,158 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Roles {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+  <div class="pcoded-wrapper">
+    <div class="pcoded-content">
+      <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col-md-12">
+                <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                  <li class="breadcrumb-item"><a href="/asignar_sucursales">Seleccion Usuario</a></li>
+                  <li class="breadcrumb-item" style="color: white;">Asignación</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+          <div class="page-wrapper">
+            <!-- [ Main Content ] start -->
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>Asignación de Sucursales</h5>
+                  </div>
+                  <div class="card-block">
+                    
+                    {% if msg %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                      <strong>{{ msg | safe }}</strong>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    {% endif %}
+
+                    <form role="form" method="POST" action="/roles/email_conocido">                      
+                      <div class="col-sm-12 mb-4">
+                        <label for="email">Email del Usuario</label>
+                        {% if email_empleado %}
+                          <input class="form-control" id="email" name="email" placeholder="Ingrese el email del Usuario" value="{{ email_empleado }}">
+                        {% else %}
+                          <input class="form-control" id="email" name="email" placeholder="Ingrese el email del Usuario">
+                        {% endif %}
+                      </div>
+                      
+                      <div class="col-sm-12 form-group">
+                        <h4 class="text-center">Listado de sucursales ASIGNADAS PREVIAMENTE</h4>
+                        <div class="table-responsive">
+                          <table class="table"> 
+                            <thead> 
+                              <tr class="bg-secondary"> 
+                                <th>ID</th> 
+                                <th>Nombre</th> 
+                                <th>Dirección</th> 
+                                <th>Localidad</th> 
+                                <th>Acción</th> 
+                              </tr> 
+                            </thead> 
+                            <tbody>
+                              {% for suc in data_sucursales['elemts'] %}
+                              <tr> 
+                                <th>{{ suc['id'] }}</th> 
+                                <td>{{ suc['nombre'] }}</td> 
+                                <td>{{ suc['direccion'] }}</td> 
+                                <td>{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
+                                <td><button class="btn btn-danger btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','false')">Eliminar Asignación</button></td>
+                              </tr> 
+                              {% endfor %} 
+                            </tbody> 
+                          </table> 
+                        </div>
+                      </div>
+                      <div class="col-sm-12 form-group">
+                        <h4 class="text-center">Listado de TODAS las sucursales</h4>
+                        <div class="table-responsive">
+                          <table class="table"> 
+                            <thead> 
+                              <tr class="bg-secondary"> 
+                                <th>ID</th> 
+                                <th>Nombre</th> 
+                                <th>Dirección</th> 
+                                <th>Localidad</th> 
+                                <th>Acción</th> 
+                              </tr> 
+                            </thead> 
+                            <tbody>
+                              {% for suc in data_sucursales['elemts'] %}
+                              <tr> 
+                                <th>{{ suc['id'] }}</th> 
+                                <td>{{ suc['nombre'] }}</td> 
+                                <td>{{ suc['direccion'] }}</td> 
+                                <td>{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
+                                <td><button class="btn btn-success btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','true')">Asignar</button></td>
+                              </tr> 
+                              {% endfor %} 
+                            </tbody> 
+                          </table> 
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block javascripts %}
+ <script>
+    function actualizarSucursal(sucursalId, estado) {
+      var userToken = getCookie("token"); // Obtener el token de la cookie
+      var myHeaders = new Headers();
+      myHeaders.append("user-token", userToken);
+      fetch('http://ljragusa.com.ar:3001/sucursales/' + sucursalId, {
+        method: 'PUT',
+        headers: myHeaders,
+        body: JSON.stringify({ id:current_user.id, idSucursal:sucursalId, asignada: estado })
+      })
+      .then(response => {
+        if (response.ok) {
+          // Recargar la página después de la operación exitosa
+          location.reload();
+        } else {
+          console.error('Error al actualizar la sucursal');
+        }
+      })
+      .catch(error => {
+        console.error('Error al realizar la solicitud PUT:', error);
+      });
+    }
+
+    function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+  </script>
+{% endblock javascripts %}

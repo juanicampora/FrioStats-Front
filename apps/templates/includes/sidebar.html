@@ -33,19 +33,25 @@
                         <span class="pcoded-micon"><i class="feather icon-user"></i></span>
                             <span class="pcoded-mtext">Página de Perfil</span></a>
                 </li>                
-                <li class="nav-item pcoded-menu-caption">
-                    <label>Administración</label>
-                </li>
-                <li data-username="Registrar"
-                    class="nav-item {% if 'register' in segment %} active {% endif %}">
-                    <a href="/register" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-plus"></i></span><span
-                            class="pcoded-mtext">Registrar Usuario</span></a>
-                </li>
-                <li data-username="Roles" class="nav-item {% if 'roles' in segment %} active {% endif %}">
-                    <a href="/roles" class="nav-link "><span class="pcoded-micon"><i class="feather icon-users"></i></span><span
-                            class="pcoded-mtext">Asignar Roles</span></a>
-                </li>
-                <li data-username="Disabled Menu" class="nav-item mt-5">
+                {% if current_user.rol=='Admin' %}
+                    <li class="nav-item pcoded-menu-caption">
+                        <label>Administración</label>
+                    </li>
+                    <li data-username="Registrar"
+                        class="nav-item {% if 'register' in segment %} active {% endif %}">
+                        <a href="/register" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-plus"></i></span><span
+                                class="pcoded-mtext">Registrar Usuario</span></a>
+                    </li>
+                    <li data-username="Roles" class="nav-item {% if 'roles' in segment %} active {% endif %}">
+                        <a href="/roles" class="nav-link "><span class="pcoded-micon"><i class="feather icon-users"></i></span><span
+                                class="pcoded-mtext">Asignar Roles</span></a>
+                    </li>
+                    <li data-username="Sucursales" class="nav-item {% if 'asignacionsucursales' in segment %} active {% endif %}">
+                        <a href="/asignar_sucursales" class="nav-link "><span class="pcoded-micon"><i class="feather icon-shopping-cart"></i></span><span
+                                class="pcoded-mtext">Asignación Sucursales</span></a>
+                    </li>
+                {% endif %}
+                <li data-username="Logout" class="nav-item mt-5">
                     <a href="{{ url_for('authentication_blueprint.logout') }}" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-power"></i></span><span class="pcoded-mtext">Logout</span>
                     </a>

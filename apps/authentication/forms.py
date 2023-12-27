@@ -22,7 +22,7 @@ class CreateAccountForm(FlaskForm):
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password',
                              id='pwd_create',
-                             validators=[DataRequired()])
+                             validators=[DataRequired(),Length(min=6, max=50)])
     name = StringField('Name',
                         id='name_create',
                         validators=[DataRequired(),Length(min=3, max=50),Regexp(r'^[a-zA-Z]+$', message='Ingrese solo letras.')])
