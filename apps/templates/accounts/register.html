@@ -19,6 +19,8 @@ block content %}
         <span class="mb-2 text-muted">
           {% if msg %} {% if success %}
             <span class="text-success">{{ msg | safe }}</span>
+            <br>
+            <span class="text-warning">Recordar asignar una sucursal al nuevo usuario</span>
           {% else %} 
             {% for mensaje in msg %}
             <span class="text-danger">{{ mensaje }}</span>

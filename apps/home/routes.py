@@ -12,8 +12,8 @@ def prueba():
     return render_template('home/prueba.html', segment='prueba')
 
 @blueprint.route('/index')
-@confirm_mail_required()
 @login_required
+@confirm_mail_required()
 def index():
     token = request.cookies.get('token')
     url = "http://ljragusa.com.ar:3001/sucursales"
@@ -28,11 +28,13 @@ def index():
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
     notificaciones=respuesta.json()
+    print(supermercados)
+    print(notificaciones)
     return render_template('home/index.html', segment='index',supermercados=supermercados,notificaciones=notificaciones)  #segment se usa en sidebar.html
 
 @blueprint.route('/profile', methods=['GET', 'POST'])
-@confirm_mail_required()
 @login_required
+@confirm_mail_required()
 def profile():
     profile_form = ProfileForm(request.form)
     if request.method=='POST': 
@@ -81,8 +83,8 @@ def profile():
         return render_template('accounts/profile.html', segment='profile', idTelegram=idTelegram, recibirTelegram=recibirTelegram, recibirEmail=recibirEmail, form=profile_form)
 
 @blueprint.route('/profile/telegram', methods=['GET', 'POST'])
-@confirm_mail_required()
 @login_required
+@confirm_mail_required()
 def profile_telegram():
     if request.method=='POST': 
         idTelegram = request.form.get('idTelegram')
@@ -120,8 +122,8 @@ def profile_telegram():
         return render_template('accounts/profile_telegram.html', segment='profile')
 
 @blueprint.route('/panel/<int:id_super>', methods=['GET','POST'])
-@confirm_mail_required()
 @login_required
+@confirm_mail_required()
 def panel(id_super):
     token = request.cookies.get('token')
     url = f'http://ljragusa.com.ar:3001/notificaciones/getNotificaciones/{id_super}'
@@ -133,8 +135,8 @@ def panel(id_super):
     return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones)
 
 @blueprint.route('/medicion/<int:idMaquina>', methods=['GET','POST'])
-@confirm_mail_required()
 @login_required
+@confirm_mail_required()
 def devMediciones(idMaquina):
     url = f'http://ljragusa.com.ar:3001/mediciones/{idMaquina}'
     payload={}
@@ -150,8 +152,8 @@ def devMediciones(idMaquina):
     return jsonify({'tablamediciones': tablamediciones})
     
 blueprint.route('/parametro/<int:idMaquina>/<string:parametro>', methods=['GET','POST'])
-@confirm_mail_required()
 @login_required
+@confirm_mail_required()
 def parametro(idMaquina,parametro):
     if request.method=='GET':
         url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}/{parametro}'
@@ -206,10 +208,17 @@ def get_segment(request):
 
 #Funciones usadas varias veces
 def verifSesión(respuesta):
-    if respuesta.status_code==403:
+    print("EL ERROR QUE DIO ESSSSSSSSSSSSSSSSSSSSSSSSSSS")
+    print(respuesta.status_code)
+    if respuesta.status_code==200:
+        return
+    elif respuesta.status_code==500:
         if respuesta.json()['message']=='Sesion expirada':
             logout_user()
             return abort(403)
+    else:
+        return abort(500)
+
 
 def getOne(token):
     url = "http://ljragusa.com.ar:3001/users/"

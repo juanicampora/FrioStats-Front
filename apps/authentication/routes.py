@@ -160,19 +160,24 @@ def roles_email_conocido():
     elif (request.method == 'POST'):
         
         email = request.form['email']
-        #PEDIR A LUCHO UNA API PARA PONER ACA QUE VERIFIQUE QUE EL EMAIL EXISTE. si existe que mande 
-        
-        idUsuario=email
-        if idUsuario==None:
-            data_roles=getRoles()
-            return render_template('accounts/roles.html', segment='roles', data_roles=data_roles,msg='El email ingresado no existe en el sistema')
-        else:
+        url = "http://ljragusa.com.ar:3001/users/checkEmail"
+        payload={
+            "email": email
+        }
+        headers = { 'user-token': request.cookies.get('token') }
+        try:
+            respuesta = requests.request("POST", url, headers=headers, data=payload)
+        except requests.exceptions.RequestException as e:
+            print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+            return abort(500)
+        if respuesta.status_code == 200:
+            idUsuario=email
             idRol = request.form['rolSeleccionado']
-            respuesta= asignarRol(idUsuario,idRol)
+            asignarRol(idUsuario,idRol)
             redirect(url_for('authentication_blueprint.roles',exito='si'))
-            
-
-
+        else:
+            data_roles=getRoles()  
+            return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles, msg=respuesta.json()['message'])
 
 @blueprint.route('/roles/lista', methods=['GET'])
 @login_required
@@ -196,6 +201,31 @@ def roles_lista_seleccionado(email_empleado):
 @blueprint.route('/mailconfirmation')
 def mailconfirmation():
     return render_template('accounts/mail_confirmation.html')
+
+@blueprint.route('/asignar_sucursales', methods=['GET'])
+@login_required
+@confirm_mail_required()
+@role_required('Admin')
+def asignar_sucursales(): 
+    url = "http://ljragusa.com.ar:3001/users/getEmployees"
+    payload={}
+    headers = { 'user-token': request.cookies.get('token') }
+    respuesta = requests.request("GET", url, headers=headers, data=payload)
+    empleados=respuesta.json()
+    return render_template('accounts/sucursales_lista_emails.html', segment='asignacionsucursales', empleados=empleados)
+    
+@blueprint.route('/asignar_sucursales/<string:email_empleado>', methods=['GET'])
+@login_required
+@confirm_mail_required()
+@role_required('Admin')
+def asignar_sucursales_email_seleccionado(email_empleado): 
+    if (request.method == 'GET'):
+        data_sucursales=getSucursales()     
+        return render_template('accounts/sucursales_email_seleccionado.html', segment='asignacionsucursales', email_empleado=email_empleado, data_sucursales=data_sucursales)
+    elif (request.method == 'POST'):
+        idUsuario=email
+        idRol = request.form['rolSeleccionado']
+        asignarRol(idUsuario,idRol)
 
 
 @blueprint.route('/logout')
@@ -258,3 +288,15 @@ def asignarRol(idUsuario,idRol):
             return abort(500)
     verifSesión(respuesta)
     return respuesta
+
+def getSucursales():
+    url = "http://ljragusa.com.ar:3001/sucursales/"
+    payload={}
+    headers = { 'user-token': request.cookies.get('token') }
+    try:
+        sucursales = requests.request("GET", url, headers=headers, data=payload)
+    except requests.exceptions.RequestException as e:
+            print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+            return abort(500)    
+    data_sucursales = sucursales.json()
+    return data_sucursales
