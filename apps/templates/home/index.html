@@ -127,8 +127,8 @@
                 scrollTop: $('#tabla').offset().top
             }, 800);
             
-            $('#tabla tr').removeClass('bg-primary bg-opacity-25'); // Eliminar resaltado de otras filas
-            $('#tabla tr[data-id="' + supermercadoId + '"]').addClass('bg-primary bg-opacity-25');
+            $('#tabla tr').css({'background-color': ''}); // Eliminar resaltado de otras filas
+            $('#tabla tr[data-id="' + supermercadoId + '"]').css({'background-color': '#0082e178'});
         }
 
         function showPinInfo(pinId) {
@@ -163,8 +163,8 @@
         $(document).ready(function () {
             $("tr").click(function () {
                 var id = $(this).data("id");
-                $('#tabla tr').removeClass('bg-primary bg-opacity-25'); // Eliminar resaltado de otras filas
-                $('#tabla tr[data-id="' + id + '"]').addClass('bg-primary bg-opacity-25');
+                $('#tabla tr').css({'background-color': ''}); // Eliminar resaltado de otras filas
+                $('#tabla tr[data-id="' + id + '"]').css({'background-color': '#0082e178'});
                 coordenadas = getCoordinatesById(id);
                 if (coordenadas) {
                     console.log('Latitud:', coordenadas.lat);

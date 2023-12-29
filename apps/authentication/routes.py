@@ -223,12 +223,10 @@ def confirmEmail(token):
     headers = {}
     try:
         respuesta = requests.request("GET", url, headers=headers, data=payload)
-        print(respuesta)
     except requests.exceptions.RequestException as e:
         print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
         return abort(500)
     if respuesta.status_code == 200:
-        print(respuesta)
         return render_template('accounts/mail_confirmed',email=respuesta.json()['email'])
     else:   
         return errorGenerico(respuesta)

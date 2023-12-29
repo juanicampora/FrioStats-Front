@@ -28,8 +28,6 @@ def index():
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
     notificaciones=respuesta.json()
-    print(supermercados)
-    print(notificaciones)
     return render_template('home/index.html', segment='index',supermercados=supermercados,notificaciones=notificaciones)  #segment se usa en sidebar.html
 
 @blueprint.route('/profile', methods=['GET', 'POST'])
@@ -143,7 +141,6 @@ def devMediciones(idMaquina):
     headers = { 'user-token': request.cookies.get('token') }
     respuesta= requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
-    print(respuesta.text)
     maquinas = respuesta.json()
     archivo_ruta = "apps/templates/home/tablamediciones.html"
     with open(archivo_ruta, 'r') as tabla_file:
@@ -208,8 +205,6 @@ def get_segment(request):
 
 #Funciones usadas varias veces
 def verifSesión(respuesta):
-    print("EL ERROR QUE DIO ESSSSSSSSSSSSSSSSSSSSSSSSSSS")
-    print(respuesta.status_code)
     if respuesta.status_code==200:
         return
     elif respuesta.status_code==500:
