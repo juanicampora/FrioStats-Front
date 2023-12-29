@@ -221,10 +221,15 @@ def confirmEmail(token):
     headers = {}
     try:
         respuesta = requests.request("GET", url, headers=headers, data=payload)
+        print(respuesta)
     except requests.exceptions.RequestException as e:
-        errorGenerico(respuesta.json()['message'])
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
     if respuesta.status_code == 200:
+        print(respuesta)
         return render_template('accounts/mail_confirmed',email=respuesta.json()['email'])
+    else:   
+        return errorGenerico(respuesta)
 
 @blueprint.route('/logout')
 def logout():
@@ -252,8 +257,9 @@ def not_found_error(error):
 def internal_error(error):
     return render_template('home/page-500.html'), 500
 
-def errorGenerico(mensaje):
-    return render_template('home/page-error-generico.html',mensaje=mensaje), 500
+def errorGenerico(respuesta):
+    mensaje=respuesta.json()['message']
+    return render_template('home/page-error-generico.html',mensaje=mensaje)
     
 # Funciones utilizadas varias veces
 def verifSesión(respuesta):
