@@ -107,8 +107,10 @@ def register():
                                 success=False,
                                 form=create_account_form)
         else:
+            mensajes=[]
+            mensajes.append(response.json()['message'])
             return render_template('accounts/register.html', segment='register',
-                                msg=response.json(),
+                                msg=mensajes,
                                 success=False,
                                 form=create_account_form)
     else:
