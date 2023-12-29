@@ -6,6 +6,7 @@ from apps.home import blueprint
 from flask import abort, jsonify, render_template,redirect, request, url_for
 from flask_login import login_required, logout_user
 from jinja2 import Template, TemplateNotFound
+from apps import  login_manager
 
 @blueprint.route('/prueba',methods=['GET', 'POST'])     #borrar
 def prueba():
@@ -20,7 +21,9 @@ def index():
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
+    print('ACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
     verifSesión(respuesta)
+    print('PASOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
     supermercados = respuesta.json()
     url = "http://ljragusa.com.ar:3001/notificaciones/getCantNoti"
     payload={}
@@ -203,12 +206,38 @@ def get_segment(request):
         return None
 
 
+# Errors
+
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    return render_template('home/page-403.html'), 403
+
+
+@blueprint.errorhandler(403)
+def access_forbidden(error):
+    return render_template('home/page-403.html',mensaje=error.description), 403
+
+
+@blueprint.errorhandler(404)
+def not_found_error(error):
+    return render_template('home/page-404.html'), 404
+
+
+@blueprint.errorhandler(500)
+def internal_error(error):
+    return render_template('home/page-500.html'), 500
+
+
 #Funciones usadas varias veces
 def verifSesión(respuesta):
+    print('ENTRE A VERIF SESION EN HOME')
     if respuesta.status_code==200:
-        return
-    elif respuesta.status_code==500:
-        if respuesta.json()['message']=='Sesion expirada':
+        return True
+    elif respuesta.status_code==403:
+        if respuesta.json()['msg']=='Sesion expirada':
+            logout_user()            
+            return abort(403,respuesta.json()['msg'])
+        else:
             logout_user()
             return abort(403)
     else:

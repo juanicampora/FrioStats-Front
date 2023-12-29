@@ -245,7 +245,7 @@ def unauthorized_handler():
 
 @blueprint.errorhandler(403)
 def access_forbidden(error):
-    return render_template('home/page-403.html'), 403
+    return render_template('home/page-403.html',mensaje=error.description), 403
 
 
 @blueprint.errorhandler(404)
@@ -257,16 +257,21 @@ def not_found_error(error):
 def internal_error(error):
     return render_template('home/page-500.html'), 500
 
-def errorGenerico(respuesta):
-    mensaje=respuesta.json()['message']
-    return render_template('home/page-error-generico.html',mensaje=mensaje)
     
 # Funciones utilizadas varias veces
 def verifSesión(respuesta):
-    if respuesta.status_code==403:
-        if respuesta.json()['message']=='Sesion expirada':
+    print('ENTRE A VERIF SESION EN HOME')
+    if respuesta.status_code==200:
+        return True
+    elif respuesta.status_code==403:
+        if respuesta.json()['msg']=='Sesion expirada':
+            logout_user()            
+            return abort(403,respuesta.json()['msg'])
+        else:
             logout_user()
             return abort(403)
+    else:
+        return abort(500)
 
 def getRoles():
     url = "http://ljragusa.com.ar:3001/roles/"

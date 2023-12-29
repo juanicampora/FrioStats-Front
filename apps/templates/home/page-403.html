@@ -14,17 +14,17 @@
             </div>
             <div class="card">
                 <div class="card-body text-center">
-                    <div class="mb-4">
-                        <i class="feather x-circle"></i>
-                    </div>
+                    {% if mensaje is defined %}
+                    <h3 class="mb-4">Error</h3>
+                    <span class="mb-2 text-muted">{{mensaje}}</span>
+                    {% else %}
                     <h3 class="mb-4">Error 403</h3>
-
-                    <br />
-
-                    <span class="mb-0 text-muted">
-                        Acceso denegado - <a href="/">Ir al Inicio</a> 
-                    </span>
-
+                    <br>
+                    <span class="mb-2 text-muted">Acceso denegado</span>
+                    {% endif %}
+                    <br>
+                    <br>
+                    <a href="/" class="btn btn-primary mr-0">Ir al Inicio</a>
                 </div>
             </div>
         </div>
