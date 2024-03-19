@@ -200,6 +200,7 @@ def asignar_sucursales():
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     empleados=respuesta.json()
+    print(empleados)
     return render_template('accounts/sucursales_lista_emails.html', segment='asignacionsucursales', empleados=empleados)
     
 @blueprint.route('/asignar_sucursales/<string:email_empleado>', methods=['GET'])
@@ -260,7 +261,6 @@ def internal_error(error):
     
 # Funciones utilizadas varias veces
 def verifSesión(respuesta):
-    print('ENTRE A VERIF SESION EN HOME')
     if respuesta.status_code==200:
         return True
     elif respuesta.status_code==403:

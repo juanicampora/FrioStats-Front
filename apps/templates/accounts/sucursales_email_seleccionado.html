@@ -62,7 +62,7 @@
                         <div class="table-responsive">
                           <table class="table"> 
                             <thead> 
-                              <tr class="bg-secondary"> 
+                              <tr class="bg-secondary text-light"> 
                                 <th>ID</th> 
                                 <th>Nombre</th> 
                                 <th>Dirección</th> 
@@ -73,11 +73,11 @@
                             <tbody>
                               {% for suc in data_sucursales['elemts'] %}
                               <tr> 
-                                <th>{{ suc['id'] }}</th> 
-                                <td>{{ suc['nombre'] }}</td> 
-                                <td>{{ suc['direccion'] }}</td> 
-                                <td>{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
-                                <td><button class="btn btn-danger btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','false')">Eliminar Asignación</button></td>
+                                <th class="align-middle">{{ suc['id'] }}</th> 
+                                <td class="align-middle">{{ suc['nombre'] }}</td> 
+                                <td class="align-middle">{{ suc['direccion'] }}</td> 
+                                <td class="align-middle">{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
+                                <td class="align-middle"><button class="btn btn-danger btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','false')">Eliminar Asignación</button></td>
                               </tr> 
                               {% endfor %} 
                             </tbody> 
@@ -89,7 +89,7 @@
                         <div class="table-responsive">
                           <table class="table"> 
                             <thead> 
-                              <tr class="bg-secondary"> 
+                              <tr class="bg-secondary text-light"> 
                                 <th>ID</th> 
                                 <th>Nombre</th> 
                                 <th>Dirección</th> 
@@ -100,11 +100,11 @@
                             <tbody>
                               {% for suc in data_sucursales['elemts'] %}
                               <tr> 
-                                <th>{{ suc['id'] }}</th> 
-                                <td>{{ suc['nombre'] }}</td> 
-                                <td>{{ suc['direccion'] }}</td> 
-                                <td>{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
-                                <td><button class="btn btn-success btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','true')">Asignar</button></td>
+                                <th class="align-middle">{{ suc['id'] }}</th> 
+                                <td class="align-middle">{{ suc['nombre'] }}</td> 
+                                <td class="align-middle">{{ suc['direccion'] }}</td> 
+                                <td class="align-middle">{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
+                                <td class="align-middle"><button class="btn btn-success btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','true')">Asignar</button></td>
                               </tr> 
                               {% endfor %} 
                             </tbody> 

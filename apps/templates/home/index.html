@@ -57,17 +57,25 @@
                                                         <tbody>                                                        
                                                             {% for super in supermercados['elemts'] %}
                                                                 <tr class="tabla-con-mano" data-id="{{ super['id'] | safe }}">
-                                                                    <td><a href="/panel/{{super['id']}}"><button type="button" class="btn-sm btn-primary">Abrir en Panel</button></a></td>
-                                                                    <td>{{ super['id'] }}</td>
-                                                                    <td>{{ super['nombre'] }}</td>
-                                                                    <td>{{ super['ciudad'] }} , {{ super['provincia'] }}</td>
-                                                                    <td>{{ super['direccion'] }}</td>
-                                                                    <td>{{ super['telefono'] }}</td>
+                                                                    <td class="align-middle"><a href="/panel/{{super['id']}}"><button type="button" class="btn-sm btn-primary">Abrir en Panel</button></a></td>
+                                                                    <td class="align-middle">{{ super['id'] }}</td>
+                                                                    <td class="align-middle">{{ super['nombre'] }}</td>
+                                                                    <td class="align-middle">{{ super['ciudad'] }} , {{ super['provincia'] }}</td>
+                                                                    <td class="align-middle">{{ super['direccion'] }}</td>
+                                                                    <td class="align-middle">{{ super['telefono'] }}</td>
                                                                     {% for noti in notificaciones['elemts'] %}
                                                                         {% if noti['idSucursal']==super['id'] %}
-                                                                            <td>
+                                                                            <td class="align-middle">
+                                                                                {% if noti['cantGraves'] != 0 %}
                                                                                 <span id="notiGrave" class="badge badge-pill bg-danger text-dark">{{ noti['cantGraves'] }}</span>
+                                                                                {% endif %}
+                                                                                {% if noti['cantLeves'] != 0 %}
                                                                                 <span id="notiLeve" class="badge badge-pill bg-warning text-dark">{{ noti['cantLeves'] }}</span>
+                                                                                {% endif %}
+                                                                            </td>
+                                                                        {% else %}
+                                                                            <td class="align-middle">
+                                                                                <span id="sinNoti" class="badge badge-pill bg-success text-dark">✔</span>
                                                                             </td>
                                                                         {% endif %}
                                                                     {% endfor %}
@@ -104,8 +112,6 @@
 {% block javascripts %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="../static/assets/js/mapadark.js"></script>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     // Agregar pines de ubicación

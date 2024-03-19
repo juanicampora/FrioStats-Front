@@ -32,9 +32,9 @@ function setIndicator(theme) {
 function setPage(theme) {
     //We will remove the existing classes,
     // and then we will add our current theme class.
-    if (theme === 1){
+    if (theme === 1) {
         page.classList.add("dark")
-    }else{
+    } else {
         page.classList.remove("dark")
     }
 

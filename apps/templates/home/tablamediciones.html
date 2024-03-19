@@ -12,6 +12,7 @@
                 <th>Accion</th>
                 <th>Parametro</th>
                 <th>Valor</th>
+                <th>Unidad</th>
               </tr>
             </thead>
             <tbody>
@@ -20,36 +21,43 @@
                 <td><a href="/parametro/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-primary"> Editar parametro</button></a></td>
                 <td>Sensor Temperatura Interna</td>
                 <td>{{maquina['sensorTempInterna']}}</td>
+                <td>&deg;C</td>
               </tr>
               <tr>
                 <td><a href="/parametro/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempTrabajoYBulbo"><button type="button"class="btn-sm btn-primary">Editar parametro</button></a></td>
                 <td>Sensor Temperatura Trabajo y Bulbo</td>
                 <td>{{maquina['sensorTempTrabajoYBulbo']}}</td>
+                <td>&deg;C</td>
               </tr>
               <tr>
                 <td></td>
                 <td>Sensor Puerta</td>
                 <td>{% if maquina['sensorPuerta']==true %}Abierta{% else %}Cerrada{% endif %}</td>
+                <td></td>
               </tr>
               <tr>
                 <td><a href="/parametro/{{maquinas['elemts'][0]['idMaquina']}}/sensorCooler"><button type="button" class="btn-sm btn-primary">Editar parametro</button></a></td>
                 <td>Sensor Cooler</td>
                 <td>{{maquina['sensorCooler']}}</td>
+                <td>RPM</td>
               </tr>
               <tr>
                 <td><a href="/parametro/{{maquinas['elemts'][0]['idMaquina']}}/sensorPuntoRocio"><button type="button" class="btn-sm btn-primary">Editar parametro</button></a></td>
                 <td>Sensor Punto de Rocio</td>
                 <td>{{maquina['sensorPuntoRocio']}}</td>
+                <td>&deg;C</td>
               </tr>
               <tr>
                 <td></td>
                 <td>Sensor Luz</td>
                 <td>{% if maquina['sensorLuz']==true %}Encendida{% else %}Apagada{% endif %}</td>
+                <td></td>
               </tr>
               <tr>
                 <td><a href="/parametro/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-primary">Editar parametro</button></a></td>
                 <td>Consumo</td>
                 <td>{{maquina['consumo']}}</td>
+                <td>Kw/h</td>
               </tr>
               {% endfor %}
             </tbody>
