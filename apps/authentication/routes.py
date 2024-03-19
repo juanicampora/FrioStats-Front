@@ -55,8 +55,7 @@ def login():
                                     msg='No confirmó su mail, por favor revise su casilla de correo',
                                     form=login_form)
         else:
-            print("El error obtenido es distinto a 200,401,403 y es:")
-            print(respuesta.status_code)   
+            print("El error obtenido es distinto a 200,401,403 y es:"+ respuesta.status_code)
             return abort(500)
 
     if not current_user.is_authenticated:
@@ -200,7 +199,6 @@ def asignar_sucursales():
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     empleados=respuesta.json()
-    print(empleados)
     return render_template('accounts/sucursales_lista_emails.html', segment='asignacionsucursales', empleados=empleados)
     
 @blueprint.route('/asignar_sucursales/<string:email_empleado>', methods=['GET'])

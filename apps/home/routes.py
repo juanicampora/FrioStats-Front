@@ -17,14 +17,11 @@ def prueba():
 @confirm_mail_required()
 def index():
     token = request.cookies.get('token')
-    print(token)
     url = "http://ljragusa.com.ar:3001/sucursales"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
-    print("llego aca 1")
     verifSesión(respuesta)
-    print("llego aca 2")
     supermercados = respuesta.json()
     url = "http://ljragusa.com.ar:3001/notificaciones/getCantNoti"
     payload={}
