@@ -1,10 +1,10 @@
-> 👉 **Para actualizar en docker** - Abrir `Docker` y ejecutar los siguientes comandos en cmd estando en el directorio del proyecto:
+> 👉 **Para actualizar en docker** - Correr la app `Docker Desktop` y ejecutar los siguientes comandos en CMD estando en el directorio del proyecto:
 
 ```bash
 $ docker build -t juaniiic/friostats-front . 
 $ docker push juaniiic/friostats-front 
 ```
-> Recordar eliminar el anterior docker con `docker rmi juaniiic/friostats-front` (probar)
+> Recordar eliminar el anterior docker con `docker rmi juaniiic/friostats-front`
 > Luego entrar a portainer.io y actualizar la imagen de docker ( http://186.13.28.124:9000/ )
 
 Visit `http://localhost:5085` in your browser. The app should be up & running.
