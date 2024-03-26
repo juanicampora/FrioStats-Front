@@ -133,10 +133,10 @@ def panel(id_super):
     notificaciones = respuesta.json()
     return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones)
 
-@blueprint.route('/medicion/<int:idMaquina>', methods=['GET','POST'])
+@blueprint.route('/medicion/<int:idSucursal>/<int:idMaquina>', methods=['GET','POST'])
 @login_required
 @confirm_mail_required()
-def devMediciones(idMaquina):
+def devMediciones(idSucursal,idMaquina):
     url = f'http://ljragusa.com.ar:3001/mediciones/{idMaquina}'
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
@@ -146,32 +146,41 @@ def devMediciones(idMaquina):
     archivo_ruta = "apps/templates/home/tablamediciones.html"
     with open(archivo_ruta, 'r') as tabla_file:
         tabla_template = Template(tabla_file.read())
-        tablamediciones = tabla_template.render(maquinas=maquinas)  # Renderizar con Jinja2
+        tablamediciones = tabla_template.render(maquinas=maquinas,idSucursal=idSucursal)  # Renderizar con Jinja2
     return jsonify({'tablamediciones': tablamediciones})
     
-blueprint.route('/parametro/<int:idMaquina>/<string:parametro>', methods=['GET','POST'])
+@blueprint.route('/parametro/<int:idSucursal>/<int:idMaquina>/<string:parametro>', methods=['GET'])
 @login_required
 @confirm_mail_required()
-def parametro(idMaquina,parametro):
+def parametro(idSucursal,idMaquina,parametro):
     if request.method=='GET':
-        url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}/{parametro}'
+        url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}'
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         respuesta= requests.request("GET", url, headers=headers, data=payload)
         verifSesión(respuesta)
-        parametros = respuesta.json()
-        #ESPERAR A LUCHO PARA CONTINUARLO
-        return render_template('home/editarparametro.html', segment='panel', idMaquina=idMaquina, parametros=parametros)
-    if request.method=='POST':
-        #LEER LAS COSAS DEL POST Y GUARDAR CAMBIOS EN BBDD
-        return redirect(url_for('home.panel')    )#,id_super=id_super))
-
+        print(respuesta.json())
+        if parametro == 'sensorTempInterna':
+            parametros = [respuesta.json()['elemts']['minTempInterna'],respuesta.json()['elemts']['maxTempInterna']]
+            descripcionParametro='Temperatura Interna'
+        elif parametro == 'sensorTempTrabajoYBulbo':
+            parametros = [respuesta.json()['elemts']['minTempTrabajoYBulbo'],respuesta.json()['elemts']['maxTempTrabajoYBulbo']]
+            descripcionParametro='Temperatura de Trabajo y Bulbo'
+        elif parametro == 'sensorRpmCooler':
+            parametros = [respuesta.json()['elemts']['minRpmCooler'],respuesta.json()['elemts']['maxRpmCooler']]
+            descripcionParametro='Cooler'
+        elif parametro == 'sensorPuntoRocio':
+            parametros = [respuesta.json()['elemts']['minPuntoRocio'],respuesta.json()['elemts']['maxPuntoRocio']]
+            descripcionParametro='Punto de Rocío'
+        elif parametro == 'sensorConsumo':
+            parametros = ['Nada',respuesta.json()['elemts']['maxConsumo']]
+            descripcionParametro='Consumo'
+        print(parametros)
+        return render_template('home/editarparametro.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
 
 @blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route
 def route_template(template):
-
     try:
-
         if not template.endswith('.html'):
             template += '.html'
 
@@ -179,11 +188,9 @@ def route_template(template):
         segment = get_segment(request)
 
         # Serve the file (if exists) from app/templates/home/FILE.html
-        return render_template("accounts/" + template, segment=segment)
-
+        return render_template("home/" + template, segment=segment)
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
-
     except:
         return render_template('home/page-500.html'), 500
 
@@ -205,6 +212,10 @@ def get_segment(request):
 
 
 # Errors
+
+@blueprint.route('/error')         #Ruta de Error generico
+def error_generico():
+    return render_template('home/page-error-generico.html')
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():

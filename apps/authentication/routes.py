@@ -164,6 +164,7 @@ def roles_email_conocido():
             redirect(url_for('authentication_blueprint.roles',exito='si'))
         else:
             data_roles=getRoles()  
+            print(respuesta.json())
             return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles, msg=respuesta.json()['message'])
 
 @blueprint.route('/roles/lista', methods=['GET'])
@@ -210,7 +211,7 @@ def asignar_sucursales_email_seleccionado(email_empleado):
         data_sucursales=getSucursales()     
         return render_template('accounts/sucursales_email_seleccionado.html', segment='asignacionsucursales', email_empleado=email_empleado, data_sucursales=data_sucursales)
     elif (request.method == 'POST'):
-        idUsuario=email
+        idUsuario=email_empleado
         idRol = request.form['rolSeleccionado']
         asignarRol(idUsuario,idRol)
 
@@ -227,8 +228,8 @@ def confirmEmail(token):
         return abort(500)
     if respuesta.status_code == 200:
         return render_template('accounts/mail_confirmed',email=respuesta.json()['email'])
-    else:   
-        return errorGenerico(respuesta)
+    # else:   
+    #     return errorGenerico(respuesta)
 
 @blueprint.route('/logout')
 def logout():

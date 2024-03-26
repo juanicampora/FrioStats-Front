@@ -142,13 +142,14 @@
 
 <script>
   const botones = document.querySelectorAll('.boton-maquina');
+  var id_super = {{ id_super }};
   botones.forEach(boton => {
     boton.addEventListener('click', () => {
       tablaOcultar.style.display = 'block'; // Cambia el estilo para mostrar la tabla oculta
       tablaOcultar.scrollIntoView({ behavior: 'smooth' }); // Desplaza la página al div con animación suave
       const idMaquina = boton.getAttribute('idMaquina'); // Obtiene el texto del atributo data-boton
       //ver que hacer despues
-      const url = `/medicion/${idMaquina}`;
+      const url = `/medicion/${id_super}/${idMaquina}`;
       const tablaContainer = document.getElementById('tabla-container');
       fetch(url)
         .then(response => response.json())
