@@ -77,26 +77,26 @@
 function guardar() {
   var parametro = '{{ parametro }}';
   var bodyData = {};
+  let maximo = parametro.replace('sensor', 'max');
+  bodyData[maximo] = parseInt(document.getElementById('maximo').value);
   if (document.getElementById('minimo').value != ''){
     let minimo = parametro.replace('sensor', 'min');
     bodyData[minimo] = parseInt(document.getElementById('minimo').value);
   }
-  let maximo = parametro.replace('sensor', 'max');
-  bodyData[maximo] = parseInt(document.getElementById('maximo').value);
   // encerrar cada indice de bodydata entre ''
   bodyData = JSON.stringify(bodyData).replace(/"([^"]+)":/g, '"$1":');
   var myHeaders = new Headers();
   var userToken = getCookie("token"); // Obtener el token de la cookie
   myHeaders.append("user-token", userToken);
   console.log(bodyData);
-  console.log(myHeaders);
+  console.log(myHeaders.get("user-token"));
   fetch('http://ljragusa.com.ar:3001/parameters/{{idMaquina}}', {
     method: 'PATCH',
     headers: myHeaders,
     body: bodyData
   }).then(response => {
     console.log(response);
-    console.log('GuardadoOOOOOOOOOOOOOOO');
+    console.log('Guardadooooooooooooo');
     //                                                                  MANDAR A PANEL
     //window.location.href = '/panel/{{idSucursal}}';
   }).catch(error => {

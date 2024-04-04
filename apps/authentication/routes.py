@@ -210,10 +210,6 @@ def asignar_sucursales_email_seleccionado(email_empleado):
     if (request.method == 'GET'):
         data_sucursales=getSucursales()     
         return render_template('accounts/sucursales_email_seleccionado.html', segment='asignacionsucursales', email_empleado=email_empleado, data_sucursales=data_sucursales)
-    elif (request.method == 'POST'):
-        idUsuario=email_empleado
-        idRol = request.form['rolSeleccionado']
-        asignarRol(idUsuario,idRol)
 
 
 @blueprint.route('/confirmEmail/<string:token>', methods=['GET'])

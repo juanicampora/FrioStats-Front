@@ -47,14 +47,10 @@
                     </div>
                     {% endif %}
 
-                    <form role="form" method="POST" action="/roles/email_conocido">                      
+                    <form role="form" >                      
                       <div class="col-sm-12 mb-4">
                         <label for="email">Email del Usuario</label>
-                        {% if email_empleado %}
-                          <input class="form-control" id="email" name="email" placeholder="Ingrese el email del Usuario" value="{{ email_empleado }}">
-                        {% else %}
-                          <input class="form-control" id="email" name="email" placeholder="Ingrese el email del Usuario">
-                        {% endif %}
+                          <input class="form-control" id="email" name="email" disabled value="{{ email_empleado }}">
                       </div>
                       
                       <div class="col-sm-12 form-group">
@@ -77,7 +73,7 @@
                                 <td class="align-middle">{{ suc['nombre'] }}</td> 
                                 <td class="align-middle">{{ suc['direccion'] }}</td> 
                                 <td class="align-middle">{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
-                                <td class="align-middle"><button class="btn btn-danger btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','false')">Eliminar Asignación</button></td>
+                                <td class="align-middle"><button class="btn btn-danger btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','False')">Eliminar Asignación</button></td>
                               </tr> 
                               {% endfor %} 
                             </tbody> 
@@ -104,7 +100,7 @@
                                 <td class="align-middle">{{ suc['nombre'] }}</td> 
                                 <td class="align-middle">{{ suc['direccion'] }}</td> 
                                 <td class="align-middle">{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
-                                <td class="align-middle"><button class="btn btn-success btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','true')">Asignar</button></td>
+                                <td class="align-middle"><button class="btn btn-success btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','True')">Asignar</button></td>
                               </tr> 
                               {% endfor %} 
                             </tbody> 
@@ -131,22 +127,30 @@
       var userToken = getCookie("token"); // Obtener el token de la cookie
       var myHeaders = new Headers();
       myHeaders.append("user-token", userToken);
-      fetch('http://ljragusa.com.ar:3001/sucursales/' + sucursalId, {
-        method: 'PUT',
-        headers: myHeaders,
-        body: JSON.stringify({ id:current_user.id, idSucursal:sucursalId, asignada: estado })
-      })
-      .then(response => {
-        if (response.ok) {
-          // Recargar la página después de la operación exitosa
-          location.reload();
-        } else {
-          console.error('Error al actualizar la sucursal');
-        }
-      })
-      .catch(error => {
-        console.error('Error al realizar la solicitud PUT:', error);
-      });
+      try {
+        
+        fetch('http://ljragusa.com.ar:3001/sucursales/' + sucursalId, {
+          method: 'PUT',
+          headers: myHeaders,
+          body: JSON.stringify({ email:'{{email_empleado}}', idSucursal:sucursalId, asignada: estado })
+        })
+        .then(response => {
+          if (response.ok) {
+            // Recargar la página después de la operación exitosa
+            location.reload();
+          } else {
+            console.log('Error al actualizar la sucursal');
+            window.location.href = "/error";
+          }
+        })
+        .catch(error => {
+          console.log('Error al realizar la solicitud PUT:', error);
+          window.location.href = "/error";
+        });
+      } catch (error) {
+        console.log('Error al realizar la solicitud PUT:', error);
+        window.location.href = "/error";
+      }
     }
 
     function getCookie(name) {
