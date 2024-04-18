@@ -208,9 +208,39 @@ def asignar_sucursales():
 @role_required('Admin')
 def asignar_sucursales_email_seleccionado(email_empleado): 
     if (request.method == 'GET'):
-        data_sucursales=getSucursales()     
+        url = "http://ljragusa.com.ar:3001/sucursales/"+email_empleado
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        try:
+            sucursales = requests.request("GET", url, headers=headers, data=payload)
+        except requests.exceptions.RequestException as e:
+                print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+                return abort(500)    
+        data_sucursales = sucursales.json()
         return render_template('accounts/sucursales_email_seleccionado.html', segment='asignacionsucursales', email_empleado=email_empleado, data_sucursales=data_sucursales)
 
+@blueprint.route('/actualizar_sucursal/<string:email_empleado>/<int:sucursalId>/<string:estado>', methods=['GET'])
+@login_required
+@confirm_mail_required()
+@role_required('Admin')
+def actualizar_sucursal(email_empleado,sucursalId,estado):
+    url = "http://ljragusa.com.ar:3001/sucursales/"
+    payload={
+        "email": email_empleado,
+        "idSucursal": sucursalId,
+        "asignada": estado
+    }
+    headers = { 'user-token': request.cookies.get('token') }
+    try:
+        respuesta = requests.request("PUT", url, headers=headers, data=payload)
+        print(respuesta.json())
+        print('BIEN')
+    except requests.exceptions.RequestException as e:
+            print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+            return abort(500)
+    if respuesta.status_code == 200:
+        return redirect(url_for('authentication_blueprint.asignar_sucursales_email_seleccionado',email_empleado=email_empleado))
+    
 
 @blueprint.route('/confirmEmail/<string:token>', methods=['GET'])
 def confirmEmail(token):

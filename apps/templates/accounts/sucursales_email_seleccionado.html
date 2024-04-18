@@ -67,13 +67,13 @@
                               </tr> 
                             </thead> 
                             <tbody>
-                              {% for suc in data_sucursales['elemts'] %}
+                              {% for suc in data_sucursales['sucursalUsuario'] %}
                               <tr> 
                                 <th class="align-middle">{{ suc['id'] }}</th> 
                                 <td class="align-middle">{{ suc['nombre'] }}</td> 
                                 <td class="align-middle">{{ suc['direccion'] }}</td> 
                                 <td class="align-middle">{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
-                                <td class="align-middle"><button class="btn btn-danger btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','False')">Eliminar Asignación</button></td>
+                                <td class="align-middle"><form action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/true" method="GET"><button class="btn btn-danger btn-sm">Eliminar Asignación</button></form></td>
                               </tr> 
                               {% endfor %} 
                             </tbody> 
@@ -94,13 +94,13 @@
                               </tr> 
                             </thead> 
                             <tbody>
-                              {% for suc in data_sucursales['elemts'] %}
+                              {% for suc in data_sucursales['sucursalesEmpresa'] %}
                               <tr> 
                                 <th class="align-middle">{{ suc['id'] }}</th> 
                                 <td class="align-middle">{{ suc['nombre'] }}</td> 
                                 <td class="align-middle">{{ suc['direccion'] }}</td> 
                                 <td class="align-middle">{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
-                                <td class="align-middle"><button class="btn btn-success btn-sm" onclick="actualizarSucursal('{{ suc['id'] }}','True')">Asignar</button></td>
+                                <td class="align-middle"><form action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/true" method="GET"><button class="btn btn-success btn-sm">Asignar</button></form></td>
                               </tr> 
                               {% endfor %} 
                             </tbody> 
@@ -123,40 +123,10 @@
 
 {% block javascripts %}
  <script>
-    function actualizarSucursal(sucursalId, estado) {
-      var userToken = getCookie("token"); // Obtener el token de la cookie
-      var myHeaders = new Headers();
-      myHeaders.append("user-token", userToken);
-      try {
-        
-        fetch('http://ljragusa.com.ar:3001/sucursales/' + sucursalId, {
-          method: 'PUT',
-          headers: myHeaders,
-          body: JSON.stringify({ email:'{{email_empleado}}', idSucursal:sucursalId, asignada: estado })
-        })
-        .then(response => {
-          if (response.ok) {
-            // Recargar la página después de la operación exitosa
-            location.reload();
-          } else {
-            console.log('Error al actualizar la sucursal');
-            window.location.href = "/error";
-          }
-        })
-        .catch(error => {
-          console.log('Error al realizar la solicitud PUT:', error);
-          window.location.href = "/error";
-        });
-      } catch (error) {
-        console.log('Error al realizar la solicitud PUT:', error);
-        window.location.href = "/error";
-      }
-    }
-
     function getCookie(name) {
-    var value = "; " + document.cookie;
-    var parts = value.split("; " + name + "=");
-    if (parts.length === 2) return parts.pop().split(";").shift();
-  }
+      var value = "; " + document.cookie;
+      var parts = value.split("; " + name + "=");
+      if (parts.length === 2) return parts.pop().split(";").shift();
+    }
   </script>
 {% endblock javascripts %}

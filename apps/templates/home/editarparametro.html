@@ -38,7 +38,7 @@
                   </div>
                   <div class="card-block px-0 py-0">
                     <div class="table-responsive">
-                      <form role="form" method="POST" action="/parametro/{{idMaquina}}/{{parametro}}">
+                      <form role="form" method="POST" action="/parametro/{{idSucursal}}/{{idMaquina}}/{{parametro}}">
                         {% if parametros[0]!='Nada' %}
                         <div class="col-sm-12 mb-4">
                           <label for="minimo">Valor Minimo</label>
@@ -51,10 +51,8 @@
                           <input class="form-control" id="maximo" name="maximo" placeholder="Ingrese el email del Usuario"
                             value="{{ parametros[1] }}">
                         </div>
-                        
-                      
                         <div class="col-sm-12 mb-2" style="text-align: center;">
-                          <button type="button" class="btn btn-primary" onclick="guardar()">Guardar</button>
+                          <button type="submit" class="btn btn-primary">Guardar</button>
                         </div>
                       </form>
                     </div>

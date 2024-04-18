@@ -149,7 +149,7 @@ def devMediciones(idSucursal,idMaquina):
         tablamediciones = tabla_template.render(maquinas=maquinas,idSucursal=idSucursal)  # Renderizar con Jinja2
     return jsonify({'tablamediciones': tablamediciones})
     
-@blueprint.route('/parametro/<int:idSucursal>/<int:idMaquina>/<string:parametro>', methods=['GET'])
+@blueprint.route('/parametro/<int:idSucursal>/<int:idMaquina>/<string:parametro>', methods=['GET','POST'])
 @login_required
 @confirm_mail_required()
 def parametro(idSucursal,idMaquina,parametro):
@@ -177,6 +177,26 @@ def parametro(idSucursal,idMaquina,parametro):
             descripcionParametro='Consumo'
         print(parametros)
         return render_template('home/editarparametro.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
+    elif request.method=='POST':
+        minimobody=parametro.replace('sensor','min')
+        maximobody=parametro.replace('sensor','max')
+        if request.form.get('minimo') == None: minimo='null' 
+        else: minimo=request.form.get('minimo')
+        if request.form.get('maximo') == None: maximo='null' 
+        else: maximo=request.form.get('maximo')
+        url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}'
+        payload={
+            minimobody: minimo,
+            maximobody: maximo
+        }
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta = requests.request("PATCH", url, headers=headers, data=payload)
+        print(respuesta.json())
+        verifSesión(respuesta)
+        if respuesta.status_code == 200:
+            return redirect(url_for('home_blueprint.panel',id_super=idSucursal))
+        else:
+            return abort(500)
 
 @blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route
 def route_template(template):
