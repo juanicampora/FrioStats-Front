@@ -164,7 +164,6 @@ def roles_email_conocido():
             redirect(url_for('authentication_blueprint.roles',exito='si'))
         else:
             data_roles=getRoles()  
-            print(respuesta.json())
             return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles, msg=respuesta.json()['message'])
 
 @blueprint.route('/roles/lista', methods=['GET'])
@@ -224,7 +223,6 @@ def asignar_sucursales_email_seleccionado(email_empleado):
 @confirm_mail_required()
 @role_required('Admin')
 def actualizar_sucursal(email_empleado,sucursalId,estado):
-    print('AAA',email_empleado,sucursalId,estado)
     url = "http://ljragusa.com.ar:3001/sucursales/"
     payload={
         "email": email_empleado,
@@ -234,8 +232,6 @@ def actualizar_sucursal(email_empleado,sucursalId,estado):
     headers = { 'user-token': request.cookies.get('token') }
     try:
         respuesta = requests.request("PUT", url, headers=headers, data=payload)
-        print(respuesta.json())
-        print('BIEN')
     except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)

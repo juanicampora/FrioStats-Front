@@ -30,11 +30,7 @@ def index():
     verifSesión(respuesta)
     notificaciones = respuesta.json()['elemts']
     sucursalNotificacion=[]
-    print(supermercados)
-    print(notificaciones)
-    print('ARRANCAAAAAAAAAAAA')
     for sucursal in supermercados['elemts']:
-        print(sucursal)
         sucuNoti = {
             'id': sucursal['id'],
             'cantLeves': 0, 
@@ -177,7 +173,6 @@ def parametro(idSucursal,idMaquina,parametro):
         headers = { 'user-token': request.cookies.get('token') }
         respuesta= requests.request("GET", url, headers=headers, data=payload)
         verifSesión(respuesta)
-        print(respuesta.json())
         if parametro == 'sensorTempInterna':
             parametros = [respuesta.json()['elemts']['minTempInterna'],respuesta.json()['elemts']['maxTempInterna']]
             descripcionParametro='Temperatura Interna'
@@ -193,7 +188,6 @@ def parametro(idSucursal,idMaquina,parametro):
         elif parametro == 'sensorConsumo':
             parametros = ['Nada',respuesta.json()['elemts']['maxConsumo']]
             descripcionParametro='Consumo'
-        print(parametros)
         return render_template('home/editarparametro.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
     elif request.method=='POST':
         minimobody=parametro.replace('sensor','min')
@@ -209,7 +203,6 @@ def parametro(idSucursal,idMaquina,parametro):
         }
         headers = { 'user-token': request.cookies.get('token') }
         respuesta = requests.request("PATCH", url, headers=headers, data=payload)
-        print(respuesta.json())
         verifSesión(respuesta)
         if respuesta.status_code == 200:
             return redirect(url_for('home_blueprint.panel',id_super=idSucursal))
