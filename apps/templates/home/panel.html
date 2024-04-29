@@ -1,21 +1,20 @@
-{% extends "layouts/base.html" %}
-
-{% block title %} Dashboard {% endblock %}
+{% extends "layouts/base.html" %} {% block title %} Panel {% endblock %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
-<link rel="stylesheet" href="../static/assets/css/tablaalerta.css">
-<link rel="stylesheet" href="../static/assets/css/maquinasenplano.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<link rel="stylesheet" href="../static/assets/css/tablaalerta.css" />
+<link rel="stylesheet" href="../static/assets/css/maquinasenplano.css" />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+/>
 <style>
   .tablaoculta {
-  display: none;
+    display: none;
   }
 </style>
-<link rel="stylesheet" href="../static/assets/css/modalparametros.css">
-{% endblock stylesheets %}
-
-{% block content %}
+<link rel="stylesheet" href="../static/assets/css/modalparametros.css" />
+{% endblock stylesheets %} {% block content %}
 <div class="pcoded-main-container">
   <div class="pcoded-wrapper">
     <div class="pcoded-content">
@@ -26,8 +25,12 @@
             <div class="row align-items-center">
               <div class="col-md-12">
                 <ul class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
-                  <li class="breadcrumb-item"><a href="/panel/{{id_super}}">Panel</a></li>
+                  <li class="breadcrumb-item">
+                    <a href="/"><i class="feather icon-home"></i></a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="/panel/{{id_super}}">Panel</a>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -51,20 +54,34 @@
                             <th>Máquina N°</th>
                             <th>Detalle de la notificación</th>
                           </thead>
-                          {% for maquina in notificaciones['elemts'] %}
-                          {% for noti in maquina['Notificaciones'] %}
-                          {% if noti['Tipo']['id']==1 %}
-                          <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-amarillo">
+                          {% for maquina in notificaciones['elemts'] %} {% for
+                          noti in maquina['Notificaciones'] %} {% if
+                          noti['Tipo']['id']==1 %}
+                          <tr
+                            id="notificacion-{{ noti['id'] }}"
+                            class="tabla-alerta-amarillo"
+                          >
                             {% else %}
-                          <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-rojo">
+                          </tr>
+
+                          <tr
+                            id="notificacion-{{ noti['id'] }}"
+                            class="tabla-alerta-rojo"
+                          >
                             {% endif %}
-                            <td><button type="button" class="btn-sm btn-secondary"
-                                onclick="marcarLeido({{ noti['id'] }})">Leído</button></td>
+                            <td>
+                              <button
+                                type="button"
+                                class="btn-sm btn-success"
+                                onclick="marcarLeido({{ noti['id'] }})"
+                              >
+                                ✔
+                              </button>
+                            </td>
                             <td>{{maquina['idMaqSuc']}}</td>
                             <td>{{noti['descripcion']}}</td>
                           </tr>
-                          {% endfor %}
-                          {% endfor %}
+                          {% endfor %} {% endfor %}
                         </tbody>
                       </table>
                     </div>
@@ -85,21 +102,79 @@
 
                   <div class="containerplano">
                     <div class="card-block px-0 py-0">
-                      <img id="plano" src="{{ url_for('static', filename='assets/images/plano.jpg') }}">
-                      <div class="boton-maquina" id="boton1" idMaquina="1" style="left: 130px; top: 085px;"><span class="material-symbols-outlined">ac_unit</span></div>
-                      <div class="boton-maquina" id="boton2" idMaquina="2" style="left: 130px; top: 220px;"><span class="material-symbols-outlined">ac_unit</span></div>
-                      <div class="boton-maquina" id="boton3" idMaquina="3" style="left: 320px; top: 210px;"><span class="material-symbols-outlined">ac_unit</span></div>
-                      <div class="boton-maquina" id="boton4" idMaquina="4" style="left: 586px; top: 171px;"><span class="material-symbols-outlined">kitchen</span></div>
-                      <div class="boton-maquina" id="boton5" idMaquina="5" style="left: 668px; top: 046px;"><span class="material-symbols-outlined">ac_unit</span></div>
-                      <div class="boton-maquina" id="boton6" idMaquina="6" style="left: 698px; top: 130px;"><span class="material-symbols-outlined">blanket</span></div>
-                      <div class="boton-maquina" id="boton7" idMaquina="7" style="left: 703px; top: 227px;"><span class="material-symbols-outlined">ac_unit</span></div>
-                      <div class="boton-maquina" id="boton8" idMaquina="8" style="left: 687px; top: 361px;"><span class="material-symbols-outlined">ac_unit</span></div>
+                      <img
+                        id="plano"
+                        src="{{ url_for('static', filename='assets/images/plano.jpg') }}"
+                      />
+                      <div
+                        class="boton-maquina"
+                        id="boton1"
+                        idMaquina="1"
+                        style="left: 130px; top: 085px"
+                      >
+                        <span class="material-symbols-outlined">ac_unit</span>
+                      </div>
+                      <div
+                        class="boton-maquina"
+                        id="boton2"
+                        idMaquina="2"
+                        style="left: 130px; top: 220px"
+                      >
+                        <span class="material-symbols-outlined">ac_unit</span>
+                      </div>
+                      <div
+                        class="boton-maquina"
+                        id="boton3"
+                        idMaquina="3"
+                        style="left: 320px; top: 210px"
+                      >
+                        <span class="material-symbols-outlined">ac_unit</span>
+                      </div>
+                      <div
+                        class="boton-maquina"
+                        id="boton4"
+                        idMaquina="4"
+                        style="left: 586px; top: 171px"
+                      >
+                        <span class="material-symbols-outlined">kitchen</span>
+                      </div>
+                      <div
+                        class="boton-maquina"
+                        id="boton5"
+                        idMaquina="5"
+                        style="left: 668px; top: 046px"
+                      >
+                        <span class="material-symbols-outlined">ac_unit</span>
+                      </div>
+                      <div
+                        class="boton-maquina"
+                        id="boton6"
+                        idMaquina="6"
+                        style="left: 698px; top: 130px"
+                      >
+                        <span class="material-symbols-outlined">blanket</span>
+                      </div>
+                      <div
+                        class="boton-maquina"
+                        id="boton7"
+                        idMaquina="7"
+                        style="left: 703px; top: 227px"
+                      >
+                        <span class="material-symbols-outlined">ac_unit</span>
+                      </div>
+                      <div
+                        class="boton-maquina"
+                        id="boton8"
+                        idMaquina="8"
+                        style="left: 687px; top: 361px"
+                      >
+                        <span class="material-symbols-outlined">ac_unit</span>
+                      </div>
                     </div>
                   </div>
-                  
                 </div>
               </div>
-            </div>            
+            </div>
             <div class="tablaoculta" id="tablaOcultar">
               <div id="tabla-container"></div>
             </div>
@@ -115,40 +190,44 @@
 {% block javascripts %}
 <script>
   function marcarLeido(notificacionId) {
-    var fila = document.getElementById("notificacion-" + notificacionId);
+    var fila = document.getElementById('notificacion-' + notificacionId);
     fila.parentNode.removeChild(fila);
 
-    var userToken = getCookie("token"); // Obtener el token de la cookie
+    var userToken = getCookie('token'); // Obtener el token de la cookie
 
     var myHeaders = new Headers();
-    myHeaders.append("user-token", userToken);
+    myHeaders.append('user-token', userToken);
 
     var requestOptions = {
       method: 'PATCH',
       headers: myHeaders,
-      redirect: 'follow'
+      redirect: 'follow',
     };
 
-    fetch("http://ljragusa.com.ar:3001/notificaciones/" + notificacionId, requestOptions);
+    fetch(
+      'http://ljragusa.com.ar:3001/notificaciones/' + notificacionId,
+      requestOptions
+    );
   }
 
   // Función para obtener el valor de una cookie por su nombre
   function getCookie(name) {
-    var value = "; " + document.cookie;
-    var parts = value.split("; " + name + "=");
-    if (parts.length === 2) return parts.pop().split(";").shift();
+    var value = '; ' + document.cookie;
+    var parts = value.split('; ' + name + '=');
+    if (parts.length === 2) return parts.pop().split(';').shift();
   }
 </script>
 
 <script>
   const botones = document.querySelectorAll('.boton-maquina');
+  var id_super = {{ id_super }};
   botones.forEach(boton => {
     boton.addEventListener('click', () => {
       tablaOcultar.style.display = 'block'; // Cambia el estilo para mostrar la tabla oculta
       tablaOcultar.scrollIntoView({ behavior: 'smooth' }); // Desplaza la página al div con animación suave
       const idMaquina = boton.getAttribute('idMaquina'); // Obtiene el texto del atributo data-boton
       //ver que hacer despues
-      const url = `/medicion/${idMaquina}`;
+      const url = `/medicion/${id_super}/${idMaquina}`;
       const tablaContainer = document.getElementById('tabla-container');
       fetch(url)
         .then(response => response.json())
@@ -157,23 +236,22 @@
         });
     });
   });
-
 </script>
 
 <script>
-        // Función para manejar el clic en la imagen
-//  function handleClick(event) {
-//    const img = document.getElementById('plano');
-//    const rect = img.getBoundingClientRect(); // Rectángulo que rodea la imagen
-//    const offsetX = event.clientX - rect.left; // Coordenada x relativa en la imagen
-//    const offsetY = event.clientY - rect.top;  // Coordenada y relativa en la imagen
-//
-//    const coordenadasVal = document.getElementById('coordenadasVal');
-//    coordenadasVal.textContent = `Left: ${offsetX}px, Top: ${offsetY}px`;
-//  }
-//
-//  // Agregar el evento click al elemento de la imagen
-//  document.getElementById('plano').addEventListener('click', handleClick);
+  // Función para manejar el clic en la imagen
+  //  function handleClick(event) {
+  //    const img = document.getElementById('plano');
+  //    const rect = img.getBoundingClientRect(); // Rectángulo que rodea la imagen
+  //    const offsetX = event.clientX - rect.left; // Coordenada x relativa en la imagen
+  //    const offsetY = event.clientY - rect.top;  // Coordenada y relativa en la imagen
+  //
+  //    const coordenadasVal = document.getElementById('coordenadasVal');
+  //    coordenadasVal.textContent = `Left: ${offsetX}px, Top: ${offsetY}px`;
+  //  }
+  //
+  //  // Agregar el evento click al elemento de la imagen
+  //  document.getElementById('plano').addEventListener('click', handleClick);
 </script>
 
 {% endblock javascripts %}

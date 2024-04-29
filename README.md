@@ -1,25 +1,17 @@
-## ✨ Start the app in Docker
-
-> 👉 **Step 1** - Download the code
+> 👉 **Para actualizar en docker** - Correr la app `Docker Desktop` y ejecutar los siguientes comandos en CMD estando en el directorio del proyecto:
 
 ```bash
-$ git clone https://github.com/app-generator/flask-datta-able.git
-$ cd flask-datta-able
+$ docker build -t juaniiic/friostats-front . 
+$ docker push juaniiic/friostats-front 
 ```
-
-<br />
-
-> 👉 **Step 2** - Start the APP in `Docker`
-
-```bash
-$ docker-compose up --build
-```
+> Recordar eliminar el anterior docker con `docker rmi juaniiic/friostats-front`
+> Luego entrar a portainer.io y actualizar la imagen de docker ( http://186.13.28.124:9000/ )
 
 Visit `http://localhost:5085` in your browser. The app should be up & running.
 
 <br />
 
-### ✨ Create a new `.env` file using sample `env.sample`
+### ✨ Crear un nuevo `.env` usando el sample `env.sample`
 
 The meaning of each variable can be found below:
 
@@ -35,43 +27,20 @@ The meaning of each variable can be found below:
 
 ### 👉 Set Up for `Windows`
 
-> Install modules via `VENV` (windows)
+> Instalar modulos via `VENV`
 
 ```
 $ virtualenv env
 $ .\env\Scripts\activate
 $ pip install -r requirements.txt
+
 ```
 
-<br />
+### 👉 Iniciar el proyecto
 
-> Set Up Flask Environment
+> Click derecho al archivo run.py + "Ejecutar el archivo python en terminal"
 
-```bash
-$ # CMD
-$ set FLASK_APP=run.py
-$ set FLASK_ENV=development
-$
-$ # Powershell
-$ $env:FLASK_APP = ".\run.py"
-$ $env:FLASK_ENV = "development"
-```
-
-<br />
-
-> Start the app
-
-```bash
-$ flask run
-// OR
-$ flask run --cert=adhoc # For HTTPS server
-```
-
-At this point, the app runs at `http://127.0.0.1:5000/`.
-
-<br />
-
-## ✨ Code-base structure
+### ✨ Estructura del proyecto
 
 ```bash
 < PROJECT ROOT >

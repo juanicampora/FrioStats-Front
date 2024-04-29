@@ -14,19 +14,16 @@
             </div>
             <div class="card">
                 <div class="card-body text-center">
-                    <div class="mb-4">
-                        <i class="feather x-circle"></i>
-                    </div>
-                    <h3 class="mb-4">Error 403</h3>
-
-                    <br />
-
-                    <span class="mb-0 text-muted">
-                        {{mensaje}}
-                        <br>
-                        <a href="/">Ir al Inicio</a> 
-                    </span>
-
+                    <h3>Error</h3>
+                    <br>
+                    {% if mensaje %}
+                    <span class="mb-2 text-muted">{{mensaje}}</span>
+                    {% else %}
+                    <span class="mb-2 text-muted">Ocurrió un error inesperado</span>
+                    {% endif %}
+                    <br>
+                    <br>
+                    <a href="/"><button class="btn btn-primary mr-0">Ir al Inicio</button></a>
                 </div>
             </div>
         </div>

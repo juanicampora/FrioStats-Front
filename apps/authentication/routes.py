@@ -55,8 +55,7 @@ def login():
                                     msg='No confirmó su mail, por favor revise su casilla de correo',
                                     form=login_form)
         else:
-            print("El error obtenido es distinto a 200,401,403 y es:")
-            print(respuesta.status_code)   
+            print("El error obtenido es distinto a 200,401,403 y es:"+ respuesta.status_code)
             return abort(500)
 
     if not current_user.is_authenticated:
@@ -107,8 +106,10 @@ def register():
                                 success=False,
                                 form=create_account_form)
         else:
+            mensajes=[]
+            mensajes.append(response.json()['message'])
             return render_template('accounts/register.html', segment='register',
-                                msg=response.json(),
+                                msg=mensajes,
                                 success=False,
                                 form=create_account_form)
     else:
@@ -206,13 +207,37 @@ def asignar_sucursales():
 @role_required('Admin')
 def asignar_sucursales_email_seleccionado(email_empleado): 
     if (request.method == 'GET'):
-        data_sucursales=getSucursales()     
+        url = "http://ljragusa.com.ar:3001/sucursales/"+email_empleado
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        try:
+            sucursales = requests.request("GET", url, headers=headers, data=payload)
+        except requests.exceptions.RequestException as e:
+                print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+                return abort(500)    
+        data_sucursales = sucursales.json()
         return render_template('accounts/sucursales_email_seleccionado.html', segment='asignacionsucursales', email_empleado=email_empleado, data_sucursales=data_sucursales)
-    elif (request.method == 'POST'):
-        idUsuario=email
-        idRol = request.form['rolSeleccionado']
-        asignarRol(idUsuario,idRol)
 
+@blueprint.route('/actualizar_sucursal/<string:email_empleado>/<int:sucursalId>/<string:estado>', methods=['GET'])
+@login_required
+@confirm_mail_required()
+@role_required('Admin')
+def actualizar_sucursal(email_empleado,sucursalId,estado):
+    url = "http://ljragusa.com.ar:3001/sucursales/"
+    payload={
+        "email": email_empleado,
+        "idSucursal": sucursalId,
+        "asignada": estado
+    }
+    headers = { 'user-token': request.cookies.get('token') }
+    try:
+        respuesta = requests.request("PUT", url, headers=headers, data=payload)
+    except requests.exceptions.RequestException as e:
+            print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+            return abort(500)
+    if respuesta.status_code == 200:
+        return redirect(url_for('authentication_blueprint.asignar_sucursales_email_seleccionado',email_empleado=email_empleado))
+    
 
 @blueprint.route('/confirmEmail/<string:token>', methods=['GET'])
 def confirmEmail(token):
@@ -222,9 +247,12 @@ def confirmEmail(token):
     try:
         respuesta = requests.request("GET", url, headers=headers, data=payload)
     except requests.exceptions.RequestException as e:
-        errorGenerico(respuesta.json()['message'])
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
     if respuesta.status_code == 200:
         return render_template('accounts/mail_confirmed',email=respuesta.json()['email'])
+    # else:   
+    #     return errorGenerico(respuesta)
 
 @blueprint.route('/logout')
 def logout():
@@ -240,7 +268,7 @@ def unauthorized_handler():
 
 @blueprint.errorhandler(403)
 def access_forbidden(error):
-    return render_template('home/page-403.html'), 403
+    return render_template('home/page-403.html',mensaje=error.description), 403
 
 
 @blueprint.errorhandler(404)
@@ -252,15 +280,20 @@ def not_found_error(error):
 def internal_error(error):
     return render_template('home/page-500.html'), 500
 
-def errorGenerico(mensaje):
-    return render_template('home/page-error-generico.html',mensaje=mensaje), 500
     
 # Funciones utilizadas varias veces
 def verifSesión(respuesta):
-    if respuesta.status_code==403:
-        if respuesta.json()['message']=='Sesion expirada':
+    if respuesta.status_code==200:
+        return True
+    elif respuesta.status_code==403:
+        if respuesta.json()['msg']=='Sesion expirada':
+            logout_user()            
+            return abort(403,respuesta.json()['msg'])
+        else:
             logout_user()
             return abort(403)
+    else:
+        return abort(500)
 
 def getRoles():
     url = "http://ljragusa.com.ar:3001/roles/"
