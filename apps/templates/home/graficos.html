@@ -1,7 +1,8 @@
-{% extends "layouts/base.html" %} {% block title %} Parametro {% endblock %}
+{% extends "layouts/base.html" %} {% block title %} Gráficos {% endblock %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 <link
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
@@ -23,7 +24,7 @@
                   <li class="breadcrumb-item">
                     <a href="/panel/{{idSucursal}}">Panel</a>
                   </li>
-                  <li class="breadcrumb-item">Editar Parámetro</li>
+                  <li class="breadcrumb-item">Gráfico</li>
                 </ul>
               </div>
             </div>
@@ -33,47 +34,33 @@
         <div class="main-body">
           <div class="page-wrapper">
             <div class="row">
-              <div class="col-md-6">
-                <div class="card Recent-Users">
+              <div class="col-md-12">
+                <div class="card">
                   <div class="card-header">
-                    <h5>Editar Parámetro: "{{descParametro}}"</h5>
+                    <h5>Gráfico {{descParametro}}</h5>
                   </div>
-                  <div class="card-block px-0 py-0">
-                    <div class="table-responsive">
-                      <form
-                        role="form"
-                        method="POST"
-                        action="/parametro/{{idSucursal}}/{{idMaquina}}/{{parametro}}"
-                      >
-                        {% if parametros[0]!='Nada' %}
-                        <div class="col-sm-12 mb-4">
-                          <label for="minimo">Valor Minimo</label>
-                          <input
-                            class="form-control"
-                            id="minimo"
-                            name="minimo"
-                            placeholder="Ingrese un valor mínimo"
-                            value="{{ parametros[0] }}"
-                          />
-                        </div>
-                        {% endif %}
-                        <div class="col-sm-12 mb-4">
-                          <label for="maximo">Valor Máximo</label>
-                          <input
-                            class="form-control"
-                            id="maximo"
-                            name="maximo"
-                            placeholder="Ingrese el email del Usuario"
-                            value="{{ parametros[1] }}"
-                          />
-                        </div>
-                        <div class="col-sm-12 mb-2" style="text-align: center">
-                          <button type="submit" class="btn btn-primary">
-                            Guardar
-                          </button>
-                        </div>
-                      </form>
-                    </div>
+                  <div class="card-block">
+                    <canvas id="myChart"></canvas>
+                    <script>
+                      var ctx = document.getElementById('myChart').getContext('2d');
+                      var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                          labels: {{ labels | safe }},
+                          datasets: [
+                            {
+                              label: 'Temperatura',
+                              data: {{ values | safe }},
+                              fill: false,
+                              borderColor: 'rgb(4, 169, 245)',
+                              borderWidth: 6,
+                              cubicInterpolationMode: 'monotone',
+                              tension: 0.4
+                            },
+                          ],
+                        }
+                      });
+                    </script>
                   </div>
                 </div>
               </div>

@@ -224,6 +224,7 @@ def asignar_sucursales_email_seleccionado(email_empleado):
 @confirm_mail_required()
 @role_required('Admin')
 def actualizar_sucursal(email_empleado,sucursalId,estado):
+    print('AAA',email_empleado,sucursalId,estado)
     url = "http://ljragusa.com.ar:3001/sucursales/"
     payload={
         "email": email_empleado,

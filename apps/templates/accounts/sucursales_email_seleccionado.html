@@ -1,11 +1,7 @@
-{% extends "layouts/base.html" %}
-
-{% block title %} Roles {% endblock %}
+{% extends "layouts/base.html" %} {% block title %} Sucursales {% endblock %}
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
-
-{% block content %}
+{% block stylesheets %}{% endblock stylesheets %} {% block content %}
 
 <!-- [ Main Content ] start -->
 <div class="pcoded-main-container">
@@ -18,9 +14,15 @@
             <div class="row align-items-center">
               <div class="col-md-12">
                 <ul class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
-                  <li class="breadcrumb-item"><a href="/asignar_sucursales">Seleccion Usuario</a></li>
-                  <li class="breadcrumb-item" style="color: white;">Asignación</li>
+                  <li class="breadcrumb-item">
+                    <a href="/"><i class="feather icon-home"></i></a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="/asignar_sucursales">Seleccion Usuario</a>
+                  </li>
+                  <li class="breadcrumb-item" style="color: white">
+                    Asignación
+                  </li>
                 </ul>
               </div>
             </div>
@@ -37,77 +39,145 @@
                     <h5>Asignación de Sucursales</h5>
                   </div>
                   <div class="card-block">
-                    
                     {% if msg %}
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <div
+                      class="alert alert-danger alert-dismissible fade show"
+                      role="alert"
+                    >
                       <strong>{{ msg | safe }}</strong>
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <button
+                        type="button"
+                        class="close"
+                        data-dismiss="alert"
+                        aria-label="Close"
+                      >
                         <span aria-hidden="true">&times;</span>
                       </button>
                     </div>
                     {% endif %}
 
-                    <form role="form" >                      
-                      <div class="col-sm-12 mb-4">
-                        <label for="email">Email del Usuario</label>
-                          <input class="form-control" id="email" name="email" disabled value="{{ email_empleado }}">
+                    <div class="col-sm-12 mb-4">
+                      <label for="email">Email del Usuario</label>
+                      <input
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        disabled
+                        value="{{ email_empleado }}"
+                      />
+                    </div>
+
+                    <div class="col-sm-12 form-group">
+                      <h4 class="text-center">Sucursales ASIGNADAS</h4>
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr class="bg-secondary text-light">
+                              <th>ID</th>
+                              <th>Nombre</th>
+                              <th>Dirección</th>
+                              <th>Localidad</th>
+                              <th>Acción</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% if data_sucursales['sucursalUsuario']|length == 1
+                            %} {% for suc in data_sucursales['sucursalUsuario']
+                            %}
+                            <tr>
+                              <th class="align-middle">{{ suc['id'] }}</th>
+                              <td class="align-middle">{{ suc['nombre'] }}</td>
+                              <td class="align-middle">
+                                {{ suc['direccion'] }}
+                              </td>
+                              <td class="align-middle">
+                                {{ suc['ciudad'] }}, {{ suc['provincia'] }}
+                              </td>
+                              <td class="align-middle">
+                                <form
+                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/false"
+                                  method="GET"
+                                >
+                                  <button
+                                    disabled
+                                    class="btn btn-danger btn-sm"
+                                    data-toggle="tooltip"
+                                    data-placement="right"
+                                    title="Debe tener al menos una sucursal asignada."
+                                  >
+                                    Eliminar Asignación
+                                  </button>
+                                </form>
+                              </td>
+                            </tr>
+                            {% endfor %} {% else %} {% for suc in
+                            data_sucursales['sucursalUsuario'] %}
+                            <tr>
+                              <th class="align-middle">{{ suc['id'] }}</th>
+                              <td class="align-middle">{{ suc['nombre'] }}</td>
+                              <td class="align-middle">
+                                {{ suc['direccion'] }}
+                              </td>
+                              <td class="align-middle">
+                                {{ suc['ciudad'] }}, {{ suc['provincia'] }}
+                              </td>
+                              <td class="align-middle">
+                                <form
+                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/false"
+                                  method="GET"
+                                >
+                                  <button class="btn btn-danger btn-sm">
+                                    Eliminar Asignación
+                                  </button>
+                                </form>
+                              </td>
+                            </tr>
+                            {% endfor %} {% endif %}
+                          </tbody>
+                        </table>
                       </div>
-                      
-                      <div class="col-sm-12 form-group">
-                        <h4 class="text-center">Listado de sucursales ASIGNADAS PREVIAMENTE</h4>
-                        <div class="table-responsive">
-                          <table class="table"> 
-                            <thead> 
-                              <tr class="bg-secondary text-light"> 
-                                <th>ID</th> 
-                                <th>Nombre</th> 
-                                <th>Dirección</th> 
-                                <th>Localidad</th> 
-                                <th>Acción</th> 
-                              </tr> 
-                            </thead> 
-                            <tbody>
-                              {% for suc in data_sucursales['sucursalUsuario'] %}
-                              <tr> 
-                                <th class="align-middle">{{ suc['id'] }}</th> 
-                                <td class="align-middle">{{ suc['nombre'] }}</td> 
-                                <td class="align-middle">{{ suc['direccion'] }}</td> 
-                                <td class="align-middle">{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
-                                <td class="align-middle"><form action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/true" method="GET"><button class="btn btn-danger btn-sm">Eliminar Asignación</button></form></td>
-                              </tr> 
-                              {% endfor %} 
-                            </tbody> 
-                          </table> 
-                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                      <h4 class="text-center">Sucursales no ASIGNADAS</h4>
+                      <div class="table-responsive">
+                        <table class="table">
+                          <thead>
+                            <tr class="bg-secondary text-light">
+                              <th>ID</th>
+                              <th>Nombre</th>
+                              <th>Dirección</th>
+                              <th>Localidad</th>
+                              <th>Acción</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for suc in
+                            data_sucursales['sucursalesNoAsignadas'] %}
+                            <tr>
+                              <th class="align-middle">{{ suc['id'] }}</th>
+                              <td class="align-middle">{{ suc['nombre'] }}</td>
+                              <td class="align-middle">
+                                {{ suc['direccion'] }}
+                              </td>
+                              <td class="align-middle">
+                                {{ suc['ciudad'] }}, {{ suc['provincia'] }}
+                              </td>
+                              <td class="align-middle">
+                                <form
+                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/true"
+                                  method="GET"
+                                >
+                                  <button class="btn btn-success btn-sm">
+                                    Asignar
+                                  </button>
+                                </form>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
                       </div>
-                      <div class="col-sm-12 form-group">
-                        <h4 class="text-center">Listado de TODAS las sucursales</h4>
-                        <div class="table-responsive">
-                          <table class="table"> 
-                            <thead> 
-                              <tr class="bg-secondary text-light"> 
-                                <th>ID</th> 
-                                <th>Nombre</th> 
-                                <th>Dirección</th> 
-                                <th>Localidad</th> 
-                                <th>Acción</th> 
-                              </tr> 
-                            </thead> 
-                            <tbody>
-                              {% for suc in data_sucursales['sucursalesEmpresa'] %}
-                              <tr> 
-                                <th class="align-middle">{{ suc['id'] }}</th> 
-                                <td class="align-middle">{{ suc['nombre'] }}</td> 
-                                <td class="align-middle">{{ suc['direccion'] }}</td> 
-                                <td class="align-middle">{{ suc['ciudad'] }}, {{ suc['provincia'] }}</td> 
-                                <td class="align-middle"><form action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/true" method="GET"><button class="btn btn-success btn-sm">Asignar</button></form></td>
-                              </tr> 
-                              {% endfor %} 
-                            </tbody> 
-                          </table> 
-                        </div>
-                      </div>
-                    </form>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -119,14 +189,12 @@
   </div>
 </div>
 
-{% endblock content %}
-
-{% block javascripts %}
- <script>
-    function getCookie(name) {
-      var value = "; " + document.cookie;
-      var parts = value.split("; " + name + "=");
-      if (parts.length === 2) return parts.pop().split(";").shift();
-    }
-  </script>
+{% endblock content %} {% block javascripts %}
+<script>
+  function getCookie(name) {
+    var value = '; ' + document.cookie;
+    var parts = value.split('; ' + name + '=');
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+</script>
 {% endblock javascripts %}

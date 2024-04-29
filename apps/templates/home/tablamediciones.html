@@ -18,7 +18,10 @@
             <tbody>
               {% for maquina in maquinas['elemts'] %}
               <tr>
-                <td><a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-primary"> Editar par&aacute;metro</button></a></td>
+                <td>
+                  <a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-primary"> Editar par&aacute;metro</button></a>
+                  <a href="/graficos/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-success"> Gr&aacute;fico</button></a>
+                </td>
                 <td>Sensor Temperatura Interna</td>
                 <td>{{maquina['sensorTempInterna']}}</td>
                 <td>&deg;C</td>

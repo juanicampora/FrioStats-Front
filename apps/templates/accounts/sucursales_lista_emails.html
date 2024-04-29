@@ -1,11 +1,7 @@
-{% extends "layouts/base.html" %}
-
-{% block title %} Roles {% endblock %}
+{% extends "layouts/base.html" %} {% block title %} Sucursales {% endblock %}
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
-
-{% block content %}
+{% block stylesheets %}{% endblock stylesheets %} {% block content %}
 
 <!-- [ Main Content ] start -->
 <div class="pcoded-main-container">
@@ -37,15 +33,31 @@
                           </thead>
                           <tbody>
                             {% for empleado in empleados['elemts'] %}
-                            <tr class="tabla-con-mano fila-usuario" data-id="{{ empleado['email'] }}">
-                              <td class="align-middle"><button type="button" class="btn-sm btn-primary">Seleccionar</button></td>
-                              <td class="align-middle">{{ empleado['id'] }}</td>
-                              <td class="align-middle">{{ empleado['apellido'] }} , {{ empleado['nombre'] }}</td>
-                              <td class="align-middle">{{ empleado['email'] }}</td>
+                            <tr
+                              class="tabla-con-mano fila-usuario"
+                              data-id="{{ empleado['email'] }}"
+                            >
                               <td class="align-middle">
-                              {% for sucursal in empleado['Sucursals'] %}
-                                {{ sucursal['ciudad'] }} - {{ sucursal['nombre'] }} - {{ sucursal['direccion'] }}<br>
-                              {% endfor %}
+                                <button
+                                  type="button"
+                                  class="btn-sm btn-primary"
+                                >
+                                  Seleccionar
+                                </button>
+                              </td>
+                              <td class="align-middle">{{ empleado['id'] }}</td>
+                              <td class="align-middle">
+                                {{ empleado['apellido'] }} , {{
+                                empleado['nombre'] }}
+                              </td>
+                              <td class="align-middle">
+                                {{ empleado['email'] }}
+                              </td>
+                              <td class="align-middle">
+                                {% for sucursal in empleado['Sucursals'] %} {{
+                                sucursal['ciudad'] }} - {{ sucursal['nombre'] }}
+                                - {{ sucursal['direccion'] }}<br />
+                                {% endfor %}
                               </td>
                             </tr>
                             {% endfor %}
@@ -72,18 +84,18 @@
 {% block javascripts %}
 <script>
   // Esperar a que el documento esté listo
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener('DOMContentLoaded', function () {
     // Seleccionar todas las filas de usuario por su clase
-    var filasUsuario = document.querySelectorAll(".fila-usuario");
+    var filasUsuario = document.querySelectorAll('.fila-usuario');
 
     // Agregar un controlador de clic a cada fila
     filasUsuario.forEach(function (fila) {
-      fila.addEventListener("click", function () {
+      fila.addEventListener('click', function () {
         // Obtener el valor de data-id de la fila clicada
-        var dataId = fila.getAttribute("data-id");
+        var dataId = fila.getAttribute('data-id');
 
         // Construir la URL de redirección
-        var url = "/asignar_sucursales/" + dataId;
+        var url = '/asignar_sucursales/' + dataId;
 
         // Redirigir a la URL
         window.location.href = url;

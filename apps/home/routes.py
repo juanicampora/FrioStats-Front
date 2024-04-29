@@ -28,8 +28,26 @@ def index():
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
-    notificaciones=respuesta.json()
-    return render_template('home/index.html', segment='index',supermercados=supermercados,notificaciones=notificaciones)  #segment se usa en sidebar.html
+    notificaciones = respuesta.json()['elemts']
+    sucursalNotificacion=[]
+    print(supermercados)
+    print(notificaciones)
+    print('ARRANCAAAAAAAAAAAA')
+    for sucursal in supermercados['elemts']:
+        print(sucursal)
+        sucuNoti = {
+            'id': sucursal['id'],
+            'cantLeves': 0, 
+            'cantGraves': 0
+        }
+        for notificacion in notificaciones:
+            if notificacion != None:
+                if sucursal['id'] == notificacion['idSucursal']:
+                    sucuNoti['cantLeves'] = notificacion['cantLeves']
+                    sucuNoti['cantGraves'] = notificacion['cantGraves']
+                    break
+        sucursalNotificacion.append(sucuNoti)      
+    return render_template('home/index.html', segment='index',supermercados=supermercados,notificaciones=sucursalNotificacion)  #segment se usa en sidebar.html
 
 @blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -197,6 +215,24 @@ def parametro(idSucursal,idMaquina,parametro):
             return redirect(url_for('home_blueprint.panel',id_super=idSucursal))
         else:
             return abort(500)
+
+@blueprint.route('/graficos/<int:idSucursal>/<int:idMaquina>/<string:parametro>', methods=['GET'])
+@login_required
+@confirm_mail_required()
+def graficos(idSucursal,idMaquina,parametro):
+    if request.method=='GET':
+        # url = f'http://ljragusa.com.ar:3001/graficos/{idSucursal}/{idMaquina}/{parametro}'   ## VER SI CON idMaquina y parametro solamente alcanza
+        # payload={}
+        # headers = { 'user-token': request.cookies.get('token') }
+        # respuesta= requests.request("GET", url, headers=headers, data=payload)
+        # verifSesión(respuesta)
+        # print(respuesta.json())
+        descParametro='Temperatura Interna'
+        datos = [('15-44-23-04', 12), ('15-49-23-04', 13.01), ('15-54-23-04', 13.12), ('15-59-23-04', 12.02), ('16-04-23-04', 13.56), ('16-09-23-04', 14.11), ('16-14-23-04', 16.73), ('16-19-23-04', 15.43), ('16-24-23-04', 16.13), ('16-29-23-04', 16.83), ('16-34-23-04', 15.53), ('16-39-23-04', 14.23), ('16-44-23-04', 14.93), ('16-49-23-04', 13.93), ('16-54-23-04', 14.63), ('16-59-23-04', 15.22), ('17-04-23-04', 16.03), ('17-09-23-04', 16.73), ('17-14-23-04', 16.43)]
+        labels = [dato[0] for dato in datos]
+        values = [dato[1] for dato in datos]
+        return render_template('home/graficos.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, descParametro=descParametro, labels=labels, values=values)
+
 
 @blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route
 def route_template(template):

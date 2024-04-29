@@ -54,7 +54,8 @@
                                                                 <th>Notificaciones</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody>                                                        
+                                                        <tbody>     
+                                                            {{notificaciones['elemts']}}                                                   
                                                             {% for super in supermercados['elemts'] %}
                                                                 <tr class="tabla-con-mano" data-id="{{ super['id'] | safe }}">
                                                                     <td class="align-middle"><a href="/panel/{{super['id']}}"><button type="button" class="btn-sm btn-primary">Abrir en Panel</button></a></td>
@@ -63,21 +64,20 @@
                                                                     <td class="align-middle">{{ super['ciudad'] }} , {{ super['provincia'] }}</td>
                                                                     <td class="align-middle">{{ super['direccion'] }}</td>
                                                                     <td class="align-middle">{{ super['telefono'] }}</td>
-                                                                    {% for noti in notificaciones['elemts'] %}
-                                                                        {% if noti['idSucursal']==super['id'] %}
-                                                                            <td class="align-middle">
-                                                                                {% if noti['cantGraves'] != 0 %}
-                                                                                <span id="notiGrave" class="badge badge-pill bg-danger text-dark">{{ noti['cantGraves'] }}</span>
-                                                                                {% endif %}
-                                                                                {% if noti['cantLeves'] != 0 %}
-                                                                                <span id="notiLeve" class="badge badge-pill bg-warning text-dark">{{ noti['cantLeves'] }}</span>
-                                                                                {% endif %}
-                                                                            </td>
-                                                                        {% else %}
-                                                                            <td class="align-middle">
-                                                                                <span id="sinNoti" class="badge badge-pill bg-success text-dark">✔</span>
-                                                                            </td>
-                                                                        {% endif %}
+                                                                    {% for noti in notificaciones %}
+                                                                            {% if noti['id'] == super['id'] %}                                                                                                                                                        
+                                                                                <td class="align-middle">
+                                                                                    {% if noti['cantGraves'] != 0 %}
+                                                                                    <span id="notiGrave" class="badge badge-pill bg-danger text-dark">{{ noti['cantGraves'] }}</span>
+                                                                                    {% endif %}
+                                                                                    {% if noti['cantLeves'] != 0 %}
+                                                                                    <span id="notiLeve" class="badge badge-pill bg-warning text-dark">{{ noti['cantLeves'] }}</span>
+                                                                                    {% endif %}
+                                                                                    {% if noti['cantGraves'] == 0 and noti['cantLeves'] == 0 %}
+                                                                                    <span id="sinNoti" class="badge badge-pill bg-success text-dark">✔</span>
+                                                                                    {% endif %}
+                                                                                </td>                                                                            
+                                                                            {% endif %}
                                                                     {% endfor %}
                                                                 </tr>
                                                             {% endfor %}
