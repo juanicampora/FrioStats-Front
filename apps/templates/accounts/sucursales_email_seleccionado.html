@@ -98,15 +98,14 @@
                                   action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/false"
                                   method="GET"
                                 >
-                                  <button
-                                    disabled
-                                    class="btn btn-danger btn-sm"
-                                    data-toggle="tooltip"
-                                    data-placement="right"
-                                    title="Debe tener al menos una sucursal asignada."
-                                  >
+                                  <button disabled class="btn btn-danger btn-sm">
                                     Eliminar Asignación
                                   </button>
+                                  <!-- Boton redondo y gris con simbolo info -->
+                                  <button disabled type="button" class="btn btn-secondary btn-sm" 
+                                  data-toggle="tooltip" data-placement="right" title="No puede eliminarse porque debe tener al menos una sucursal asignada."
+                                  style=" text-align: center; ">
+                                    <i class="feather icon-info" style="font-size: large; text-align: center; padding: 0px; margin: 0px; "></i>
                                 </form>
                               </td>
                             </tr>

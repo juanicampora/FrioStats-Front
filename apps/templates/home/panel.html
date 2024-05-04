@@ -50,34 +50,23 @@
                       <table class="table">
                         <tbody>
                           <thead>
-                            <th>Acción</th>
+                            <th>Marcar como leído</th>
                             <th>Máquina N°</th>
                             <th>Detalle de la notificación</th>
                           </thead>
-                          {% for maquina in notificaciones['elemts'] %} {% for
-                          noti in maquina['Notificaciones'] %} {% if
-                          noti['Tipo']['id']==1 %}
-                          <tr
-                            id="notificacion-{{ noti['id'] }}"
-                            class="tabla-alerta-amarillo"
-                          >
-                            {% else %}
+                          <tr>
+                            <td><button type="button" class="btn-sm btn-success" onclick="marcarLeidoTodas()"> ✔ </button> Marcar todas como leído</td>
+                            <td></td>
+                            <td></td>
                           </tr>
-
-                          <tr
-                            id="notificacion-{{ noti['id'] }}"
-                            class="tabla-alerta-rojo"
-                          >
-                            {% endif %}
-                            <td>
-                              <button
-                                type="button"
-                                class="btn-sm btn-success"
-                                onclick="marcarLeido({{ noti['id'] }})"
-                              >
-                                ✔
-                              </button>
-                            </td>
+                          {% for maquina in notificaciones['elemts'] %} 
+                            {% for noti in maquina['Notificaciones'] %} 
+                              {% if noti['Tipo']['id']==1 %}
+                                <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-amarillo">
+                              {% else %}
+                                <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-rojo">
+                              {% endif %}
+                            <td><button type="button" class="btn-sm btn-success" onclick="marcarLeido({{ noti['id'] }})"> ✔ </button></td>
                             <td>{{maquina['idMaqSuc']}}</td>
                             <td>{{noti['descripcion']}}</td>
                           </tr>
@@ -208,6 +197,39 @@
       'http://ljragusa.com.ar:3001/notificaciones/' + notificacionId,
       requestOptions
     );
+  }
+  function marcarLeidoTodas() {
+    var userToken = getCookie('token'); // Obtener el token de la cookie
+    var myHeaders = new Headers();
+    myHeaders.append('user-token', userToken);
+
+    var requestOptions = {
+      method: 'PATCH',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+
+    fetch(
+          'http://ljragusa.com.ar:3001/notificaciones/checkAll/' + {{id_super}},
+          requestOptions
+        ).then(response => {
+          if (response.status === 200) {
+            document.location.reload();
+          }
+        })
+
+    // let notificaciones = {{ notificaciones | tojson | safe }};
+    // console.log(notificaciones);
+    // notis = notificaciones['elemts'];
+    // notis.forEach(maquina => {
+    //   maquina['Notificaciones'].forEach(noti => {
+    //     fetch(
+    //       'http://ljragusa.com.ar:3001/notificaciones/' + noti['id'],
+    //       requestOptions
+    //     );
+    //   });
+    // });
+    // document.location.reload();
   }
 
   // Función para obtener el valor de una cookie por su nombre

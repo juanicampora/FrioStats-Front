@@ -1,4 +1,7 @@
 # -*- encoding: utf-8 -*-
+from datetime import datetime
+from datetime import timedelta
+import json
 import requests
 from apps.authentication import confirm_mail_required
 from apps.authentication.forms import ProfileForm
@@ -23,6 +26,9 @@ def index():
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
     supermercados = respuesta.json()
+    ## verificar si supermercados['message'] existe
+    if not('elemts' in supermercados):
+        return render_template('home/index.html', segment='index',supermercados=supermercados)
     url = "http://ljragusa.com.ar:3001/notificaciones/getCantNoti"
     payload={}
     headers = { 'user-token': token }
@@ -209,22 +215,51 @@ def parametro(idSucursal,idMaquina,parametro):
         else:
             return abort(500)
 
-@blueprint.route('/graficos/<int:idSucursal>/<int:idMaquina>/<string:parametro>', methods=['GET'])
+@blueprint.route('/graficos/<int:idSucursal>/<int:idMaquina>', methods=['GET','POST'])
 @login_required
 @confirm_mail_required()
-def graficos(idSucursal,idMaquina,parametro):
+def graficos(idSucursal,idMaquina):
     if request.method=='GET':
+        return render_template('home/pre-graficos.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina)
+    if request.method=='POST':
         # url = f'http://ljragusa.com.ar:3001/graficos/{idSucursal}/{idMaquina}/{parametro}'   ## VER SI CON idMaquina y parametro solamente alcanza
         # payload={}
         # headers = { 'user-token': request.cookies.get('token') }
         # respuesta= requests.request("GET", url, headers=headers, data=payload)
         # verifSesión(respuesta)
         # print(respuesta.json())
-        descParametro='Temperatura Interna'
-        datos = [('15-44-23-04', 12), ('15-49-23-04', 13.01), ('15-54-23-04', 13.12), ('15-59-23-04', 12.02), ('16-04-23-04', 13.56), ('16-09-23-04', 14.11), ('16-14-23-04', 16.73), ('16-19-23-04', 15.43), ('16-24-23-04', 16.13), ('16-29-23-04', 16.83), ('16-34-23-04', 15.53), ('16-39-23-04', 14.23), ('16-44-23-04', 14.93), ('16-49-23-04', 13.93), ('16-54-23-04', 14.63), ('16-59-23-04', 15.22), ('17-04-23-04', 16.03), ('17-09-23-04', 16.73), ('17-14-23-04', 16.43)]
-        labels = [dato[0] for dato in datos]
-        values = [dato[1] for dato in datos]
-        return render_template('home/graficos.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, descParametro=descParametro, labels=labels, values=values)
+        periodo_seleccionado = request.form.get('periodo')
+        print(periodo_seleccionado)
+        if periodo_seleccionado == '1':
+            ## Crear variable hoy con fecha de hoy con date.now y fechaInicio hoy -4 dias y fechaFin hoy            
+            hoy = datetime.now().strftime("%Y-%m-%d")
+            fechaInicio = (datetime.now() - timedelta(days=4)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+            url = f'http://ljragusa.com.ar:3001/graphics/?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idMaquina={idMaquina}'
+            payload={}
+            headers = { 'user-token': request.cookies.get('token') }
+            respuesta= requests.request("GET", url, headers=headers, data=payload)
+            verifSesión(respuesta)
+            print(respuesta.json())
+
+            datosString="""{
+                "valuesSensorTempInterna": [12.1, 13.2, 15.3, 12.4, 16.5],
+                "labelsSensorTempInterna": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
+                "valuesSensorTempTrabajoYBulbo": [14.1, 15.2, 17.3, 14.4, 14.5],
+                "labelsSensorTempTrabajoYBulbo": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
+                "valuesSensorPuerta": [1,0,1,0,1],
+                "labelsSensorPuerta": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
+                "valuesSensorRpmCooler": [12.1, 14.2, 16.3, 14.4, 13.5],
+                "labelsSensorRpmCooler": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
+                "valuesSensorPuntoRocio": [18.1, 15.2, 12.3, 16.4, 13.5],
+                "labelsSensorPuntoRocio": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
+                "valuesSensorLuz": [1,0,1,0,1],
+                "labelsSensorLuz": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
+                "valuesSensorConsumo": [15.1, 13.2, 14.3, 16.4, 12.5],
+                "labelsSensorConsumo": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"]
+            }"""
+            datos=json.loads(datosString)
+            return render_template('home/graficos.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, datos=datos)
 
 
 @blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route

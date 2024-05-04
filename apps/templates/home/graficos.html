@@ -24,7 +24,10 @@
                   <li class="breadcrumb-item">
                     <a href="/panel/{{idSucursal}}">Panel</a>
                   </li>
-                  <li class="breadcrumb-item">Gráfico</li>
+                  <li class="breadcrumb-item">
+                    <a href="/graficos/{{idSucursal}}/{{idMaquina}}">Período</a>
+                  </li>
+                  <li class="breadcrumb-item">Gráficos</li>
                 </ul>
               </div>
             </div>
@@ -37,32 +40,58 @@
               <div class="col-md-12">
                 <div class="card">
                   <div class="card-header">
-                    <h5>Gráfico {{descParametro}}</h5>
-                  </div>
-                  <div class="card-block">
-                    <canvas id="myChart"></canvas>
-                    <script>
-                      var ctx = document.getElementById('myChart').getContext('2d');
-                      var myChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                          labels: {{ labels | safe }},
-                          datasets: [
-                            {
-                              label: 'Temperatura',
-                              data: {{ values | safe }},
-                              fill: false,
-                              borderColor: 'rgb(4, 169, 245)',
-                              borderWidth: 6,
-                              cubicInterpolationMode: 'monotone',
-                              tension: 0.4
-                            },
-                          ],
-                        }
-                      });
-                    </script>
+                    <h5>Gráficos</h5>
                   </div>
                 </div>
+                <ul class="nav nav-tabs" id="myTab" role="tablist"> 
+                  <li class="nav-item">
+                    <a class="nav-link text-uppercase active show" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Gráficos separados</a> 
+                  </li> 
+                  <li class="nav-item">
+                    <a class="nav-link text-uppercase" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Gráficos juntos</a>
+                  </li> 
+                </ul> 
+                <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade active show" id="home" role="tabpanel" aria-labelledby="home-tab"> 
+                    <div class="container">
+                            <div class="row">
+                              <div class="col">
+                                <canvas id="gTempInterna"></canvas>                    
+                              </div>
+                              <div class="col">
+                                <canvas id="gTempTrabajoYBulbo"></canvas>                    
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col">
+                                <canvas id="gPuerta"></canvas>      
+                              </div>              
+                              <div class="col">
+                                <canvas id="gCooler"></canvas>  
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div class="col">                  
+                                <canvas id="gPuntoRocio"></canvas>  
+                              </div>                  
+                              <div class="col">  
+                                <canvas id="gLuz"></canvas>   
+                              </div>
+                            </div>     
+                            <div class="row">
+                              <div class="col">             
+                                <canvas id="gConsumo"></canvas>         
+                              </div>
+                              <div class="col">
+
+                              </div>
+                            </div>    
+                          </div>
+                  </div> 
+                  <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <canvas id="gTodos"></canvas>
+                  </div> 
+                </div>                 
               </div>
             </div>
           </div>
@@ -71,47 +100,168 @@
     </div>
   </div>
 </div>
-{% endblock content %} {% block javascripts %}
+{% endblock content %}
+{% block javascripts %}
+<script>
+  var ctx1 = document.getElementById('gTempInterna').getContext('2d');
+  var gTempInterna = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: {{ datos.labelsSensorTempInterna | safe }},
+      datasets: [{
+          label: 'Temperatura Interna',
+          data: {{ datos.valuesSensorTempInterna | safe }},
+          borderColor: 'rgb(229, 152, 102)', borderWidth: 6,
+          fill: false, cubicInterpolationMode: 'monotone', tension: 0.4
+        },],},
+    options: { scales: {        
+        y: { title: { display: true, text: 'Temperatura (°C)' } }
+      }}
+  });
+  var ctx2 = document.getElementById('gTempTrabajoYBulbo').getContext('2d');
+  var gTempTrabajoYBulbo = new Chart(ctx2, {
+    type: 'line',
+    data: {
+      labels: {{ datos.labelsSensorTempTrabajoYBulbo | safe }},
+      datasets: [{
+          label: 'Temperatura de Trabajo y Bulbo',
+          data: {{ datos.valuesSensorTempTrabajoYBulbo | safe }},
+          borderColor: 'rgb(128, 0, 0)', borderWidth: 6,
+          fill: false, cubicInterpolationMode: 'monotone', tension: 0.4
+        },],},
+    options: { scales: {        
+        y: { title: { display: true, text: 'Temperatura (°C)' } }
+      }}
+  });
+  var ctx3 = document.getElementById('gPuerta').getContext('2d');
+  var gPuerta = new Chart(ctx3, {
+    type: 'line',
+    data: {
+      labels: {{ datos.labelsSensorPuerta | safe }},
+      datasets: [{
+          label: 'Puerta',
+          data: {{ datos.valuesSensorPuerta | safe }},
+          borderColor: 'rgb(125, 60, 152)', borderWidth: 6,
+          fill: false, tension: 0.4,
+          stepped: true
+        },],},
+    options: { 
+      interaction: { intersect: false, axis: 'x'},
+      scales: {        
+        y: { title: { display: true, text: 'Estado (Abierto-Cerrado)' } }
+      }}
+  });
+  var ctx4 = document.getElementById('gCooler').getContext('2d');
+  var gCooler = new Chart(ctx4, {
+    type: 'line',
+    data: {
+      labels: {{ datos.labelsSensorRpmCooler | safe }},
+      datasets: [{
+          label: 'Cooler',
+          data: {{ datos.valuesSensorRpmCooler | safe }},
+          borderColor: 'rgb(4, 169, 245)', borderWidth: 6,
+          fill: false, tension: 0.4,
+        },],},
+      options: { 
+        scales: {          
+          y: { title: { display: true, text: 'Velocidad (RPM)' } }
+      }}
+  });
+  var ctx5 = document.getElementById('gPuntoRocio').getContext('2d');
+  var gPuntoRocio = new Chart(ctx5, {
+    type: 'line',
+    data: {
+      labels: {{ datos.labelsSensorPuntoRocio | safe }},
+      datasets: [{
+          label: 'Punto de Rocío',
+          data: {{ datos.valuesSensorPuntoRocio | safe }},
+          borderColor: 'rgb(40, 180, 99)', borderWidth: 6,
+          fill: false, tension: 0.4,
+        },],},
+      options: { 
+        scales: {          
+          y: { title: { display: true, text: 'Temperatura (°C)' } }
+      }}
+  });
+  var ctx6 = document.getElementById('gLuz').getContext('2d');
+  var gLuz = new Chart(ctx6, {
+    type: 'line',
+    data: {
+      labels: {{ datos.labelsSensorLuz | safe }},
+      datasets: [{
+          label: 'Luz',
+          data: {{ datos.valuesSensorLuz | safe }},
+          borderColor: 'rgb(241, 196, 15)', borderWidth: 6,
+          fill: false, tension: 0.4,
+          stepped: true
+        },],},
+      options: { 
+        interaction: { intersect: false, axis: 'x'},
+        scales: {          
+          y: { title: { display: true, text: 'Estado (PRENDIDO/APAGADO)' } }
+      }}
+  });
+  var ctx7 = document.getElementById('gConsumo').getContext('2d');
+  var gConsumo = new Chart(ctx7, {
+    type: 'line',
+    data: {
+      labels: {{ datos.labelsSensorConsumo | safe }},
+      datasets: [{
+          label: 'Consumo',
+          data: {{ datos.valuesSensorConsumo | safe }},
+          borderColor: 'rgb(231, 76, 60)', borderWidth: 6,
+          fill: false, tension: 0.4,
+        },],},
+      options: { 
+        scales: {          
+          y: { title: { display: true, text: 'Consumo (Watts)' } }
+      }}
+  });
+</script>
 
 <script>
-  function guardar() {
-    var parametro = '{{ parametro }}';
-    var bodyData = {};
-    let maximo = parametro.replace('sensor', 'max');
-    bodyData[maximo] = parseInt(document.getElementById('maximo').value);
-    if (document.getElementById('minimo').value != '') {
-      let minimo = parametro.replace('sensor', 'min');
-      bodyData[minimo] = parseInt(document.getElementById('minimo').value);
-    }
-    // encerrar cada indice de bodydata entre ''
-    bodyData = JSON.stringify(bodyData).replace(/"([^"]+)":/g, '"$1":');
-    var myHeaders = new Headers();
-    var userToken = getCookie('token'); // Obtener el token de la cookie
-    myHeaders.append('user-token', userToken);
-    console.log(bodyData);
-    console.log(myHeaders.get('user-token'));
-    fetch('http://ljragusa.com.ar:3001/parameters/{{idMaquina}}', {
-      method: 'PATCH',
-      headers: myHeaders,
-      body: bodyData,
-    })
-      .then((response) => {
-        console.log(response);
-        console.log('Guardadooooooooooooo');
-        //                                                                  MANDAR A PANEL
-        //window.location.href = '/panel/{{idSucursal}}';
-      })
-      .catch((error) => {
-        console.log(error);
-        window.location.href = '/error';
-      });
-  }
-
-  function getCookie(name) {
-    var value = '; ' + document.cookie;
-    var parts = value.split('; ' + name + '=');
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  }
+var ctxT = document.getElementById('gTodos').getContext('2d');
+  var gTodos = new Chart(ctxT, {
+    type: 'line',
+    data: {
+      labels: {{ datos.labelsSensorConsumo | safe }},
+      datasets: [{
+          label: 'Consumo',
+          data: {{ datos.valuesSensorConsumo | safe }},
+          borderColor: 'rgb(231, 76, 60)', borderWidth: 6,
+          fill: false, tension: 0.4,
+        },
+        {
+          label: 'Temperatura Interna',
+          data: {{ datos.valuesSensorTempInterna | safe }},
+          borderColor: 'rgb(229, 152, 102)', borderWidth: 6,
+          fill: false, cubicInterpolationMode: 'monotone', tension: 0.4
+        },
+        {
+          label: 'Temperatura de Trabajo y Bulbo',
+          data: {{ datos.valuesSensorTempTrabajoYBulbo | safe }},
+          borderColor: 'rgb(128, 0, 0)', borderWidth: 6,
+          fill: false, cubicInterpolationMode: 'monotone', tension: 0.4
+        },
+        {
+          label: 'Cooler',
+          data: {{ datos.valuesSensorRpmCooler | safe }},
+          borderColor: 'rgb(4, 169, 245)', borderWidth: 6,
+          fill: false, tension: 0.4,
+        },
+        {
+          label: 'Punto de Rocío',
+          data: {{ datos.valuesSensorPuntoRocio | safe }},
+          borderColor: 'rgb(40, 180, 99)', borderWidth: 6,
+          fill: false, tension: 0.4,
+        },        
+      ],
+    },
+      options: { 
+        scales: {          
+          y: { title: { display: true, text: 'Consumo (Watts)' } }
+      }}
+  });
 </script>
 
 {% endblock javascripts %}

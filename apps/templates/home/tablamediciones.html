@@ -6,7 +6,10 @@
       </div>
       <div class="card-block px-0 py-3">
         <div class="card-block table-border-style">
-          <table class="table table-striped">
+          <div class="text-center">
+            <a href="/graficos/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}"><button type="button" class="btn-lg btn-info mb-4"><i class="feather icon-bar-chart-2"></i>  Visualizar Gr&aacute;ficos</button></a>            
+          </div>
+            <table class="table table-striped">
             <thead>
               <tr>
                 <th>Acci&oacute;n</th>
@@ -20,7 +23,6 @@
               <tr>
                 <td>
                   <a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-primary"> Editar par&aacute;metro</button></a>
-                  <a href="/graficos/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-success"> Gr&aacute;fico</button></a>
                 </td>
                 <td>Sensor Temperatura Interna</td>
                 <td>{{maquina['sensorTempInterna']}}</td>

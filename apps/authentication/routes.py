@@ -153,7 +153,7 @@ def roles_email_conocido():
         }
         headers = { 'user-token': request.cookies.get('token') }
         try:
-            respuesta = requests.request("POST", url, headers=headers, data=payload)
+            respuesta = requests.request("GET", url, headers=headers, data=payload)
         except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
@@ -161,6 +161,7 @@ def roles_email_conocido():
             idUsuario=email
             idRol = request.form['rolSeleccionado']
             asignarRol(idUsuario,idRol)
+            print('PASOOOOOOOOOOOOO')
             redirect(url_for('authentication_blueprint.roles',exito='si'))
         else:
             data_roles=getRoles()  
@@ -315,7 +316,7 @@ def asignarRol(idUsuario,idRol):
         }
     headers = { 'user-token': request.cookies.get('token') }
     try:
-        respuesta = requests.request("POST", url, headers=headers, data=payload)
+        respuesta = requests.request("PATCH", url, headers=headers, data=payload)
     except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)

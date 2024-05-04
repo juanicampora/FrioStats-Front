@@ -1,0 +1,81 @@
+{% extends "layouts/base.html" %} {% block title %} Gráficos {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+/>
+{% endblock stylesheets %} {% block content %}
+<div class="pcoded-main-container">
+  <div class="pcoded-wrapper">
+    <div class="pcoded-content">
+      <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col-md-12">
+                <ul class="breadcrumb">
+                  <li class="breadcrumb-item">
+                    <a href="/"><i class="feather icon-home"></i></a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="/panel/{{idSucursal}}">Panel</a>
+                  </li>
+                  <li class="breadcrumb-item">Período</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+          <div class="page-wrapper">
+            <div class="row">
+              <div class="col-md-5">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>Selección período Gráficos</h5>
+                  </div>
+                  <div class="card-block">
+                    <form method="POST" action="/graficos/{{idSucursal}}/{{idMaquina}}" id="periodoForm">
+                      <div class="form-group">
+                          <h4 class="mb-4" style="text-align: center;">Seleccione el período que desea visualizar en los gráficos</h4>
+                          <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="1" id="p1" checked><label for="p1" class="cr"> Mes actual</label></div>
+                          <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="2" id="p2"><label for="p2" class="cr"> Mes anterior</label></div>
+                          <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="3" id="p3"><label for="p3" class="cr"> Bimestre actual</label></div>
+                          <div class="checkbox checkbox-fill mb-2"><input type="checkbox" name="periodo" value="4" id="p4"><label for="p4" class="cr"> Bimestre anterior</label></div>
+                          <div style="text-align: center;"><button class="btn btn-primary">Visualizar Gráficas en el período seleccionado</button></div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{% block javascripts %}
+<script>
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', function() {
+      // Si el checkbox actual está marcado
+      if (this.checked) {
+        // Desmarcar los otros checkboxes
+        checkboxes.forEach((otherCheckbox) => {
+          if (otherCheckbox !== this) {
+            otherCheckbox.checked = false;
+          }
+        });
+      }
+    });
+  });
+</script>
+{% endblock javascripts %}

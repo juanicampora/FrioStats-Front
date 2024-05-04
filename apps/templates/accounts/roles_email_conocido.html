@@ -59,7 +59,7 @@
                       
                       <div class="col-sm-12 form-group">
                         <label for="exampleFormControlSelect1">Rol a Asignar</label>
-                        <select class="form-control" id="rolSeleccionado">
+                        <select class="form-control" id="rolSeleccionado" name="rolSeleccionado">
                           {% for rol in data_roles['elemts'] %}
                             <option value="{{ rol['id'] }}">{{ rol['descripcion'] }}</option>
                           {% endfor %}
