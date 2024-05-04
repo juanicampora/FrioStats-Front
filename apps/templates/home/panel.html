@@ -17,14 +17,14 @@
 {% endblock stylesheets %} {% block content %}
 <div class="pcoded-main-container">
   <div class="pcoded-wrapper">
-    <div class="pcoded-content">
+    <div class="pcoded-content" style="padding-top: 10px;">
       <div class="pcoded-inner-content">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
           <div class="page-block">
             <div class="row align-items-center">
               <div class="col-md-12">
-                <ul class="breadcrumb">
+                <ul class="breadcrumb" style="margin-bottom: 0px;">
                   <li class="breadcrumb-item">
                     <a href="/"><i class="feather icon-home"></i></a>
                   </li>
@@ -41,8 +41,8 @@
           <div class="page-wrapper">
             <div class="row">
               <div class="col-xl-12 col-md-6">
-                <div class="card Recent-Users">
-                  <div class="card-header">
+                <div class="card Recent-Users" style="margin-bottom: 10px;">
+                  <div class="card-header" style="padding-top: 15px; padding-bottom: 15px;">
                     <h5>Notificaciones</h5>
                   </div>
                   <div class="card-block px-0 py-0">
@@ -80,8 +80,8 @@
             </div>
             <div class="row">
               <div class="col-xl-12 col-md-6">
-                <div class="card Recent-Users">
-                  <div class="card-header">
+                <div class="card Recent-Users" style="margin-bottom: 10px;">
+                  <div class="card-header" style="padding-top: 15px; padding-bottom: 15px;">
                     <h5>Plano del Supermercado</h5>
                   </div>
                   <div id="coordenadas">
@@ -245,8 +245,7 @@
   var id_super = {{ id_super }};
   botones.forEach(boton => {
     boton.addEventListener('click', () => {
-      tablaOcultar.style.display = 'block'; // Cambia el estilo para mostrar la tabla oculta
-      tablaOcultar.scrollIntoView({ behavior: 'smooth' }); // Desplaza la página al div con animación suave
+      tablaOcultar.style.display = 'block'; // Cambia el estilo para mostrar la tabla oculta      
       const idMaquina = boton.getAttribute('idMaquina'); // Obtiene el texto del atributo data-boton
       //ver que hacer despues
       const url = `/medicion/${id_super}/${idMaquina}`;
@@ -255,6 +254,7 @@
         .then(response => response.json())
         .then(data => {
           tablaContainer.innerHTML = data.tablamediciones;
+          tablaOcultar.scrollIntoView({ behavior: 'smooth' }); // Desplaza la página al div con animación suave
         });
     });
   });

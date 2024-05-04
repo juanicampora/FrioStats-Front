@@ -10,14 +10,14 @@
 {% endblock stylesheets %} {% block content %}
 <div class="pcoded-main-container">
   <div class="pcoded-wrapper">
-    <div class="pcoded-content">
+    <div class="pcoded-content" style="padding-top: 10px;">
       <div class="pcoded-inner-content">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
           <div class="page-block">
             <div class="row align-items-center">
               <div class="col-md-12">
-                <ul class="breadcrumb">
+                <ul class="breadcrumb" style="margin-bottom: 0px;">
                   <li class="breadcrumb-item">
                     <a href="/"><i class="feather icon-home"></i></a>
                   </li>
@@ -38,11 +38,6 @@
           <div class="page-wrapper">
             <div class="row">
               <div class="col-md-12">
-                <div class="card">
-                  <div class="card-header">
-                    <h5>Gráficos</h5>
-                  </div>
-                </div>
                 <ul class="nav nav-tabs" id="myTab" role="tablist"> 
                   <li class="nav-item">
                     <a class="nav-link text-uppercase active show" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Gráficos separados</a> 
@@ -51,7 +46,7 @@
                     <a class="nav-link text-uppercase" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Gráficos juntos</a>
                   </li> 
                 </ul> 
-                <div class="tab-content" id="myTabContent">
+                <div class="tab-content" id="myTabContent" style="padding: 10px;">
                   <div class="tab-pane fade active show" id="home" role="tabpanel" aria-labelledby="home-tab"> 
                     <div class="container">
                             <div class="row">
@@ -114,7 +109,8 @@
           borderColor: 'rgb(229, 152, 102)', borderWidth: 6,
           fill: false, cubicInterpolationMode: 'monotone', tension: 0.4
         },],},
-    options: { scales: {        
+    options: { 
+      scales: {        
         y: { title: { display: true, text: 'Temperatura (°C)' } }
       }}
   });
@@ -129,7 +125,8 @@
           borderColor: 'rgb(128, 0, 0)', borderWidth: 6,
           fill: false, cubicInterpolationMode: 'monotone', tension: 0.4
         },],},
-    options: { scales: {        
+    options: { 
+      scales: {        
         y: { title: { display: true, text: 'Temperatura (°C)' } }
       }}
   });
@@ -148,7 +145,7 @@
     options: { 
       interaction: { intersect: false, axis: 'x'},
       scales: {        
-        y: { title: { display: true, text: 'Estado (Abierto-Cerrado)' } }
+        y: { title: { display: true, text: 'Estado (Abierto-Cerrado)' }, min: 0, max: 1, ticks: { stepSize: 1}  }
       }}
   });
   var ctx4 = document.getElementById('gCooler').getContext('2d');
@@ -198,7 +195,7 @@
       options: { 
         interaction: { intersect: false, axis: 'x'},
         scales: {          
-          y: { title: { display: true, text: 'Estado (PRENDIDO/APAGADO)' } }
+          y: { title: { display: true, text: 'Estado (PRENDIDO/APAGADO)'}, min: 0, max: 1, ticks: { stepSize: 1} }
       }}
   });
   var ctx7 = document.getElementById('gConsumo').getContext('2d');
