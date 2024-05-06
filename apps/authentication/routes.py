@@ -161,7 +161,6 @@ def roles_email_conocido():
             idUsuario=email
             idRol = request.form['rolSeleccionado']
             asignarRol(idUsuario,idRol)
-            print('PASOOOOOOOOOOOOO')
             redirect(url_for('authentication_blueprint.roles',exito='si'))
         else:
             data_roles=getRoles()  

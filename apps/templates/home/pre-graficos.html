@@ -43,10 +43,11 @@
                     <form method="POST" action="/graficos/{{idSucursal}}/{{idMaquina}}" id="periodoForm">
                       <div class="form-group">
                           <h4 class="mb-4" style="text-align: center;">Seleccione el período que desea visualizar en los gráficos</h4>
-                          <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="1" id="p1" checked><label for="p1" class="cr"> Mes actual</label></div>
-                          <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="2" id="p2"><label for="p2" class="cr"> Mes anterior</label></div>
-                          <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="3" id="p3"><label for="p3" class="cr"> Bimestre actual</label></div>
-                          <div class="checkbox checkbox-fill mb-2"><input type="checkbox" name="periodo" value="4" id="p4"><label for="p4" class="cr"> Bimestre anterior</label></div>
+                          <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="1" id="p1" checked><label for="p1" class="cr"> Ultima Semana</label></div>
+                          <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="2" id="p2"><label for="p2" class="cr"> Ultimo Mes</label></div>
+                          <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="3" id="p3"><label for="p3" class="cr"> Mes anterior</label></div>
+                          <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="4" id="p4"><label for="p4" class="cr"> Ultimo Bimestre</label></div>
+                          <div class="checkbox checkbox-fill mb-2"><input type="checkbox" name="periodo" value="5" id="p5"><label for="p5" class="cr"> Bimestre anterior</label></div>
                           <div style="text-align: center;"><button class="btn btn-primary">Visualizar Gráficas en el período seleccionado</button></div>
                       </div>
                     </form>

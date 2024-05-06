@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 from datetime import datetime
-from datetime import timedelta
-import json
+from dateutil.relativedelta import relativedelta
 import requests
 from apps.authentication import confirm_mail_required
 from apps.authentication.forms import ProfileForm
@@ -20,15 +19,16 @@ def prueba():
 @confirm_mail_required()
 def index():
     token = request.cookies.get('token')
-    url = "http://ljragusa.com.ar:3001/sucursales"
+    url = "http://ljragusa.com.ar:3001/home"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
-    supermercados = respuesta.json()
+    dataHome = respuesta.json()['elemts']
+    print(dataHome)
     ## verificar si supermercados['message'] existe
-    if not('elemts' in supermercados):
-        return render_template('home/index.html', segment='index',supermercados=supermercados)
+    if dataHome['Sucursals']==[]:
+        return render_template('home/index.html', segment='index',supermercados=dataHome['Sucursals'])
     url = "http://ljragusa.com.ar:3001/notificaciones/getCantNoti"
     payload={}
     headers = { 'user-token': token }
@@ -36,7 +36,7 @@ def index():
     verifSesión(respuesta)
     notificaciones = respuesta.json()['elemts']
     sucursalNotificacion=[]
-    for sucursal in supermercados['elemts']:
+    for sucursal in dataHome['Sucursals']:
         sucuNoti = {
             'id': sucursal['id'],
             'cantLeves': 0, 
@@ -49,7 +49,7 @@ def index():
                     sucuNoti['cantGraves'] = notificacion['cantGraves']
                     break
         sucursalNotificacion.append(sucuNoti)      
-    return render_template('home/index.html', segment='index',supermercados=supermercados,notificaciones=sucursalNotificacion)  #segment se usa en sidebar.html
+    return render_template('home/index.html', segment='index',supermercados=dataHome['Sucursals'],notificaciones=sucursalNotificacion)  #segment se usa en sidebar.html
 
 @blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -222,44 +222,31 @@ def graficos(idSucursal,idMaquina):
     if request.method=='GET':
         return render_template('home/pre-graficos.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina)
     if request.method=='POST':
-        # url = f'http://ljragusa.com.ar:3001/graficos/{idSucursal}/{idMaquina}/{parametro}'   ## VER SI CON idMaquina y parametro solamente alcanza
-        # payload={}
-        # headers = { 'user-token': request.cookies.get('token') }
-        # respuesta= requests.request("GET", url, headers=headers, data=payload)
-        # verifSesión(respuesta)
-        # print(respuesta.json())
         periodo_seleccionado = request.form.get('periodo')
-        print(periodo_seleccionado)
+        hoy = datetime.now().strftime("%Y-%m-%d")
         if periodo_seleccionado == '1':
-            ## Crear variable hoy con fecha de hoy con date.now y fechaInicio hoy -4 dias y fechaFin hoy            
-            hoy = datetime.now().strftime("%Y-%m-%d")
-            fechaInicio = (datetime.now() - timedelta(days=4)).strftime("%Y-%m-%d")
+            fechaInicio = (datetime.now() - relativedelta(days=7)).strftime("%Y-%m-%d")
             fechaFin = hoy
-            url = f'http://ljragusa.com.ar:3001/graphics/?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idMaquina={idMaquina}'
-            payload={}
-            headers = { 'user-token': request.cookies.get('token') }
-            respuesta= requests.request("GET", url, headers=headers, data=payload)
-            verifSesión(respuesta)
-            print(respuesta.json())
+        elif periodo_seleccionado == '2':           
+            fechaInicio = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '3':
+            fechaInicio = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+            fechaFin = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m-%d")
+        elif periodo_seleccionado == '4':
+            fechaInicio = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '5':
+            fechaInicio = (datetime.now() - relativedelta(months=4)).strftime("%Y-%m-%d")
+            fechaFin = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+        url = f'http://ljragusa.com.ar:3001/graphics/?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idMaquina={idMaquina}'
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta= requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuesta)
+        datos = respuesta.json()            
+        return render_template('home/graficos.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, datos=datos)
 
-            datosString="""{
-                "valuesSensorTempInterna": [12.1, 13.2, 15.3, 12.4, 16.5],
-                "labelsSensorTempInterna": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
-                "valuesSensorTempTrabajoYBulbo": [14.1, 15.2, 17.3, 14.4, 14.5],
-                "labelsSensorTempTrabajoYBulbo": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
-                "valuesSensorPuerta": [1,0,1,0,1],
-                "labelsSensorPuerta": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
-                "valuesSensorRpmCooler": [12.1, 14.2, 16.3, 14.4, 13.5],
-                "labelsSensorRpmCooler": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
-                "valuesSensorPuntoRocio": [18.1, 15.2, 12.3, 16.4, 13.5],
-                "labelsSensorPuntoRocio": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
-                "valuesSensorLuz": [1,0,1,0,1],
-                "labelsSensorLuz": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"],
-                "valuesSensorConsumo": [15.1, 13.2, 14.3, 16.4, 12.5],
-                "labelsSensorConsumo": ["09:30 - 15/05","10:30 - 15/05","11:30 - 15/05","12:30 - 15/05","13:30 - 15/05"]
-            }"""
-            datos=json.loads(datosString)
-            return render_template('home/graficos.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, datos=datos)
 
 
 @blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route

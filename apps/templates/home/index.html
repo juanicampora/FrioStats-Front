@@ -23,7 +23,7 @@
                     <!-- [ breadcrumb ] end -->
                     <div class="main-body">
                         <div class="page-wrapper">    
-                            {% if supermercados and 'elemts' in supermercados and supermercados['elemts'] %}
+                            {% if supermercados %}
                             <div id="mapa">
                                 <div class="col-xl-12">
                                     <div class="card" style="margin-bottom: 10px;">
@@ -54,9 +54,8 @@
                                                             <th>Notificaciones</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>     
-                                                        {{notificaciones['elemts']}}                                                   
-                                                        {% for super in supermercados['elemts'] %}
+                                                    <tbody>                                                      
+                                                        {% for super in supermercados %}
                                                             <tr class="tabla-con-mano" data-id="{{ super['id'] | safe }}">
                                                                 <td class="align-middle" style="padding: 0px;"><a href="/panel/{{super['id']}}"><button type="button" class="btn-sm btn-primary" style="width: 100%; height: 100%; cursor: pointer;">Abrir en Panel</button></a></td>
                                                                 <td class="align-middle">{{ super['id'] }}</td>
@@ -113,8 +112,8 @@
 
 <script>
     // Agregar pines de ubicación
-    {% if supermercados and 'elemts' in supermercados and supermercados['elemts'] %}
-        {% for super in supermercados['elemts'] %}
+    {% if supermercados %}
+        {% for super in supermercados %}
         var coordenadas = "{{ super['coordenadas'] }}";
         var coordenadas_array = coordenadas.split(', ');
         var latitude = parseFloat(coordenadas_array[0]);
@@ -151,7 +150,7 @@
                 });
         }
 
-        var supermercadosList = {{ supermercados['elemts'] | tojson | safe }};
+        var supermercadosList = {{ supermercados | tojson | safe }};
         function getCoordinatesById(id) {
             for (var i = 0; i < supermercadosList.length; i++) {
                 if (supermercadosList[i].id === id) {
