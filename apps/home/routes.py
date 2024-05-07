@@ -151,7 +151,8 @@ def panel(id_super):
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
     notificaciones = respuesta.json()
-    return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones)
+    contador = {'val': 0, 'paginas': 0}
+    return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones,contador = contador)
 
 @blueprint.route('/medicion/<int:idSucursal>/<int:idMaquina>', methods=['GET','POST'])
 @login_required
@@ -245,7 +246,7 @@ def graficos(idSucursal,idMaquina):
         respuesta= requests.request("GET", url, headers=headers, data=payload)
         verifSesión(respuesta)
         datos = respuesta.json()            
-        return render_template('home/graficos.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, datos=datos)
+        return render_template('home/graficos.html', segment='graficos', idSucursal=idSucursal ,idMaquina=idMaquina, datos=datos)
 
 
 

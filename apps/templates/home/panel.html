@@ -39,6 +39,7 @@
         <!-- [ breadcrumb ] end -->
         <div class="main-body">
           <div class="page-wrapper">
+            {% if notificaciones['elemts']|length != 0 %}
             <div class="row">
               <div class="col-xl-12 col-md-6">
                 <div class="card Recent-Users" style="margin-bottom: 10px;">
@@ -48,36 +49,70 @@
                   <div class="card-block px-0 py-0">
                     <div class="table-responsive">
                       <table class="table">
-                        <tbody>
-                          <thead>
-                            <th>Marcar como leído</th>
-                            <th>Máquina N°</th>
-                            <th>Detalle de la notificación</th>
-                          </thead>
+                        <tbody>                          
                           <tr>
                             <td><button type="button" class="btn-sm btn-success" onclick="marcarLeidoTodas()"> ✔ </button> Marcar todas como leído</td>
                             <td></td>
-                            <td></td>
+                            <td></td>                            
                           </tr>
-                          {% for maquina in notificaciones['elemts'] %} 
-                            {% for noti in maquina['Notificaciones'] %} 
-                              {% if noti['Tipo']['id']==1 %}
-                                <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-amarillo">
-                              {% else %}
-                                <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-rojo">
-                              {% endif %}
-                            <td><button type="button" class="btn-sm btn-success" onclick="marcarLeido({{ noti['id'] }})"> ✔ </button></td>
-                            <td>{{maquina['idMaqSuc']}}</td>
-                            <td>{{noti['descripcion']}}</td>
-                          </tr>
-                          {% endfor %} {% endfor %}
                         </tbody>
                       </table>
+                    </div>                    
+                    <div id="carousel" class="carousel">
+                      {% for maquina in notificaciones['elemts'] %} 
+                        {% for noti in maquina['Notificaciones'] %} 
+                          {% if contador['val'] == 0 %}
+                          <div class="carousel-item">
+                            <div class="table-responsive">
+                              <table class="table">
+                                <tbody>
+                                  <thead>
+                                    <th style="width:200px">Marcar como leído</th>
+                                    <th style="width:200px">Máquina N°</th>
+                                    <th>Detalle de la notificación</th>
+                                  </thead>
+                          {% endif %}                            
+                            
+                          {% if noti['Tipo']['id']==1 %}
+                                  <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-amarillo">
+                          {% else %}
+                                  <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-rojo">
+                          {% endif %}
+                                  <td><button type="button" class="btn-sm btn-success" onclick="marcarLeido({{ noti['id'] }})"> ✔ </button></td>
+                                  <td>{{maquina['idMaqSuc']}}</td>
+                                  <td>{{noti['descripcion']}}</td>
+                                  </tr>
+                          {% if contador['val'] == 5 %}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                            {% set _ = contador.update({'paginas': contador['paginas']+1}) %}
+                            {% set _ = contador.update({'val': 0}) %}                        
+                          {% else %}
+                            {% set _ = contador.update({'val': contador['val']+1}) %}
+                          {% endif %}                    
+                        {% endfor %} 
+                      {% endfor %}
+                      {% if contador['val'] > 0 %}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                            {% set _ = contador.update({'val': 0}) %}       
+                            {% set _ = contador.update({'paginas': contador['paginas']+1}) %}                 
+                      {% endif %}
+                    </div>   
+                    <div style="text-align: center;" class="mb-4">
+                      <button type="button" class="btn btn-primary" id="anterior-btn">Anterior</button>
+                      <button type="button" class="btn btn-primary" id="siguiente-btn">Siguiente</button>
+                      <h5>Página de notificaciones <span id="pagina-info"></span> de <span id="paginas-info"></span></h5>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            {% endif %}
             <div class="row">
               <div class="col-xl-12 col-md-6">
                 <div class="card Recent-Users" style="margin-bottom: 10px;">
@@ -178,6 +213,58 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <script>
+    // Botones de navegación
+    const anteriorBtn = document.getElementById('anterior-btn');
+    const siguienteBtn = document.getElementById('siguiente-btn');
+
+    // Carrusel
+    const carousel = document.getElementById('carousel');
+    let currentIndex = 0;
+    let cantPaginas = {{ contador['paginas'] }};
+    actualizarPaginaInfo();
+    const items = carousel.querySelectorAll('.carousel-item');
+
+    // Ocultar todos los elementos excepto el primero
+    items.forEach((item, index) => {
+        if (index !== 0) {
+            item.style.display = 'none';
+        }
+        else {
+            item.style.display = 'block';
+        }
+    });
+
+    // Mostrar el índice anterior del carrusel
+    function mostrarAnterior() {
+        if (currentIndex > 0) {
+            items[currentIndex].style.display = 'none';
+            currentIndex--;
+            items[currentIndex].style.display = 'block';
+            actualizarPaginaInfo();
+        }
+    }
+
+    // Mostrar el índice siguiente del carrusel
+    function mostrarSiguiente() {
+        if (currentIndex < items.length - 1) {
+            items[currentIndex].style.display = 'none';
+            currentIndex++;
+            items[currentIndex].style.display = 'block';
+            actualizarPaginaInfo();
+        }
+    }
+
+    // Actualizar información de la página (currentIndex y cantPaginas)
+    function actualizarPaginaInfo() {
+        document.getElementById('pagina-info').textContent = currentIndex + 1;
+        document.getElementById('paginas-info').textContent = cantPaginas;
+    }
+
+    // Asignar eventos a los botones de navegación
+    anteriorBtn.addEventListener('click', mostrarAnterior);
+    siguienteBtn.addEventListener('click', mostrarSiguiente);
+</script>
+<script>
   function marcarLeido(notificacionId) {
     var fila = document.getElementById('notificacion-' + notificacionId);
     fila.parentNode.removeChild(fila);
@@ -217,19 +304,6 @@
             document.location.reload();
           }
         })
-
-    // let notificaciones = {{ notificaciones | tojson | safe }};
-    // console.log(notificaciones);
-    // notis = notificaciones['elemts'];
-    // notis.forEach(maquina => {
-    //   maquina['Notificaciones'].forEach(noti => {
-    //     fetch(
-    //       'http://ljragusa.com.ar:3001/notificaciones/' + noti['id'],
-    //       requestOptions
-    //     );
-    //   });
-    // });
-    // document.location.reload();
   }
 
   // Función para obtener el valor de una cookie por su nombre
