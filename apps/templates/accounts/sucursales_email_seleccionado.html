@@ -81,11 +81,10 @@
                             </tr>
                           </thead>
                           <tbody>
-                            {% if data_sucursales['sucursalUsuario']|length == 1
-                            %} {% for suc in data_sucursales['sucursalUsuario']
-                            %}
+                          {% if data_sucursales['sucursalesUsuario']|length == 1%} 
+                            {% for suc in data_sucursales['sucursalesUsuario'] %}
                             <tr>
-                              <th class="align-middle">{{ suc['id'] }}</th>
+                              <th class="align-middle">{{ suc['idSucursal'] }}</th>
                               <td class="align-middle">{{ suc['nombre'] }}</td>
                               <td class="align-middle">
                                 {{ suc['direccion'] }}
@@ -95,7 +94,7 @@
                               </td>
                               <td class="align-middle">
                                 <form
-                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/false"
+                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['idSucursal'] }}/false"
                                   method="GET"
                                 >
                                   <button disabled class="btn btn-danger btn-sm">
@@ -109,10 +108,11 @@
                                 </form>
                               </td>
                             </tr>
-                            {% endfor %} {% else %} {% for suc in
-                            data_sucursales['sucursalUsuario'] %}
+                            {% endfor %} 
+                          {% else %} 
+                            {% for suc in data_sucursales['sucursalesUsuario'] %}
                             <tr>
-                              <th class="align-middle">{{ suc['id'] }}</th>
+                              <th class="align-middle">{{ suc['idSucursal'] }}</th>
                               <td class="align-middle">{{ suc['nombre'] }}</td>
                               <td class="align-middle">
                                 {{ suc['direccion'] }}
@@ -122,7 +122,7 @@
                               </td>
                               <td class="align-middle">
                                 <form
-                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/false"
+                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['idSucursal'] }}/false"
                                   method="GET"
                                 >
                                   <button class="btn btn-danger btn-sm">

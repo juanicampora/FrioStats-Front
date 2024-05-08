@@ -25,7 +25,6 @@ def index():
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
     dataHome = respuesta.json()['elemts']
-    print(dataHome)
     ## verificar si supermercados['message'] existe
     if dataHome['Sucursals']==[]:
         return render_template('home/index.html', segment='index',supermercados=dataHome['Sucursals'])
