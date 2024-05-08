@@ -39,23 +39,14 @@
                     <h5>Asignación de Sucursales</h5>
                   </div>
                   <div class="card-block">
-                    {% if msg %}
-                    <div
-                      class="alert alert-danger alert-dismissible fade show"
-                      role="alert"
-                    >
-                      <strong>{{ msg | safe }}</strong>
-                      <button
-                        type="button"
-                        class="close"
-                        data-dismiss="alert"
-                        aria-label="Close"
-                      >
-                        <span aria-hidden="true">&times;</span>
+                    {% if data_sucursales['sucursalesUsuario']|length == 0 %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                      <strong>No tiene sucursales asignadas</strong>
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true" style="color: rgb(153, 135, 60);">&times;</span>
                       </button>
                     </div>
                     {% endif %}
-
                     <div class="col-sm-12 mb-4">
                       <label for="email">Email del Usuario</label>
                       <input
@@ -66,7 +57,7 @@
                         value="{{ email_empleado }}"
                       />
                     </div>
-
+                    {% if data_sucursales['sucursalesUsuario']|length != 0%} 
                     <div class="col-sm-12 form-group">
                       <h4 class="text-center">Sucursales ASIGNADAS</h4>
                       <div class="table-responsive">
@@ -84,7 +75,7 @@
                           {% if data_sucursales['sucursalesUsuario']|length == 1%} 
                             {% for suc in data_sucursales['sucursalesUsuario'] %}
                             <tr>
-                              <th class="align-middle">{{ suc['idSucursal'] }}</th>
+                              <th class="align-middle">{{ suc['id'] }}</th>
                               <td class="align-middle">{{ suc['nombre'] }}</td>
                               <td class="align-middle">
                                 {{ suc['direccion'] }}
@@ -94,7 +85,7 @@
                               </td>
                               <td class="align-middle">
                                 <form
-                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['idSucursal'] }}/false"
+                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/false"
                                   method="GET"
                                 >
                                   <button disabled class="btn btn-danger btn-sm">
@@ -112,7 +103,7 @@
                           {% else %} 
                             {% for suc in data_sucursales['sucursalesUsuario'] %}
                             <tr>
-                              <th class="align-middle">{{ suc['idSucursal'] }}</th>
+                              <th class="align-middle">{{ suc['id'] }}</th>
                               <td class="align-middle">{{ suc['nombre'] }}</td>
                               <td class="align-middle">
                                 {{ suc['direccion'] }}
@@ -122,7 +113,7 @@
                               </td>
                               <td class="align-middle">
                                 <form
-                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['idSucursal'] }}/false"
+                                  action="/actualizar_sucursal/{{ email_empleado }}/{{ suc['id'] }}/false"
                                   method="GET"
                                 >
                                   <button class="btn btn-danger btn-sm">
@@ -131,13 +122,16 @@
                                 </form>
                               </td>
                             </tr>
-                            {% endfor %} {% endif %}
+                            {% endfor %}
+                          {% endif %}
                           </tbody>
                         </table>
                       </div>
                     </div>
+                    {% endif %}
+                    {% if data_sucursales['sucursalesNoAsignadas']|length != 0%} 
                     <div class="col-sm-12 form-group">
-                      <h4 class="text-center">Sucursales no ASIGNADAS</h4>
+                      <h4 class="text-center">Sucursales NO ASIGNADAS</h4>
                       <div class="table-responsive">
                         <table class="table">
                           <thead>
@@ -177,6 +171,7 @@
                         </table>
                       </div>
                     </div>
+                    {% endif %}
                   </div>
                 </div>
               </div>
