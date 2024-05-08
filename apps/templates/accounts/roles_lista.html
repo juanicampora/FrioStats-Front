@@ -45,16 +45,18 @@
                               <th>Acción</th>
                               <th>ID</th>
                               <th>Apellido, Nombre</th>
+                              <th>Rol actual</th>
                               <th>Email</th>
                               <th>Sucursal (ciudad-nombre-dirección)</th>
                             </tr>
                           </thead>
                           <tbody>
                             {% for empleado in empleados['elemts'] %}
-                            <tr class="tabla-con-mano fila-usuario" data-id="{{ empleado['email'] }}">
+                            <tr class="tabla-con-mano fila-usuario" data-id="{{ empleado['email'] }}" rolActual="{{ empleado['Rol']['descripcion'] }}">
                               <td class="align-middle"><button type="button" class="btn-sm btn-primary">Seleccionar</button></td>
                               <td class="align-middle">{{ empleado['id'] }}</td>
                               <td class="align-middle">{{ empleado['apellido'] }} , {{ empleado['nombre'] }}</td>
+                              <td class="align-middle">{{ empleado['Rol']['descripcion'] }}</td>
                               <td class="align-middle">{{ empleado['email'] }}</td>
                               <td class="align-middle">
                               {% for sucursal in empleado['Sucursals'] %}
@@ -95,9 +97,9 @@
       fila.addEventListener("click", function () {
         // Obtener el valor de data-id de la fila clicada
         var dataId = fila.getAttribute("data-id");
-
+        var rolActual = fila.getAttribute("rolActual");
         // Construir la URL de redirección
-        var url = "/roles/lista/" + dataId;
+        var url = "/roles/lista/" + dataId+"/"+rolActual;
 
         // Redirigir a la URL
         window.location.href = url;

@@ -119,17 +119,9 @@ def register():
 @login_required
 @confirm_mail_required()
 @role_required('Admin')
-def roles(exito=None):
-    if exito=='si':
-        return render_template('accounts/roles.html', segment='roles',
-                            msg='Rol asignado correctamente.',
-                            success=True)
-    elif exito=='no':
-        return render_template('accounts/roles.html', segment='roles',
-                            msg='Hubo un error intente nuevamente.',
-                            success=False)
-    else:
-        return render_template('accounts/roles.html', segment='roles')
+def roles():
+    return render_template('accounts/roles.html', segment='roles')
+        
 
 @blueprint.route('/roles/email_conocido', methods=['GET', 'POST'])
 @login_required
@@ -137,15 +129,14 @@ def roles(exito=None):
 @role_required('Admin')
 def roles_email_conocido(): 
     email_empleado = request.args.get('email_empleado')
-
+    rol_actual = request.args.get('rol_actual')
     if (request.method == 'GET'):
         data_roles=getRoles()   
         if email_empleado != None:
-            return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles,email_empleado=email_empleado)        
+            return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles,email_empleado=email_empleado,rol_actual=rol_actual)        
         return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles)
         
-    elif (request.method == 'POST'):
-        
+    elif (request.method == 'POST'):        
         email = request.form['email']
         url = "http://ljragusa.com.ar:3001/users/checkEmail"
         payload={
@@ -158,10 +149,11 @@ def roles_email_conocido():
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
         if respuesta.status_code == 200:
-            idUsuario=email
+            idUsuario=respuesta.json()['elemt']['id']
             idRol = request.form['rolSeleccionado']
-            asignarRol(idUsuario,idRol)
-            redirect(url_for('authentication_blueprint.roles',exito='si'))
+            respuestaActualizacion=asignarRol(idUsuario,idRol)
+            mensaje=respuestaActualizacion.json()['message']
+            return render_template('accounts/roles.html', segment='roles', msg=mensaje, success=True)
         else:
             data_roles=getRoles()  
             return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles, msg=respuesta.json()['message'])
@@ -178,12 +170,12 @@ def roles_lista():
     empleados=respuesta.json()
     return render_template('accounts/roles_lista.html', segment='roles', empleados=empleados)
 
-@blueprint.route('/roles/lista/<string:email_empleado>', methods=['GET'])
+@blueprint.route('/roles/lista/<string:email_empleado>/<string:rol_actual>', methods=['GET'])
 @login_required
 @confirm_mail_required()
 @role_required('Admin')
-def roles_lista_seleccionado(email_empleado):
-    return redirect(url_for('authentication_blueprint.roles_email_conocido',email_empleado=email_empleado))
+def roles_lista_seleccionado(email_empleado,rol_actual):
+    return redirect(url_for('authentication_blueprint.roles_email_conocido',email_empleado=email_empleado,rol_actual=rol_actual))
 
 @blueprint.route('/mailconfirmation')
 def mailconfirmation():
@@ -282,7 +274,7 @@ def internal_error(error):
 
     
 # Funciones utilizadas varias veces
-def verifSesión(respuesta):
+def verifSesion(respuesta):
     if respuesta.status_code==200:
         return True
     elif respuesta.status_code==403:
@@ -308,9 +300,9 @@ def getRoles():
     return data_roles
 
 def asignarRol(idUsuario,idRol):
-    url = "http://ljragusa.com.ar:3001/users/"+idUsuario
+    idUsuarioStr=str(idUsuario)
+    url = "http://ljragusa.com.ar:3001/users/"+idUsuarioStr
     payload={
-            "idUsuario": idUsuario,
             "idRol": idRol,
         }
     headers = { 'user-token': request.cookies.get('token') }
@@ -319,7 +311,7 @@ def asignarRol(idUsuario,idRol):
     except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
-    verifSesión(respuesta)
+    verifSesion(respuesta)
     return respuesta
 
 def getSucursales():

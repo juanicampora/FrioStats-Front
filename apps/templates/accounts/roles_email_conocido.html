@@ -51,12 +51,17 @@
                       <div class="col-sm-12 mb-4">
                         <label for="email">Email del Usuario</label>
                         {% if email_empleado %}
-                          <input class="form-control" id="email" name="email" placeholder="Ingrese el email del Usuario" value="{{ email_empleado }}">
+                          <input class="form-control" id="email" name="email" value="{{ email_empleado }}" readonly>
                         {% else %}
                           <input class="form-control" id="email" name="email" placeholder="Ingrese el email del Usuario">
                         {% endif %}
                       </div>
-                      
+                      {% if email_empleado %}
+                      <div class="col-sm-12 mb-4">
+                        <label for="nombre">Rol actual</label>
+                        <input class="form-control" disabled value="{{ rol_actual }}">
+                      </div>
+                      {% endif %}
                       <div class="col-sm-12 form-group">
                         <label for="exampleFormControlSelect1">Rol a Asignar</label>
                         <select class="form-control" id="rolSeleccionado" name="rolSeleccionado">
