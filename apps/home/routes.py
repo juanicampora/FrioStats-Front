@@ -27,7 +27,7 @@ def index():
     dataHome = respuesta.json()['elemts']
     ## verificar si supermercados['message'] existe
     if dataHome['Sucursals']==[]:
-        return render_template('home/index.html', segment='index',supermercados=dataHome['Sucursals'])
+        return render_template('home/index.html', segment='index',supermercados=dataHome['Sucursals'],nombreEmpresa=dataHome['Empresa'])
     url = "http://ljragusa.com.ar:3001/notificaciones/getCantNoti"
     payload={}
     headers = { 'user-token': token }
@@ -48,7 +48,7 @@ def index():
                     sucuNoti['cantGraves'] = notificacion['cantGraves']
                     break
         sucursalNotificacion.append(sucuNoti)      
-    return render_template('home/index.html', segment='index',supermercados=dataHome['Sucursals'],notificaciones=sucursalNotificacion)  #segment se usa en sidebar.html
+    return render_template('home/index.html', segment='index',supermercados=dataHome['Sucursals'],nombreEmpresa=dataHome['Empresa'],notificaciones=sucursalNotificacion)  #segment se usa en sidebar.html
 
 @blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
