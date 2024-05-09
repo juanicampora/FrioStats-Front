@@ -167,7 +167,8 @@ def roles_lista():
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
-    empleados=respuesta.json()
+    empleados=respuesta.json()['empleados']
+    print(empleados)
     return render_template('accounts/roles_lista.html', segment='roles', empleados=empleados)
 
 @blueprint.route('/roles/lista/<string:email_empleado>/<string:rol_actual>', methods=['GET'])
@@ -177,23 +178,23 @@ def roles_lista():
 def roles_lista_seleccionado(email_empleado,rol_actual):
     return redirect(url_for('authentication_blueprint.roles_email_conocido',email_empleado=email_empleado,rol_actual=rol_actual))
 
-@blueprint.route('/eliminar', methods=['GET'])
+@blueprint.route('/baja', methods=['GET'])
 @login_required
 @confirm_mail_required()
 @role_required('Admin')
-def eliminar_usuario():
+def baja_usuario():
     url = "http://ljragusa.com.ar:3001/users/getEmployees"
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     empleados=respuesta.json()
-    return render_template('accounts/eliminar.html', segment='eliminar', empleados=empleados)
+    return render_template('accounts/baja.html', segment='baja', empleados=empleados['empleados'], empleadosBaja=empleados['empleadosBaja'])
 
-@blueprint.route('/eliminar/<string:idUsuario>', methods=['GET'])
+@blueprint.route('/baja/<string:idUsuario>', methods=['GET'])
 @login_required
 @confirm_mail_required()
 @role_required('Admin')
-def eliminar_usuario_accion(idUsuario):
+def baja_usuario_accion(idUsuario):
     url = "http://ljragusa.com.ar:3001/users/"+idUsuario
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
@@ -203,7 +204,36 @@ def eliminar_usuario_accion(idUsuario):
         print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
         return abort(500)
     if respuesta.status_code == 200:
-        return render_template('accounts/eliminar.html', segment='eliminar', msg=respuesta.json()['message'], success=True)
+        url = "http://ljragusa.com.ar:3001/users/getEmployees"
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta2 = requests.request("GET", url, headers=headers, data=payload)
+        empleados=respuesta2.json()
+        return render_template('accounts/baja.html', segment='baja', empleados=empleados['empleados'], empleadosBaja=empleados['empleadosBaja'], msg=respuesta.json()['message'], success=True)
+    else:
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
+    
+@blueprint.route('/alta/<string:idUsuario>', methods=['GET'])
+@login_required
+@confirm_mail_required()
+@role_required('Admin')
+def alta_usuario_accion(idUsuario):
+    url = "http://ljragusa.com.ar:3001/users/restore/"+idUsuario
+    payload={}
+    headers = { 'user-token': request.cookies.get('token') }
+    try:
+        respuesta = requests.request("PATCH", url, headers=headers, data=payload)
+    except requests.exceptions.RequestException as e:
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
+    if respuesta.status_code == 200:
+        url = "http://ljragusa.com.ar:3001/users/getEmployees"
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta2 = requests.request("GET", url, headers=headers, data=payload)
+        empleados=respuesta2.json()
+        return render_template('accounts/baja.html', segment='baja', empleados=empleados['empleados'], empleadosBaja=empleados['empleadosBaja'], msg=respuesta.json()['message'], success=True)
     else:
         print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
         return abort(500)
@@ -222,7 +252,7 @@ def asignar_sucursales():
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     empleados=respuesta.json()
-    return render_template('accounts/sucursales_lista_emails.html', segment='asignacionsucursales', empleados=empleados)
+    return render_template('accounts/sucursales_lista_emails.html', segment='asignacionsucursales', empleados=empleados['empleados'])
     
 @blueprint.route('/asignar_sucursales/<string:email_empleado>', methods=['GET'])
 @login_required

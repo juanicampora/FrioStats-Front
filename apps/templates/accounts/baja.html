@@ -1,0 +1,140 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Gestion Usuarios {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<!-- [ Main Content ] start -->
+<div class="pcoded-main-container">
+  <div class="pcoded-wrapper">
+    <div class="pcoded-content">
+      <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col-md-12">
+                <ul class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                  <li class="breadcrumb-item"><a href="/baja">Gestionar Usuarios</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        {% if msg %}
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <strong>{{ msg | safe }}</strong>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true" style="color: #299b85;">&times;</span>
+              </button>
+          </div>
+        {% endif %}
+        <div class="main-body">
+          <div class="page-wrapper">
+            <!-- [ Main Content ] start -->
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="card">
+                  <div class="card-header" style="padding-top: 10px; padding-bottom: 10px;">
+                    <h5>Gestion de Usuarios</h5>
+                  </div>
+                  <div class="card-block">
+                    <h4 class="text-center">Usuarios VIGENTES</h4>
+                    <div class="card-block table-border-style" style="padding: 0px;">
+                      <div class="table-responsive">
+                        <table class="table table-hover tabla-con-mano">
+                          <thead>
+                            <tr class="bg-secondary text-light">
+                              <th>Acción</th>
+                              <th>ID</th>
+                              <th>Apellido, Nombre</th>
+                              <th>Rol actual</th>
+                              <th>Email</th>
+                              <th>Sucursal (ciudad-nombre-dirección)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for empleado in empleados %}
+                            <tr class="tabla-con-mano fila-usuario">
+                              {% if empleado['Rol']['descripcion'] == 'Admin' %}
+                                <td class="align-middle"><button disabled class="btn btn-danger"  data-toggle="tooltip" data-placement="right" title="No puede dar de baja un Admin."><i class="feather icon-trash"></i>  Baja</button></td>
+                              {% else %}
+                              <form action="/baja/{{empleado['id']}}">
+                                <td class="align-middle"><button type="submit" class="btn btn-danger" style="cursor: pointer;"><i class="feather icon-trash"></i>  Dar de Baja</button></td>
+                              </form>
+                              {% endif %}
+                              <td class="align-middle">{{ empleado['id'] }}</td>
+                              <td class="align-middle">{{ empleado['apellido'] }} , {{ empleado['nombre'] }}</td>
+                              <td class="align-middle">{{ empleado['Rol']['descripcion'] }}</td>
+                              <td class="align-middle">{{ empleado['email'] }}</td>
+                              <td class="align-middle">
+                              {% for sucursal in empleado['Sucursals'] %}
+                                {{ sucursal['ciudad'] }} - {{ sucursal['nombre'] }} - {{ sucursal['direccion'] }}<br>
+                              {% endfor %}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>                                                          
+                    <h4 class="text-center" style="margin-top: 10px;">Usuarios dados de BAJA</h4>
+                    <div class="card-block table-border-style" style="padding: 0px;">
+                      <div class="table-responsive">
+                        <table class="table table-hover tabla-con-mano">
+                          <thead>
+                            <tr class="bg-secondary text-light">
+                              <th>Acción</th>
+                              <th>ID</th>
+                              <th>Apellido, Nombre</th>
+                              <th>Rol actual</th>
+                              <th>Email</th>
+                              <th>Sucursal (ciudad-nombre-dirección)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for empleado in empleadosBaja %}
+                            <tr class="tabla-con-mano fila-usuario">
+                              <form action="/alta/{{empleado['id']}}">
+                                <td class="align-middle"><button type="submit" class="btn btn-success" style="cursor: pointer;"><i class="feather icon-user-check"></i>  Dar de Alta</button></td>
+                              </form>
+                              <td class="align-middle">{{ empleado['id'] }}</td>
+                              <td class="align-middle">{{ empleado['apellido'] }} , {{ empleado['nombre'] }}</td>
+                              <td class="align-middle">{{ empleado['Rol']['descripcion'] }}</td>
+                              <td class="align-middle">{{ empleado['email'] }}</td>
+                              <td class="align-middle">
+                              {% for sucursal in empleado['Sucursals'] %}
+                                {{ sucursal['ciudad'] }} - {{ sucursal['nombre'] }} - {{ sucursal['direccion'] }}<br>
+                              {% endfor %}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    {% if empleadosBaja|length == 0 %}
+                    <div style="text-align: center; color:gold;"><strong>No hay usuarios dados de baja</strong></div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- [ Main Content ] end -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- [ Main Content ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
