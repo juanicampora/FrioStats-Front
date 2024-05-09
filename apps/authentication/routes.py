@@ -177,6 +177,37 @@ def roles_lista():
 def roles_lista_seleccionado(email_empleado,rol_actual):
     return redirect(url_for('authentication_blueprint.roles_email_conocido',email_empleado=email_empleado,rol_actual=rol_actual))
 
+@blueprint.route('/eliminar', methods=['GET'])
+@login_required
+@confirm_mail_required()
+@role_required('Admin')
+def eliminar_usuario():
+    url = "http://ljragusa.com.ar:3001/users/getEmployees"
+    payload={}
+    headers = { 'user-token': request.cookies.get('token') }
+    respuesta = requests.request("GET", url, headers=headers, data=payload)
+    empleados=respuesta.json()
+    return render_template('accounts/eliminar.html', segment='eliminar', empleados=empleados)
+
+@blueprint.route('/eliminar/<string:idUsuario>', methods=['GET'])
+@login_required
+@confirm_mail_required()
+@role_required('Admin')
+def eliminar_usuario_accion(idUsuario):
+    url = "http://ljragusa.com.ar:3001/users/"+idUsuario
+    payload={}
+    headers = { 'user-token': request.cookies.get('token') }
+    try:
+        respuesta = requests.request("DELETE", url, headers=headers, data=payload)
+    except requests.exceptions.RequestException as e:
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
+    if respuesta.status_code == 200:
+        return render_template('accounts/eliminar.html', segment='eliminar', msg=respuesta.json()['message'], success=True)
+    else:
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
+
 @blueprint.route('/mailconfirmation')
 def mailconfirmation():
     return render_template('accounts/mail_confirmation.html')
