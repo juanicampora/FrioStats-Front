@@ -62,7 +62,7 @@
                             {% for empleado in empleados %}
                             <tr class="tabla-con-mano fila-usuario">
                               {% if empleado['Rol']['descripcion'] == 'Admin' %}
-                                <td class="align-middle"><button disabled class="btn btn-danger"  data-toggle="tooltip" data-placement="right" title="No puede dar de baja un Admin."><i class="feather icon-trash"></i>  Baja</button></td>
+                                <td class="align-middle"><button disabled class="btn btn-danger"  data-toggle="tooltip" data-placement="right" title="No puede dar de baja un Admin."><i class="feather icon-trash"></i>  Dar de Baja</button></td>
                               {% else %}
                               <form action="/baja/{{empleado['id']}}">
                                 <td class="align-middle"><button type="submit" class="btn btn-danger" style="cursor: pointer;"><i class="feather icon-trash"></i>  Dar de Baja</button></td>
