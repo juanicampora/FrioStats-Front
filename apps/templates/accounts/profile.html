@@ -88,7 +88,9 @@
                                                         <div class="col-sm-12 mb-4">
                                                                 <label for="idTelegram">ID Telegram</label>
                                                                 <input class="form-control" id="idTelegram" name="idTelegram" placeholder="Ingrese su ID de Telegram" readonly value="{{ idTelegram }}"  >                                                
-                                                        </div>   
+                                                        </div>  
+                                                    {% else %}
+                                                        <input type="hidden" id="idTelegram" name="idTelegram" value="{{ idTelegram }}">
                                                     {% endif %}
                                                     <div class="col-sm-12 mb-4">
                                                         <div class="checkbox checkbox-fill d-inline">                                                    

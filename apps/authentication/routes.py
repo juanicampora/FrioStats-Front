@@ -45,6 +45,10 @@ def login():
             usuario= User(respuestajson["user"]["id"],respuestajson["user"]["email"],respuestajson["user"]["nombre"],respuestajson["user"]["apellido"],respuestajson["user"]["Rol"]["descripcion"],respuestajson["token"],respuestajson["user"]["emailConfirmado"])
             if User.find_by_id(usuario.id) is None:
                 usuario.save()
+            else:
+                usuarioBorrar= User.find_by_id(usuario.id)
+                usuarioBorrar.delete_from_db()
+                usuario.save()
             login_user(usuario)
             token=respuestajson["token"]
             response = make_response(redirect('/index'))    
@@ -168,7 +172,6 @@ def roles_lista():
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     empleados=respuesta.json()['empleados']
-    print(empleados)
     return render_template('accounts/roles_lista.html', segment='roles', empleados=empleados)
 
 @blueprint.route('/roles/lista/<string:email_empleado>/<string:rol_actual>', methods=['GET'])
@@ -303,9 +306,11 @@ def confirmEmail(token):
         print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
         return abort(500)
     if respuesta.status_code == 200:
-        return render_template('accounts/mail_confirmed',email=respuesta.json()['email'])
-    # else:   
-    #     return errorGenerico(respuesta)
+        return render_template('accounts/mail_confirmed.html',mensaje=respuesta.json()['message'])
+    elif respuesta.status_code == 409:
+        return render_template('accounts/mail_confirmed.html',mensaje=respuesta.json()['message'])
+    else:   
+         return abort(500)
 
 @blueprint.route('/logout')
 def logout():

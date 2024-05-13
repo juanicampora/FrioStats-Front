@@ -12,7 +12,7 @@ class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
     id            = db.Column(db.Integer, primary_key=True)
-    email         = db.Column(db.String(64), unique=True)
+    email         = db.Column(db.String(64))
     nombre        = db.Column(db.String(64))
     apellido      = db.Column(db.String(64))
     rol           = db.Column(db.String(64))

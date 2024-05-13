@@ -37,6 +37,15 @@
         <div class="main-body">
           <div class="page-wrapper">
             <div class="row">
+              {% if datos['message']== 'No se encontraron mediciones para esa fecha' %}
+              <div class="col-md-12">
+                <div class="card"> 
+                    <div class="card-block"> 
+                        <p class="text-warning" style="font-size: large;"><i class="feather icon-alert-circle" style="color: #ffc107"></i> No hay datos para graficar de ese período</p>
+                    </div>
+                </div>
+              </div>
+              {% else %}
               <div class="col-md-12">
                 <ul class="nav nav-tabs" id="myTab" role="tablist"> 
                   <li class="nav-item">
@@ -88,6 +97,7 @@
                   </div> 
                 </div>                 
               </div>
+              {% endif %}
             </div>
           </div>
         </div>

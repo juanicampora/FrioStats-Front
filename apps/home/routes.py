@@ -56,16 +56,24 @@ def index():
 def profile():
     profile_form = ProfileForm(request.form)
     if request.method=='POST': 
-        if request.form.get('recibirTelegram') == None: recibirTelegram='false' 
-        else: recibirTelegram='true'
-        if request.form.get('recibirEmail') == None: recibirEmail = 'false' 
-        else: recibirEmail = 'true'
+        if request.form.get('recibirTelegram') == None: recibirTelegram='False' 
+        else: recibirTelegram='True'
+        if request.form.get('recibirEmail') == None: recibirEmail = 'False' 
+        else: recibirEmail = 'True'
+        telegramId = request.form.get('idTelegram')
         token = request.cookies.get('token')
         url = "http://ljragusa.com.ar:3001/users"
-        payload={
-            "recibeNotiTelegram": recibirTelegram,
-            "recibeNotiMail": recibirEmail
-        }
+        if telegramId == 'None':
+            payload={
+                "recibeNotiTelegram": recibirTelegram,
+                "recibeNotiMail": recibirEmail,
+            }
+        else:    
+            payload={
+                "recibeNotiTelegram": recibirTelegram,
+                "recibeNotiMail": recibirEmail,
+                "telegramId": telegramId
+            }
         headers = { 'user-token': token }
         try:
             respuesta = requests.request("PATCH", url, headers=headers, data=payload)
@@ -79,7 +87,7 @@ def profile():
             recibirTelegram = datos[1]
             recibirEmail = datos[2]
             if recibirTelegram == True and idTelegram == None:
-                return render_template('accounts/profile_telegram.html', segment='profile')
+                return render_template('accounts/profile_telegram.html', segment='profile', recibirTelegram=recibirTelegram, recibirEmail=recibirEmail, form=profile_form,)
             else:    
                 return render_template('accounts/profile.html', segment='profile', idTelegram=idTelegram, recibirTelegram=recibirTelegram, recibirEmail=recibirEmail, form=profile_form,
                                 msg='Datos actualizados correctamente.',
@@ -115,11 +123,11 @@ def profile_telegram():
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
         token = request.cookies.get('token')
-        url = "http://ljragusa.com.ar:3001/users"
+        url = "http://ljragusa.com.ar:3001/users/"
         payload={
-            "telegramId": idTelegram,
             "recibeNotiTelegram": recibirTelegram,
-            "recibeNotiMail": recibirEmail
+            "recibeNotiMail": recibirEmail,
+            "telegramId": idTelegram
         }
         headers = { 'user-token': token }
         try:
@@ -134,7 +142,7 @@ def profile_telegram():
                                 success=True, form=profile_form)
         else:
             return render_template('accounts/profile_telegram.html', segment='profile', idTelegram=idTelegram, recibirTelegram=recibirTelegram, recibirEmail=recibirEmail,
-                                msg=respuesta.json()['message'],
+                                msg=respuesta.json()['error']['errors'][0]['message'],
                                 success=False)
     else:
         return render_template('accounts/profile_telegram.html', segment='profile')
@@ -244,7 +252,7 @@ def graficos(idSucursal,idMaquina):
         headers = { 'user-token': request.cookies.get('token') }
         respuesta= requests.request("GET", url, headers=headers, data=payload)
         verifSesión(respuesta)
-        datos = respuesta.json()            
+        datos = respuesta.json()
         return render_template('home/graficos.html', segment='graficos', idSucursal=idSucursal ,idMaquina=idMaquina, datos=datos)
 
 
