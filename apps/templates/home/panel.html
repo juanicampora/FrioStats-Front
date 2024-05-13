@@ -121,12 +121,17 @@
                   </div>
                   <div id="coordenadas">
                     <!-- Para ver las coordenadas haciendo click en el plano  -->
-                    <h3>Coordenadas: <span id="coordenadasVal"></span></h3> 
+                    <!-- <h3>Coordenadas: <span id="coordenadasVal"></span></h3>  -->
                   </div>
                   <div style="position: relative;">
                     <div class="card-block px-4 py-4">
-                      <img id="plano" src="http://ljragusa.com.ar/FrioStats/images/Plano1.jpg"/>
-                      <div class="boton-maquina" id="boton1" idMaquina="1" style="left: 90%; top: 40%"><span class="material-symbols-outlined">ac_unit</span></div>
+                      <img id="plano" src="http://ljragusa.com.ar/images/{{nombrePlano}}"/>
+                      {% if maquinas %}
+                        {% for maquina in maquinas %}
+                          <div class="boton-maquina" id="boton{{ maquina['id'] }}" idMaquina="{{ maquina['id'] }}" style="{{maquina['coords']}}"><span class="material-symbols-outlined">{{ maquina['icono'] }}</span></div>
+                        {% endfor %}
+                      {% endif %}
+                      <!-- <div class="boton-maquina" id="boton1" idMaquina="1" style="left: 90%; top: 40%"><span class="material-symbols-outlined">ac_unit</span></div>
                       <div class="boton-maquina" id="boton1" idMaquina="1" style="left: 90%; top: 68%"><span class="material-symbols-outlined">ac_unit</span></div>
                       <div class="boton-maquina" id="boton1" idMaquina="1" style="left: 45%; top: 91%"><span class="material-symbols-outlined">kitchen</span></div>
                       <div class="boton-maquina" id="boton1" idMaquina="1" style="left: 80%; top: 62%"><span class="material-symbols-outlined">kitchen</span></div>
@@ -134,7 +139,7 @@
                       <div class="boton-maquina" id="boton2" idMaquina="2" style="left: 66%; top: 91.5%"><span class="material-symbols-outlined">kitchen</span></div>
                       <div class="boton-maquina" id="boton2" idMaquina="2" style="left: 79.5%; top: 84%"><span class="material-symbols-outlined">kitchen</span></div>
                       <div class="boton-maquina" id="boton3" idMaquina="3" style="left: 49%; top: 3.5%"><span class="material-symbols-outlined">blanket</span></div>              
-                      <div class="boton-maquina" id="boton3" idMaquina="3" style="left: 65%; top: 3.5%"><span class="material-symbols-outlined">blanket</span></div>              
+                      <div class="boton-maquina" id="boton3" idMaquina="3" style="left: 65%; top: 3.5%"><span class="material-symbols-outlined">blanket</span></div>               -->
                     </div>
                   </div>
                 </div>
@@ -262,7 +267,6 @@
     boton.addEventListener('click', () => {
       tablaOcultar.style.display = 'block'; // Cambia el estilo para mostrar la tabla oculta      
       const idMaquina = boton.getAttribute('idMaquina'); // Obtiene el texto del atributo data-boton
-      //ver que hacer despues
       const url = `/medicion/${id_super}/${idMaquina}`;
       const tablaContainer = document.getElementById('tabla-container');
       fetch(url)
@@ -276,27 +280,27 @@
 </script>
 
 <script>
-  // Función para manejar el clic en la imagen
-function handleClick(event) {
-  const img = document.getElementById('plano');
-  const rect = img.getBoundingClientRect(); // Rectángulo que rodea la imagen
-  const offsetX = event.clientX - rect.left; // Coordenada x relativa en la imagen
-  const offsetY = event.clientY - rect.top;  // Coordenada y relativa en la imagen
+//   // Función para manejar el clic en la imagen
+// function handleClick(event) {
+//   const img = document.getElementById('plano');
+//   const rect = img.getBoundingClientRect(); // Rectángulo que rodea la imagen
+//   const offsetX = event.clientX - rect.left; // Coordenada x relativa en la imagen
+//   const offsetY = event.clientY - rect.top;  // Coordenada y relativa en la imagen
 
-  // Obtener las dimensiones de la imagen en píxeles
-  const width = img.width;
-  const height = img.height;
+//   // Obtener las dimensiones de la imagen en píxeles
+//   const width = img.width;
+//   const height = img.height;
 
-  // Convertir las coordenadas a porcentaje
-  const offsetXPercent = (offsetX / width) * 100;
-  const offsetYPercent = (offsetY / height) * 100;
+//   // Convertir las coordenadas a porcentaje
+//   const offsetXPercent = (offsetX / width) * 100;
+//   const offsetYPercent = (offsetY / height) * 100;
 
-  // Mostrar las coordenadas en porcentaje
-  const coordenadasVal = document.getElementById('coordenadasVal');
-  coordenadasVal.textContent = `left: ${offsetXPercent.toFixed(2)}%; top: ${offsetYPercent.toFixed(2)}%`;
-}
-// Agregar el evento click al elemento de la imagen
-document.getElementById('plano').addEventListener('click', handleClick);
+//   // Mostrar las coordenadas en porcentaje
+//   const coordenadasVal = document.getElementById('coordenadasVal');
+//   coordenadasVal.textContent = `left: ${offsetXPercent.toFixed(2)}%; top: ${offsetYPercent.toFixed(2)}%`;
+// }
+// // Agregar el evento click al elemento de la imagen
+// document.getElementById('plano').addEventListener('click', handleClick);
 
 </script>
 

@@ -157,9 +157,16 @@ def panel(id_super):
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
+    url = f'http://ljragusa.com.ar:3001/sucursales/{id_super}'
+    respuesta2 = requests.request("GET", url, headers=headers, data=payload)
+    verifSesión(respuesta2)
+    nombrePlano = respuesta2.json()['nombrePlano']
+    url = f'http://ljragusa.com.ar:3001/maquina/{id_super}'
+    respuesta3 = requests.request("GET", url, headers=headers, data=payload)
+    maquinas = respuesta3.json()
     notificaciones = respuesta.json()
     contador = {'val': 0, 'paginas': 0}
-    return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones,contador = contador)
+    return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones,contador = contador, nombrePlano=nombrePlano, maquinas=maquinas)
 
 @blueprint.route('/medicion/<int:idSucursal>/<int:idMaquina>', methods=['GET','POST'])
 @login_required
