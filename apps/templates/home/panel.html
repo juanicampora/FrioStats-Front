@@ -67,8 +67,9 @@
                               <table class="table">
                                 <tbody>
                                   <thead>
-                                    <th style="width:200px">Marcar como leído</th>
-                                    <th style="width:200px">Máquina N°</th>
+                                    <th style="width:100px">Marcar como leído</th>
+                                    <th style="width:100px">Máquina N°</th>
+                                    <th style="width:200px">Hora y Fecha</th>
                                     <th>Detalle de la notificación</th>
                                   </thead>
                           {% endif %}                            
@@ -80,7 +81,12 @@
                           {% endif %}
                                   <td><button type="button" class="btn-sm btn-success" onclick="marcarLeido({{ noti['id'] }})"> ✔ </button></td>
                                   <td>{{maquina['idMaqSuc']}}</td>
-                                  <td>{{noti['descripcion']}}</td>
+                                  {% set desc= noti['descripcion'].split('||') %}
+                                  <td>{{desc[1]}}</td>
+                                  <td>{{desc[0]}}</td>
+                                  <!-- <td>{{noti['descripcion']}}</td> -->
+                                  <!-- Como el de arriba pero hasta la parte del texto que dice '||' -->
+                                  
                                   </tr>
                           {% if contador['val'] == 5 %}
                                   </tbody>
@@ -117,31 +123,34 @@
               <div class="col-xl-12 col-md-6">
                 <div class="card Recent-Users" style="margin-bottom: 10px;">
                   <div class="card-header" style="padding-top: 15px; padding-bottom: 15px;">
-                    <h5>Plano del Supermercado</h5>
+                    <h5>Plano del Supermercado</h5>                    
                   </div>
                   <div id="coordenadas">
                     <!-- Para ver las coordenadas haciendo click en el plano  -->
                     <!-- <h3>Coordenadas: <span id="coordenadasVal"></span></h3>  -->
                   </div>
+                  <div style="display: flex; gap: 30px; text-align: center; margin: 0 auto; align-items: center; margin-top: 10px;"> 
+                    <div style="display: flex;flex-direction: column;align-items: center;justify-content: center;"><div class="boton-maquina" style="position: relative; background-color: #10b5ca;"><span class="material-symbols-outlined">blanket</span></div><h5>Góndola</h5></div>
+                    <div style="display: flex;flex-direction: column;align-items: center;justify-content: center;"><div class="boton-maquina" style="position: relative; background-color: #2b63ca;"><span class="material-symbols-outlined">kitchen</span></div><h5>Heladera</h5></div>
+                    <div style="display: flex;flex-direction: column;align-items: center;justify-content: center;"><div class="boton-maquina" style="position: relative; background-color: #3d3de6;"><span class="material-symbols-outlined">ac_unit</span></div><h5>Frigorífico</h5></div>
+                  </div>
                   <div style="position: relative;">
-                    <div class="card-block px-4 py-4">
+                    <div class="card-block px-4 py-4">                      
                       <img id="plano" src="http://ljragusa.com.ar/images/{{nombrePlano}}"/>
                       {% if maquinas %}
                         {% for maquina in maquinas %}
-                          <div class="boton-maquina" id="boton{{ maquina['id'] }}" idMaquina="{{ maquina['id'] }}" style="{{maquina['coords']}}"><span class="material-symbols-outlined">{{ maquina['icono'] }}</span></div>
+                          {% if maquina['icono'] == 'blanket' %}
+                            {% set color = '#10b5ca' %}
+                          {% elif maquina['icono'] == 'kitchen' %}
+                            {% set color = '#2b63ca' %}
+                          {% elif maquina['icono'] == 'ac_unit' %}
+                            {% set color = '#3d3de6' %}
+                          {% endif %}
+                          <div class="boton-maquina" id="boton{{ maquina['id'] }}" idMaquina="{{ maquina['id'] }}" style="background-color: {{color}}; {{maquina['coords']}}" data-toggle="tooltip" data-placement="top" title="Máquina {{maquina['id']}}"><span class="material-symbols-outlined">{{ maquina['icono'] }}</span></div>
                         {% endfor %}
                       {% endif %}
-                      <!-- <div class="boton-maquina" id="boton1" idMaquina="1" style="left: 90%; top: 40%"><span class="material-symbols-outlined">ac_unit</span></div>
-                      <div class="boton-maquina" id="boton1" idMaquina="1" style="left: 90%; top: 68%"><span class="material-symbols-outlined">ac_unit</span></div>
-                      <div class="boton-maquina" id="boton1" idMaquina="1" style="left: 45%; top: 91%"><span class="material-symbols-outlined">kitchen</span></div>
-                      <div class="boton-maquina" id="boton1" idMaquina="1" style="left: 80%; top: 62%"><span class="material-symbols-outlined">kitchen</span></div>
-                      <div class="boton-maquina" id="boton2" idMaquina="2" style="left: 25%; top: 91.5%"><span class="material-symbols-outlined">kitchen</span></div>
-                      <div class="boton-maquina" id="boton2" idMaquina="2" style="left: 66%; top: 91.5%"><span class="material-symbols-outlined">kitchen</span></div>
-                      <div class="boton-maquina" id="boton2" idMaquina="2" style="left: 79.5%; top: 84%"><span class="material-symbols-outlined">kitchen</span></div>
-                      <div class="boton-maquina" id="boton3" idMaquina="3" style="left: 49%; top: 3.5%"><span class="material-symbols-outlined">blanket</span></div>              
-                      <div class="boton-maquina" id="boton3" idMaquina="3" style="left: 65%; top: 3.5%"><span class="material-symbols-outlined">blanket</span></div>               -->
                     </div>
-                  </div>
+                  </div>                  
                 </div>
               </div>
             </div>

@@ -263,7 +263,7 @@ def asignar_sucursales():
 @role_required('Admin')
 def asignar_sucursales_email_seleccionado(email_empleado): 
     if (request.method == 'GET'):
-        url = "http://ljragusa.com.ar:3001/sucursales/"+email_empleado
+        url = "http://ljragusa.com.ar:3001/sucursales/email/"+email_empleado
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         try:

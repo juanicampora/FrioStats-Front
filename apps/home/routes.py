@@ -229,6 +229,58 @@ def parametro(idSucursal,idMaquina,parametro):
             return redirect(url_for('home_blueprint.panel',id_super=idSucursal))
         else:
             return abort(500)
+        
+@blueprint.route('/importancia/<int:idSucursal>/<int:idMaquina>/<string:parametro>', methods=['GET','POST'])
+@login_required
+@confirm_mail_required()
+def importancia(idSucursal,idMaquina,parametro):
+    if request.method=='GET':
+        url = f'http://ljragusa.com.ar:3001/importanciaParametro/{idMaquina}'
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta= requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuesta)
+        idAlgo=respuesta.json()['elemts']['id']
+        if parametro == 'sensorTempInterna':
+            parametros = respuesta.json()['elemts']['idTipoTempInterna']
+            tipoImportancia='idTipoTempInterna'
+            descripcionParametro='Temperatura Interna'
+        elif parametro == 'sensorTempTrabajoYBulbo':
+            parametros = respuesta.json()['elemts']['idTipoTempTrabajoYBulbo']
+            tipoImportancia='idTipoTempTrabajoYBulbo'
+            descripcionParametro='Temperatura de Trabajo y Bulbo'
+        elif parametro == 'sensorPuerta':
+            parametros = respuesta.json()['elemts']['idTipoEstadoPuerta']
+            tipoImportancia='idTipoEstadoPuerta'
+            descripcionParametro='Puerta'
+        elif parametro == 'sensorRpmCooler':
+            parametros = respuesta.json()['elemts']['idTipoCooler']
+            tipoImportancia='idTipoCooler'
+            descripcionParametro='Cooler'
+        elif parametro == 'sensorPuntoRocio':
+            parametros = respuesta.json()['elemts']['idTipoPuntoRocio']
+            tipoImportancia='idTipoPuntoRocio'
+            descripcionParametro='Punto de Rocío'
+        elif parametro == 'sensorConsumo':
+            parametros = respuesta.json()['elemts']['idConsumo']
+            tipoImportancia='idConsumo'
+            descripcionParametro='Consumo'
+        return render_template('home/editarimportancia.html', segment='panel', idAlgo=idAlgo, tipoImportancia=tipoImportancia, idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
+    elif request.method=='POST':
+        url = f'http://ljragusa.com.ar:3001/importanciaParametro/{idMaquina}'
+        payload={
+            'id': request.form.get('idAlgo'),
+            'idMaquina': idMaquina,
+            parametro: request.form.get('importancia')
+        }
+        print(payload)
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta = requests.request("PATCH", url, headers=headers, data=payload)
+        verifSesión(respuesta)
+        if respuesta.status_code == 200:
+            return redirect(url_for('home_blueprint.panel',id_super=idSucursal))
+        else:
+            return abort(500)
 
 @blueprint.route('/graficos/<int:idSucursal>/<int:idMaquina>', methods=['GET','POST'])
 @login_required
