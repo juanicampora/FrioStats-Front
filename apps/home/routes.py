@@ -10,10 +10,6 @@ from flask_login import login_required, logout_user
 from jinja2 import Template, TemplateNotFound
 from apps import  login_manager
 
-@blueprint.route('/prueba',methods=['GET', 'POST'])     #borrar
-def prueba():
-    return render_template('home/prueba.html', segment='prueba')
-
 @blueprint.route('/index')
 @login_required
 @confirm_mail_required()
@@ -166,7 +162,7 @@ def panel(id_super):
     maquinas = respuesta3.json()
     notificaciones = respuesta.json()
     contador = {'val': 0, 'paginas': 0}
-    return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones,contador = contador, nombrePlano=nombrePlano, maquinas=maquinas)
+    return render_template('home/panel.html', segment='index', id_super=id_super, notificaciones=notificaciones,contador = contador, nombrePlano=nombrePlano, maquinas=maquinas)
 
 @blueprint.route('/medicion/<int:idSucursal>/<int:idMaquina>', methods=['GET','POST'])
 @login_required
@@ -209,7 +205,7 @@ def parametro(idSucursal,idMaquina,parametro):
         elif parametro == 'sensorConsumo':
             parametros = ['Nada',respuesta.json()['elemts']['maxConsumo']]
             descripcionParametro='Consumo'
-        return render_template('home/editarparametro.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
+        return render_template('home/editarparametro.html', segment='index', idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
     elif request.method=='POST':
         minimobody=parametro.replace('sensor','min')
         maximobody=parametro.replace('sensor','max')
@@ -265,7 +261,7 @@ def importancia(idSucursal,idMaquina,parametro):
             parametros = respuesta.json()['elemts']['idConsumo']
             tipoImportancia='idConsumo'
             descripcionParametro='Consumo'
-        return render_template('home/editarimportancia.html', segment='panel', idAlgo=idAlgo, tipoImportancia=tipoImportancia, idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
+        return render_template('home/editarimportancia.html', segment='index', idAlgo=idAlgo, tipoImportancia=tipoImportancia, idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
     elif request.method=='POST':
         url = f'http://ljragusa.com.ar:3001/importanciaParametro/{idMaquina}'
         payload={
@@ -287,7 +283,7 @@ def importancia(idSucursal,idMaquina,parametro):
 @confirm_mail_required()
 def graficos(idSucursal,idMaquina):
     if request.method=='GET':
-        return render_template('home/pre-graficos.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina)
+        return render_template('home/pre-graficos.html', segment='index', idSucursal=idSucursal ,idMaquina=idMaquina)
     if request.method=='POST':
         periodo_seleccionado = request.form.get('periodo')
         hoy = datetime.now().strftime("%Y-%m-%d")
@@ -312,7 +308,16 @@ def graficos(idSucursal,idMaquina):
         respuesta= requests.request("GET", url, headers=headers, data=payload)
         verifSesión(respuesta)
         datos = respuesta.json()
-        return render_template('home/graficos.html', segment='graficos', idSucursal=idSucursal ,idMaquina=idMaquina, datos=datos)
+        # Guardar en la variable datosJuntos lo mismo que datos pero en "valuesSensorRpmCooler":{ x,x,x,...} y "valuesSensorConsumo":{ x,x,x,...} los x dividirlos por 100
+        datosJuntos = datos
+        for key in datosJuntos:
+            if key == 'valuesSensorRpmCooler':
+                for i in range(len(datosJuntos[key])):
+                    datosJuntos[key][i] = datosJuntos[key][i]/100
+            if key == 'valuesSensorConsumo':
+                for i in range(len(datosJuntos[key])):
+                    datosJuntos[key][i] = datosJuntos[key][i]/100
+        return render_template('home/graficos.html', segment='index', idSucursal=idSucursal ,idMaquina=idMaquina, datos=datos, datosJuntos=datosJuntos)
 
 
 
