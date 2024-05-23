@@ -60,6 +60,12 @@ if (currentTheme === themeStates[1]) {
 
 //We handle our user interaction here.
 themeSwitch.addEventListener('change', function () {
+    const currentPath = window.location.pathname;
+    const desiredPathRegex = /^\/graficos\/.*/;
+    const isMatchingPath = desiredPathRegex.test(currentPath);
+    if (isMatchingPath) {
+        location.reload();
+    }
     if (this.checked) {
         setTheme(0);
         setIndicator(0);
