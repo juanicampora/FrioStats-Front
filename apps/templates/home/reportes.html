@@ -1,0 +1,292 @@
+{% extends "layouts/base.html" %} {% block title %} Reportes {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+{% endblock stylesheets %} {% block content %}
+<header class="navbar pcoded-header navbar-expand-lg">
+  <div class="collapse navbar-collapse">
+    <ul class="navbar-nav" style=" width: 100%;display: flex;justify-content: center;">
+      <li>
+        <b style="text-align: center; font-size:xx-large; color: #888;">Reporte de la sucursal {{idSucursal}}</b>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<div class="pcoded-main-container">
+  <div class="pcoded-wrapper">
+    <div class="pcoded-content" style="padding-top: 10px;">
+      <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col-md-12">
+                <ul class="breadcrumb" style="margin-bottom: 0px;">
+                  <li class="breadcrumb-item">
+                    <a href="/"><i class="feather icon-home"></i></a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="/reportes">Período y Sucursal Reporte</a>
+                  </li>
+                  <li class="breadcrumb-item">Reporte</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+          <div class="page-wrapper">
+            <div class="row">
+              {% if datosP['message']== 'No se encontraron mediciones para esa fecha' %}
+              <div class="col-md-12">
+                <div class="card">
+                  <div class="card-block">
+                    <p class="text-warning" style="font-size: large;"><i class="feather icon-alert-circle"
+                        style="color: #ffc107"></i> No hay datos de la máquina {{idMaquina}} para graficar de ese
+                      período</p>
+                  </div>
+                </div>
+              </div>
+              {% else %}
+
+              <div class="col-md-12">
+                <div class="container">
+                  <div class="row mb-4">
+                    <div class="col">
+                      <canvas id="gNotiGrave"></canvas>
+                    </div>
+                    <div class="col">
+                      <canvas id="gNotiLeve"></canvas>
+                    </div>
+                  </div>
+                  <div class="row mb-4">
+                    <div class="col">
+                      <canvas id="gPuerta"></canvas>
+                    </div>
+                    <div class="col">
+                      <canvas id="gCooler"></canvas>
+                    </div>
+                  </div>
+                  <!-- <div class="row mb-4">
+                    <div class="col">
+                      <canvas id="gPuntoRocio"></canvas>
+                    </div>
+                    <div class="col">
+                      <canvas id="gLuz"></canvas>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <canvas id="gConsumo"></canvas>
+                    </div>
+                    <div class="col">
+
+                    </div>
+                  </div> -->
+                </div>
+              </div>
+              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <canvas id="gTodos"></canvas>
+                <h4 style="text-align: center;">(consumo y cooler fueron escalados x0.01)</h4>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{% block javascripts %}
+<script>
+  const theme = localStorage.getItem("theme"); // Get the theme from darkmode.js
+  const textColor = theme === "dark" ? "white" : "dark"; // Set text color based on theme
+  var ctx1 = document.getElementById('gNotiGrave').getContext('2d');
+  var gNotiGrave = new Chart(ctx1, {
+    type: 'pie',
+    data: {
+      labels: {{ datos.labelsGrave | safe }},
+  datasets: [{
+    label: 'Cantidad de notificaciones graves por máquina', color: textColor,
+    data: {{ datos.valuesGrave | safe }},
+    borderColor: 'rgb(229, 152, 102)', borderWidth: 6,
+    fill: false, cubicInterpolationMode: 'monotone', tension: 0.4
+        },],},
+  options: {
+    plugins: {
+      legend: {
+        labels: {
+          color: textColor,
+        },
+      },
+    },
+    scales: {
+      x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
+      y: { title: { display: true, color: textColor, text: 'Temperatura (°C)' } , ticks: { color: textColor }, grid: { color: '#85929E' } }
+    }
+
+  }
+  });
+  var ctx2 = document.getElementById('gNotiLeve').getContext('2d');
+  var gNotiLeve = new Chart(ctx2, {
+    type: 'pie',
+    data: {
+      labels: {{ datosP.labelsLeve | safe }},
+  datasets: [{
+    label: 'Cantidad de notificaciones leves por máquina',
+    data: {{ datos.valuesLeve | safe }},
+    borderColor: 'rgb(128, 0, 0)', borderWidth: 6,
+    fill: false, cubicInterpolationMode: 'monotone', tension: 0.4
+        },],},
+  options: {
+    plugins: {
+      legend: {
+        labels: {
+          color: textColor,
+        },
+      },
+    },
+    scales: {
+      x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
+      y: { title: { display: true, color: textColor, text: 'Temperatura (°C)' }, ticks: { color: textColor }, grid: { color: '#85929E' } }
+    }
+  }
+  });
+  // var ctx3 = document.getElementById('gPuerta').getContext('2d');
+  // var gPuerta = new Chart(ctx3, {
+  //   type: 'line',
+  //   data: {
+  //     labels: {{ datos.labelsSensorPuerta | safe }},
+  // datasets: [{
+  //   label: 'Puerta',
+  //   data: {{ datos.valuesSensorPuerta | safe }},
+  //   borderColor: 'rgb(125, 60, 152)', borderWidth: 6,
+  //   fill: false, tension: 0.4,
+  //   stepped: true
+  //       },],},
+  // options: {
+  //   plugins: {
+  //     legend: {
+  //       labels: {
+  //         color: textColor,
+  //       },
+  //     },
+  //   },
+  //   interaction: { intersect: false, axis: 'x' },
+  //   scales: {
+  //     x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
+  //     y: { title: { display: true, color: textColor, text: 'Estado (Abierto-Cerrado)' }, min: 0, max: 1, ticks: { color: textColor, stepSize: 1 } }
+  //   }
+  // }
+  // });
+  // var ctx4 = document.getElementById('gCooler').getContext('2d');
+  // var gCooler = new Chart(ctx4, {
+  //   type: 'line',
+  //   data: {
+  //     labels: {{ datos.labelsSensorRpmCooler | safe }},
+  // datasets: [{
+  //   label: 'Cooler',
+  //   data: {{ datos.valuesSensorRpmCooler | safe }},
+  //   borderColor: 'rgb(4, 169, 245)', borderWidth: 6,
+  //   fill: false, tension: 0.4,
+  //       },],},
+  // options: {
+  //   plugins: {
+  //     legend: {
+  //       labels: {
+  //         color: textColor,
+  //       },
+  //     },
+  //   },
+  //   scales: {
+  //     x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
+  //     y: { title: { display: true, color: textColor, text: 'Velocidad (RPM)' }, ticks: { color: textColor }, grid: { color: '#85929E' } }
+  //   }
+  // }
+  // });
+  // var ctx5 = document.getElementById('gPuntoRocio').getContext('2d');
+  // var gPuntoRocio = new Chart(ctx5, {
+  //   type: 'line',
+  //   data: {
+  //     labels: {{ datos.labelsSensorPuntoRocio | safe }},
+  // datasets: [{
+  //   label: 'Punto de Rocío',
+  //   data: {{ datos.valuesSensorPuntoRocio | safe }},
+  //   borderColor: 'rgb(40, 180, 99)', borderWidth: 6,
+  //   fill: false, tension: 0.4,
+  //       },],},
+  // options: {
+  //   plugins: {
+  //     legend: {
+  //       labels: {
+  //         color: textColor,
+  //       },
+  //     },
+  //   },
+  //   scales: {
+  //     x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
+  //     y: { title: { display: true, color: textColor, text: 'Temperatura (°C)' }, ticks: { color: textColor }, grid: { color: '#85929E' } }
+  //   }
+  // }
+  // });
+  // var ctx6 = document.getElementById('gLuz').getContext('2d');
+  // var gLuz = new Chart(ctx6, {
+  //   type: 'line',
+  //   data: {
+  //     labels: {{ datos.labelsSensorLuz | safe }},
+  // datasets: [{
+  //   label: 'Luz',
+  //   data: {{ datos.valuesSensorLuz | safe }},
+  //   borderColor: 'rgb(241, 196, 15)', borderWidth: 6,
+  //   fill: false, tension: 0.4,
+  //   stepped: true
+  //       },],},
+  // options: {
+  //   plugins: {
+  //     legend: {
+  //       labels: {
+  //         color: textColor,
+  //       },
+  //     },
+  //   },
+  //   interaction: { intersect: false, axis: 'x' },
+  //   scales: {
+  //     x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
+  //     y: { title: { display: true, color: textColor, text: 'Estado (PRENDIDO/APAGADO)' }, min: 0, max: 1, ticks: { color: textColor, stepSize: 1 } }
+  //   }
+  // }
+  // });
+  // var ctx7 = document.getElementById('gConsumo').getContext('2d');
+  // var gConsumo = new Chart(ctx7, {
+  //   type: 'line',
+  //   data: {
+  //     labels: {{ datos.labelsSensorConsumo | safe }},
+  // datasets: [{
+  //   label: 'Consumo',
+  //   data: {{ datos.valuesSensorConsumo | safe }},
+  //   borderColor: 'rgb(231, 76, 60)', borderWidth: 6,
+  //   fill: false, tension: 0.4,
+  //       },],},
+  // options: {
+  //   plugins: {
+  //     legend: {
+  //       labels: {
+  //         color: textColor,
+  //       },
+  //     },
+  //   },
+  //   scales: {
+  //     x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
+  //     y: { title: { display: true, color: textColor, text: 'Consumo (Watts)' }, ticks: { color: textColor } , grid: { color: '#85929E' } }
+  //   }
+  // }
+  // });
+</script>
+
+{% endblock javascripts %}

@@ -162,7 +162,8 @@ def panel(id_super):
     maquinas = respuesta3.json()
     notificaciones = respuesta.json()
     contador = {'val': 0, 'paginas': 0}
-    return render_template('home/panel.html', segment='index', id_super=id_super, notificaciones=notificaciones,contador = contador, nombrePlano=nombrePlano, maquinas=maquinas)
+    contador2 = {'val': 0, 'paginas': 0}
+    return render_template('home/panel.html', segment='index', id_super=id_super, notificaciones=notificaciones,contador = contador,contador2=contador2, nombrePlano=nombrePlano, maquinas=maquinas)
 
 @blueprint.route('/medicion/<int:idSucursal>/<int:idMaquina>', methods=['GET','POST'])
 @login_required
@@ -319,41 +320,49 @@ def graficos(idSucursal,idMaquina):
                     datosJuntos[key][i] = datosJuntos[key][i]/100
         return render_template('home/graficos.html', segment='index', idSucursal=idSucursal ,idMaquina=idMaquina, datos=datos, datosJuntos=datosJuntos)
 
-
-
-@blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route
-def route_template(template):
-    try:
-        if not template.endswith('.html'):
-            template += '.html'
-
-        # Detect the current page
-        segment = get_segment(request)
-
-        # Serve the file (if exists) from app/templates/home/FILE.html
-        return render_template("home/" + template, segment=segment)
-    except TemplateNotFound:
-        return render_template('home/page-404.html'), 404
-    except:
-        return render_template('home/page-500.html'), 500
-
-
-# Helper - Extract current page name from request
-def get_segment(request):
-
-    try:
-
-        segment = request.path.split('/')[-1]
-
-        if segment == '':
-            segment = 'index'
-
-        return segment
-
-    except:
-        return None
-
-
+@blueprint.route('/reportes', methods=['GET','POST'])
+@login_required
+@confirm_mail_required()
+def reportes():
+    if request.method=='GET':
+        url = "http://ljragusa.com.ar:3001/sucursales/token"
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta = requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuesta)
+        sucursales = respuesta.json()
+        return render_template('home/pre-reportes.html', segment='reportes',sucursales=sucursales)
+    if request.method=='POST':
+        idSucursal = request.form.get('idSucursalElegida')
+        periodo_seleccionado = request.form.get('periodo')
+        hoy = datetime.now().strftime("%Y-%m-%d")
+        if periodo_seleccionado == '1':
+            fechaInicio = (datetime.now() - relativedelta(days=7)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '2':           
+            fechaInicio = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '3':
+            fechaInicio = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+            fechaFin = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m-%d")
+        elif periodo_seleccionado == '4':
+            fechaInicio = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '5':
+            fechaInicio = (datetime.now() - relativedelta(months=4)).strftime("%Y-%m-%d")
+            fechaFin = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        url = f'http://ljragusa.com.ar:3001/graphics/pieChart?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idSucursal={idSucursal}'
+        respuestaPie= requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuestaPie)
+        url = f'http://ljragusa.com.ar:3001/graphics/consumptionChart?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idSucursal={idSucursal}'
+        respuestaConsum= requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuestaConsum)
+        datosP = respuestaPie.json()
+        datosC = respuestaConsum.json()
+        return render_template('home/reportes.html', segment='reportes', datosC=datosC, datosP=datosP, idSucursal=idSucursal)
+    
 # Errors
 
 @blueprint.route('/error')         #Ruta de Error generico
