@@ -2,10 +2,8 @@
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-/>
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 {% endblock stylesheets %} {% block content %}
 <div class="pcoded-main-container">
   <div class="pcoded-wrapper">
@@ -40,32 +38,18 @@
                   </div>
                   <div class="card-block px-0 py-0">
                     <div class="table-responsive">
-                      <form
-                        role="form"
-                        method="POST"
-                        action="/parametro/{{idSucursal}}/{{idMaquina}}/{{parametro}}"
-                      >
+                      <form role="form" method="POST" action="/parametro/{{idSucursal}}/{{idMaquina}}/{{parametro}}">
                         {% if parametros[0]!='Nada' %}
                         <div class="col-sm-12 mb-4">
                           <label for="minimo">Valor Minimo</label>
-                          <input
-                            class="form-control"
-                            id="minimo"
-                            name="minimo"
-                            placeholder="Ingrese un valor mínimo"
-                            value="{{ parametros[0] }}"
-                          />
+                          <input class="form-control" id="minimo" name="minimo" placeholder="Ingrese un valor mínimo"
+                            value="{{ parametros[0] }}" />
                         </div>
                         {% endif %}
                         <div class="col-sm-12 mb-4">
                           <label for="maximo">Valor Máximo</label>
-                          <input
-                            class="form-control"
-                            id="maximo"
-                            name="maximo"
-                            placeholder="Ingrese el email del Usuario"
-                            value="{{ parametros[1] }}"
-                          />
+                          <input class="form-control" id="maximo" name="maximo"
+                            placeholder="Ingrese el email del Usuario" value="{{ parametros[1] }}" />
                         </div>
                         <div class="col-sm-12 mb-2" style="text-align: center">
                           <button type="submit" class="btn btn-primary">
@@ -103,7 +87,7 @@
     myHeaders.append('user-token', userToken);
     console.log(bodyData);
     console.log(myHeaders.get('user-token'));
-    fetch('http://ljragusa.com.ar:3001/parameters/{{idMaquina}}', {
+    fetch('http://186.13.28.124:3001/parameters/{{idMaquina}}', {
       method: 'PATCH',
       headers: myHeaders,
       body: bodyData,

@@ -197,7 +197,7 @@
           </div>
           <div style="position: relative;">
             <div class="card-block px-4 py-4">
-              <img id="plano" src="http://ljragusa.com.ar/images/{{nombrePlano}}" />
+              <img id="plano" src="http://186.13.28.124/FrioStats/images/{{nombrePlano}}" />
               {% if maquinas %}
               {% for maquina in maquinas %}
               {% if maquina['icono'] == 'blanket' %}
@@ -300,7 +300,7 @@
     };
 
     fetch(
-      'http://ljragusa.com.ar:3001/notificaciones/' + notificacionId,
+      'http://186.13.28.124:3001/notificaciones/' + notificacionId,
       requestOptions
     );
   }
@@ -316,7 +316,7 @@
     };
 
     fetch(
-      'http://ljragusa.com.ar:3001/notificaciones/checkAll/' + {{ id_super }},
+      'http://186.13.28.124:3001/notificaciones/checkAll/' + {{ id_super }},
   requestOptions
         ).then(response => {
     if (response.status === 200) {

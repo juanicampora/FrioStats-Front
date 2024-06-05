@@ -15,7 +15,7 @@ from apps import  login_manager
 @confirm_mail_required()
 def index():
     token = request.cookies.get('token')
-    url = "http://ljragusa.com.ar:3001/home"
+    url = "http://186.13.28.124:3001/home"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
@@ -24,7 +24,7 @@ def index():
     ## verificar si supermercados['message'] existe
     if dataHome['Sucursals']==[]:
         return render_template('home/index.html', segment='index',supermercados=dataHome['Sucursals'],nombreEmpresa=dataHome['Empresa'])
-    url = "http://ljragusa.com.ar:3001/notificaciones/getCantNoti"
+    url = "http://186.13.28.124:3001/notificaciones/getCantNoti"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
@@ -58,7 +58,7 @@ def profile():
         else: recibirEmail = 'True'
         telegramId = request.form.get('idTelegram')
         token = request.cookies.get('token')
-        url = "http://ljragusa.com.ar:3001/users"
+        url = "http://186.13.28.124:3001/users"
         if telegramId == 'None':
             payload={
                 "recibeNotiTelegram": recibirTelegram,
@@ -119,7 +119,7 @@ def profile_telegram():
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
         token = request.cookies.get('token')
-        url = "http://ljragusa.com.ar:3001/users/"
+        url = "http://186.13.28.124:3001/users/"
         payload={
             "recibeNotiTelegram": recibirTelegram,
             "recibeNotiMail": recibirEmail,
@@ -148,16 +148,16 @@ def profile_telegram():
 @confirm_mail_required()
 def panel(id_super):
     token = request.cookies.get('token')
-    url = f'http://ljragusa.com.ar:3001/notificaciones/getNotificaciones/{id_super}'
+    url = f'http://186.13.28.124:3001/notificaciones/getNotificaciones/{id_super}'
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
-    url = f'http://ljragusa.com.ar:3001/sucursales/{id_super}'
+    url = f'http://186.13.28.124:3001/sucursales/{id_super}'
     respuesta2 = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta2)
     nombrePlano = respuesta2.json()['nombrePlano']
-    url = f'http://ljragusa.com.ar:3001/maquina/{id_super}'
+    url = f'http://186.13.28.124:3001/maquina/{id_super}'
     respuesta3 = requests.request("GET", url, headers=headers, data=payload)
     maquinas = respuesta3.json()
     notificaciones = respuesta.json()
@@ -169,7 +169,7 @@ def panel(id_super):
 @login_required
 @confirm_mail_required()
 def devMediciones(idSucursal,idMaquina):
-    url = f'http://ljragusa.com.ar:3001/mediciones/{idMaquina}'
+    url = f'http://186.13.28.124:3001/mediciones/{idMaquina}'
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     respuesta= requests.request("GET", url, headers=headers, data=payload)
@@ -186,7 +186,7 @@ def devMediciones(idSucursal,idMaquina):
 @confirm_mail_required()
 def parametro(idSucursal,idMaquina,parametro):
     if request.method=='GET':
-        url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}'
+        url = f'http://186.13.28.124:3001/parameters/{idMaquina}'
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         respuesta= requests.request("GET", url, headers=headers, data=payload)
@@ -214,7 +214,7 @@ def parametro(idSucursal,idMaquina,parametro):
         else: minimo=request.form.get('minimo')
         if request.form.get('maximo') == None: maximo='null' 
         else: maximo=request.form.get('maximo')
-        url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}'
+        url = f'http://186.13.28.124:3001/parameters/{idMaquina}'
         payload={
             minimobody: minimo,
             maximobody: maximo
@@ -232,7 +232,7 @@ def parametro(idSucursal,idMaquina,parametro):
 @confirm_mail_required()
 def importancia(idSucursal,idMaquina,parametro):
     if request.method=='GET':
-        url = f'http://ljragusa.com.ar:3001/importanciaParametro/{idMaquina}'
+        url = f'http://186.13.28.124:3001/importanciaParametro/{idMaquina}'
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         respuesta= requests.request("GET", url, headers=headers, data=payload)
@@ -264,7 +264,7 @@ def importancia(idSucursal,idMaquina,parametro):
             descripcionParametro='Consumo'
         return render_template('home/editarimportancia.html', segment='index', idAlgo=idAlgo, tipoImportancia=tipoImportancia, idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
     elif request.method=='POST':
-        url = f'http://ljragusa.com.ar:3001/importanciaParametro/{idMaquina}'
+        url = f'http://186.13.28.124:3001/importanciaParametro/{idMaquina}'
         payload={
             'id': request.form.get('idAlgo'),
             'idMaquina': idMaquina,
@@ -303,7 +303,7 @@ def graficos(idSucursal,idMaquina):
         elif periodo_seleccionado == '5':
             fechaInicio = (datetime.now() - relativedelta(months=4)).strftime("%Y-%m-%d")
             fechaFin = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
-        url = f'http://ljragusa.com.ar:3001/graphics/?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idMaquina={idMaquina}'
+        url = f'http://186.13.28.124:3001/graphics/?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idMaquina={idMaquina}'
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         respuesta= requests.request("GET", url, headers=headers, data=payload)
@@ -325,7 +325,7 @@ def graficos(idSucursal,idMaquina):
 @confirm_mail_required()
 def reportes():
     if request.method=='GET':
-        url = "http://ljragusa.com.ar:3001/sucursales/token"
+        url = "http://186.13.28.124:3001/sucursales/token"
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         respuesta = requests.request("GET", url, headers=headers, data=payload)
@@ -353,10 +353,10 @@ def reportes():
             fechaFin = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
-        url = f'http://ljragusa.com.ar:3001/graphics/pieChart?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idSucursal={idSucursal}'
+        url = f'http://186.13.28.124:3001/graphics/pieChart?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idSucursal={idSucursal}'
         respuestaPie= requests.request("GET", url, headers=headers, data=payload)
         verifSesión(respuestaPie)
-        url = f'http://ljragusa.com.ar:3001/graphics/consumptionChart?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idSucursal={idSucursal}'
+        url = f'http://186.13.28.124:3001/graphics/consumptionChart?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idSucursal={idSucursal}'
         respuestaConsum= requests.request("GET", url, headers=headers, data=payload)
         verifSesión(respuestaConsum)
         datosP = respuestaPie.json()
@@ -405,7 +405,7 @@ def verifSesión(respuesta):
 
 
 def getOne(token):
-    url = "http://ljragusa.com.ar:3001/users/"
+    url = "http://186.13.28.124:3001/users/"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)

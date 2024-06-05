@@ -23,7 +23,7 @@ def login():
         email  = request.form['email']
         password = request.form['password']
         
-        url = "http://ljragusa.com.ar:3001/users/login"
+        url = "http://186.13.28.124:3001/users/login"
         payload={
             "email": email,
             "password": password
@@ -31,6 +31,8 @@ def login():
         headers = {}
         try:    
             respuesta = requests.request("POST", url, headers=headers, data=payload)
+            print(respuesta.status_code)
+            print(respuesta.json())
         except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
@@ -59,7 +61,7 @@ def login():
                                     msg='No confirmó su mail, por favor revise su casilla de correo',
                                     form=login_form)
         else:
-            print("El error obtenido es distinto a 200,401,403 y es:"+ respuesta.status_code)
+            print("El error obtenido es distinto a 200,401,403 y es:"+ str(respuesta.status_code))
             return abort(500)
 
     if not current_user.is_authenticated:
@@ -79,7 +81,7 @@ def register():
         nombre = request.form['name']
         apellido = request.form['surname']
         token = request.cookies.get('token')
-        url = "http://ljragusa.com.ar:3001/users/"
+        url = "http://186.13.28.124:3001/users/"
         payload={
                 "email": email,
                 "password": password,
@@ -142,7 +144,7 @@ def roles_email_conocido():
         
     elif (request.method == 'POST'):        
         email = request.form['email']
-        url = "http://ljragusa.com.ar:3001/users/checkEmail"
+        url = "http://186.13.28.124:3001/users/checkEmail"
         payload={
             "email": email
         }
@@ -167,7 +169,7 @@ def roles_email_conocido():
 @confirm_mail_required()
 @role_required('Admin')
 def roles_lista():
-    url = "http://ljragusa.com.ar:3001/users/getEmployees"
+    url = "http://186.13.28.124:3001/users/getEmployees"
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
@@ -186,7 +188,7 @@ def roles_lista_seleccionado(email_empleado,rol_actual):
 @confirm_mail_required()
 @role_required('Admin')
 def baja_usuario():
-    url = "http://ljragusa.com.ar:3001/users/getEmployees"
+    url = "http://186.13.28.124:3001/users/getEmployees"
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
@@ -198,7 +200,7 @@ def baja_usuario():
 @confirm_mail_required()
 @role_required('Admin')
 def baja_usuario_accion(idUsuario):
-    url = "http://ljragusa.com.ar:3001/users/"+idUsuario
+    url = "http://186.13.28.124:3001/users/"+idUsuario
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     try:
@@ -207,7 +209,7 @@ def baja_usuario_accion(idUsuario):
         print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
         return abort(500)
     if respuesta.status_code == 200:
-        url = "http://ljragusa.com.ar:3001/users/getEmployees"
+        url = "http://186.13.28.124:3001/users/getEmployees"
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         respuesta2 = requests.request("GET", url, headers=headers, data=payload)
@@ -222,7 +224,7 @@ def baja_usuario_accion(idUsuario):
 @confirm_mail_required()
 @role_required('Admin')
 def alta_usuario_accion(idUsuario):
-    url = "http://ljragusa.com.ar:3001/users/restore/"+idUsuario
+    url = "http://186.13.28.124:3001/users/restore/"+idUsuario
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     try:
@@ -231,7 +233,7 @@ def alta_usuario_accion(idUsuario):
         print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
         return abort(500)
     if respuesta.status_code == 200:
-        url = "http://ljragusa.com.ar:3001/users/getEmployees"
+        url = "http://186.13.28.124:3001/users/getEmployees"
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         respuesta2 = requests.request("GET", url, headers=headers, data=payload)
@@ -250,7 +252,7 @@ def mailconfirmation():
 @confirm_mail_required()
 @role_required('Admin')
 def asignar_sucursales(): 
-    url = "http://ljragusa.com.ar:3001/users/getEmployees"
+    url = "http://186.13.28.124:3001/users/getEmployees"
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
@@ -263,7 +265,7 @@ def asignar_sucursales():
 @role_required('Admin')
 def asignar_sucursales_email_seleccionado(email_empleado): 
     if (request.method == 'GET'):
-        url = "http://ljragusa.com.ar:3001/sucursales/email/"+email_empleado
+        url = "http://186.13.28.124:3001/sucursales/email/"+email_empleado
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         try:
@@ -279,7 +281,7 @@ def asignar_sucursales_email_seleccionado(email_empleado):
 @confirm_mail_required()
 @role_required('Admin')
 def actualizar_sucursal(email_empleado,sucursalId,estado):
-    url = "http://ljragusa.com.ar:3001/sucursales/"
+    url = "http://186.13.28.124:3001/sucursales/"
     payload={
         "email": email_empleado,
         "idSucursal": sucursalId,
@@ -297,7 +299,7 @@ def actualizar_sucursal(email_empleado,sucursalId,estado):
 
 @blueprint.route('/confirmEmail/<string:token>', methods=['GET'])
 def confirmEmail(token):
-    url = "http://ljragusa.com.ar:3001/users/confirmEmail/"+token
+    url = "http://186.13.28.124:3001/users/confirmEmail/"+token
     payload={}
     headers = {}
     try:
@@ -354,7 +356,7 @@ def verifSesion(respuesta):
         return abort(500)
 
 def getRoles():
-    url = "http://ljragusa.com.ar:3001/roles/"
+    url = "http://186.13.28.124:3001/roles/"
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     try:
@@ -367,7 +369,7 @@ def getRoles():
 
 def asignarRol(idUsuario,idRol):
     idUsuarioStr=str(idUsuario)
-    url = "http://ljragusa.com.ar:3001/users/"+idUsuarioStr
+    url = "http://186.13.28.124:3001/users/"+idUsuarioStr
     payload={
             "idRol": idRol,
         }
@@ -381,7 +383,7 @@ def asignarRol(idUsuario,idRol):
     return respuesta
 
 def getSucursales():
-    url = "http://ljragusa.com.ar:3001/sucursales/"
+    url = "http://186.13.28.124:3001/sucursales/"
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     try:
