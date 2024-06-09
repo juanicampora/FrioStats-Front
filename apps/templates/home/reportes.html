@@ -5,17 +5,16 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 <link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<style>
+  .table tbody tr,
+  .table tbody td {
+    padding: 0.25rem;
+    /* Reduce padding */
+    height: 1.5rem;
+    /* Reduce row height */
+  }
+</style>
 {% endblock stylesheets %} {% block content %}
-<header class="navbar pcoded-header navbar-expand-lg">
-  <div class="collapse navbar-collapse">
-    <ul class="navbar-nav" style=" width: 100%;display: flex;justify-content: center;">
-      <li>
-        <b style="text-align: center; font-size:xx-large; color: #888;">Reporte de la sucursal {{idSucursal}}</b>
-      </li>
-    </ul>
-  </div>
-</header>
-
 <div class="pcoded-main-container">
   <div class="pcoded-wrapper">
     <div class="pcoded-content" style="padding-top: 10px;">
@@ -53,46 +52,68 @@
                 </div>
               </div>
               {% else %}
-
               <div class="col-md-12">
                 <div class="container">
-                  <div class="row mb-4">
+                  <h1 style="text-align: center;margin-bottom: 20px;"> Reporte de la Sucursal {{idSucursal}}</h1>
+                  <div class="row mb-4" style="display: flex;justify-content: center; font-size: large;">
+                    <div class="col-md-3">
+                      <table class="table table-striped">
+                        <thead style="background-color: gray;">
+                          <tr>
+                            <th scope="col">Máquina</th>
+                            <th scope="col">Notificaciones Graves</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for i in range(datosP.labelsGrave | length) %}
+                          <tr>
+                            <td>{{ datosP.labelsGrave[i] }}</td>
+                            <td>{{ datosP.valueGrave[i] }}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="col-md-3">
+                      <table class="table table-striped">
+                        <thead style="background-color: gray;">
+                          <tr>
+                            <th scope="col">Máquina</th>
+                            <th scope="col">Notificaciones Leves</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for i in range(datosP.labelsLeve | length) %}
+                          <tr>
+                            <td>{{ datosP.labelsLeve[i] }}</td>
+                            <td>{{ datosP.valueLeve[i] }}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="row mb-4" style="display: flex;justify-content: center;">
                     <div class="col">
+                      <h4 style="text-align: center;text-decoration: underline;margin-bottom: 10px;">Notificaciones
+                        Graves por Máquina</h4>
                       <canvas id="gNotiGrave"></canvas>
                     </div>
                     <div class="col">
+                      <h4 style="text-align: center;text-decoration: underline; margin-bottom: 10px;">Notificaciones
+                        Graves por Máquina</h4>
                       <canvas id="gNotiLeve"></canvas>
                     </div>
                   </div>
                   <div class="row mb-4">
                     <div class="col">
-                      <canvas id="gPuerta"></canvas>
+                      <canvas id="gConsumo"></canvas>
                     </div>
                     <div class="col">
                       <canvas id="gCooler"></canvas>
                     </div>
                   </div>
-                  <!-- <div class="row mb-4">
-                    <div class="col">
-                      <canvas id="gPuntoRocio"></canvas>
-                    </div>
-                    <div class="col">
-                      <canvas id="gLuz"></canvas>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col">
-                      <canvas id="gConsumo"></canvas>
-                    </div>
-                    <div class="col">
-
-                    </div>
-                  </div> -->
                 </div>
-              </div>
-              <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <canvas id="gTodos"></canvas>
-                <h4 style="text-align: center;">(consumo y cooler fueron escalados x0.01)</h4>
               </div>
               {% endif %}
             </div>
@@ -111,13 +132,11 @@
   var gNotiGrave = new Chart(ctx1, {
     type: 'pie',
     data: {
-      labels: {{ datos.labelsGrave | safe }},
+      labels: {{ datosP.labelsGrave | safe }},
   datasets: [{
-    label: 'Cantidad de notificaciones graves por máquina', color: textColor,
-    data: {{ datos.valuesGrave | safe }},
-    borderColor: 'rgb(229, 152, 102)', borderWidth: 6,
-    fill: false, cubicInterpolationMode: 'monotone', tension: 0.4
-        },],},
+    label: 'Cantidad de notificaciones graves', color: textColor,
+    data: {{ datosP.valueGrave | safe }}    
+      },],},
   options: {
     plugins: {
       legend: {
@@ -128,7 +147,7 @@
     },
     scales: {
       x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
-      y: { title: { display: true, color: textColor, text: 'Temperatura (°C)' } , ticks: { color: textColor }, grid: { color: '#85929E' } }
+      y: { title: { display: true, color: textColor, text: 'Notificaciones graves' } , ticks: { color: textColor }, grid: { color: '#85929E' } }
     }
 
   }
@@ -140,9 +159,7 @@
       labels: {{ datosP.labelsLeve | safe }},
   datasets: [{
     label: 'Cantidad de notificaciones leves por máquina',
-    data: {{ datos.valuesLeve | safe }},
-    borderColor: 'rgb(128, 0, 0)', borderWidth: 6,
-    fill: false, cubicInterpolationMode: 'monotone', tension: 0.4
+    data: {{ datosP.valueLeve | safe }},
         },],},
   options: {
     plugins: {
@@ -154,139 +171,12 @@
     },
     scales: {
       x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
-      y: { title: { display: true, color: textColor, text: 'Temperatura (°C)' }, ticks: { color: textColor }, grid: { color: '#85929E' } }
+      y: { title: { display: true, color: textColor, text: 'Notificaciones leves' }, ticks: { color: textColor }, grid: { color: '#85929E' } }
     }
   }
   });
-  // var ctx3 = document.getElementById('gPuerta').getContext('2d');
-  // var gPuerta = new Chart(ctx3, {
-  //   type: 'line',
-  //   data: {
-  //     labels: {{ datos.labelsSensorPuerta | safe }},
-  // datasets: [{
-  //   label: 'Puerta',
-  //   data: {{ datos.valuesSensorPuerta | safe }},
-  //   borderColor: 'rgb(125, 60, 152)', borderWidth: 6,
-  //   fill: false, tension: 0.4,
-  //   stepped: true
-  //       },],},
-  // options: {
-  //   plugins: {
-  //     legend: {
-  //       labels: {
-  //         color: textColor,
-  //       },
-  //     },
-  //   },
-  //   interaction: { intersect: false, axis: 'x' },
-  //   scales: {
-  //     x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
-  //     y: { title: { display: true, color: textColor, text: 'Estado (Abierto-Cerrado)' }, min: 0, max: 1, ticks: { color: textColor, stepSize: 1 } }
-  //   }
-  // }
-  // });
-  // var ctx4 = document.getElementById('gCooler').getContext('2d');
-  // var gCooler = new Chart(ctx4, {
-  //   type: 'line',
-  //   data: {
-  //     labels: {{ datos.labelsSensorRpmCooler | safe }},
-  // datasets: [{
-  //   label: 'Cooler',
-  //   data: {{ datos.valuesSensorRpmCooler | safe }},
-  //   borderColor: 'rgb(4, 169, 245)', borderWidth: 6,
-  //   fill: false, tension: 0.4,
-  //       },],},
-  // options: {
-  //   plugins: {
-  //     legend: {
-  //       labels: {
-  //         color: textColor,
-  //       },
-  //     },
-  //   },
-  //   scales: {
-  //     x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
-  //     y: { title: { display: true, color: textColor, text: 'Velocidad (RPM)' }, ticks: { color: textColor }, grid: { color: '#85929E' } }
-  //   }
-  // }
-  // });
-  // var ctx5 = document.getElementById('gPuntoRocio').getContext('2d');
-  // var gPuntoRocio = new Chart(ctx5, {
-  //   type: 'line',
-  //   data: {
-  //     labels: {{ datos.labelsSensorPuntoRocio | safe }},
-  // datasets: [{
-  //   label: 'Punto de Rocío',
-  //   data: {{ datos.valuesSensorPuntoRocio | safe }},
-  //   borderColor: 'rgb(40, 180, 99)', borderWidth: 6,
-  //   fill: false, tension: 0.4,
-  //       },],},
-  // options: {
-  //   plugins: {
-  //     legend: {
-  //       labels: {
-  //         color: textColor,
-  //       },
-  //     },
-  //   },
-  //   scales: {
-  //     x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
-  //     y: { title: { display: true, color: textColor, text: 'Temperatura (°C)' }, ticks: { color: textColor }, grid: { color: '#85929E' } }
-  //   }
-  // }
-  // });
-  // var ctx6 = document.getElementById('gLuz').getContext('2d');
-  // var gLuz = new Chart(ctx6, {
-  //   type: 'line',
-  //   data: {
-  //     labels: {{ datos.labelsSensorLuz | safe }},
-  // datasets: [{
-  //   label: 'Luz',
-  //   data: {{ datos.valuesSensorLuz | safe }},
-  //   borderColor: 'rgb(241, 196, 15)', borderWidth: 6,
-  //   fill: false, tension: 0.4,
-  //   stepped: true
-  //       },],},
-  // options: {
-  //   plugins: {
-  //     legend: {
-  //       labels: {
-  //         color: textColor,
-  //       },
-  //     },
-  //   },
-  //   interaction: { intersect: false, axis: 'x' },
-  //   scales: {
-  //     x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
-  //     y: { title: { display: true, color: textColor, text: 'Estado (PRENDIDO/APAGADO)' }, min: 0, max: 1, ticks: { color: textColor, stepSize: 1 } }
-  //   }
-  // }
-  // });
-  // var ctx7 = document.getElementById('gConsumo').getContext('2d');
-  // var gConsumo = new Chart(ctx7, {
-  //   type: 'line',
-  //   data: {
-  //     labels: {{ datos.labelsSensorConsumo | safe }},
-  // datasets: [{
-  //   label: 'Consumo',
-  //   data: {{ datos.valuesSensorConsumo | safe }},
-  //   borderColor: 'rgb(231, 76, 60)', borderWidth: 6,
-  //   fill: false, tension: 0.4,
-  //       },],},
-  // options: {
-  //   plugins: {
-  //     legend: {
-  //       labels: {
-  //         color: textColor,
-  //       },
-  //     },
-  //   },
-  //   scales: {
-  //     x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
-  //     y: { title: { display: true, color: textColor, text: 'Consumo (Watts)' }, ticks: { color: textColor } , grid: { color: '#85929E' } }
-  //   }
-  // }
-  // });
+
+
 </script>
 
 {% endblock javascripts %}

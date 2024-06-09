@@ -359,8 +359,10 @@ def reportes():
         url = f'http://186.13.28.124:3001/graphics/consumptionChart?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idSucursal={idSucursal}'
         respuestaConsum= requests.request("GET", url, headers=headers, data=payload)
         verifSesión(respuestaConsum)
-        datosP = respuestaPie.json()
-        datosC = respuestaConsum.json()
+        datosP = respuestaPie.json()[0]
+        datosC = respuestaConsum.json()[0]
+        print(datosP)
+        print(datosC)
         return render_template('home/reportes.html', segment='reportes', datosC=datosC, datosP=datosP, idSucursal=idSucursal)
     
 # Errors
