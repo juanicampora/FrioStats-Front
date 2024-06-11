@@ -14,6 +14,9 @@
     /* Reduce row height */
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"
+  integrity="sha512-YcsIPGdhPK4P/uRW6/sruonlYj+Q7UHWeKfTAkBW+g83NKM+jMJFJ4iAPfSnVp7BKD4dKMHmVSvICUbE/V1sSw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% endblock stylesheets %} {% block content %}
 <div class="pcoded-main-container">
   <div class="pcoded-wrapper">
@@ -52,13 +55,13 @@
                 </div>
               </div>
               {% else %}
-              <div class="col-md-12">
+              <div class="col-md-12" id="para-pdf">
                 <div class="container">
                   <h1 style="text-align: center;margin-bottom: 20px;"> Reporte de la Sucursal {{idSucursal}}</h1>
                   <div class="row mb-4" style="display: flex;justify-content: center; font-size: large;">
                     <div class="col-md-3">
                       <table class="table table-striped">
-                        <thead style="background-color: gray;">
+                        <thead style="background-color: rgb(193, 193, 193);">
                           <tr>
                             <th scope="col">Máquina</th>
                             <th scope="col">Notificaciones Graves</th>
@@ -76,7 +79,7 @@
                     </div>
                     <div class="col-md-3">
                       <table class="table table-striped">
-                        <thead style="background-color: gray;">
+                        <thead style="background-color: rgb(193, 193, 193);">
                           <tr>
                             <th scope="col">Máquina</th>
                             <th scope="col">Notificaciones Leves</th>
@@ -101,19 +104,68 @@
                     </div>
                     <div class="col">
                       <h4 style="text-align: center;text-decoration: underline; margin-bottom: 10px;">Notificaciones
-                        Graves por Máquina</h4>
+                        Leves por Máquina</h4>
                       <canvas id="gNotiLeve"></canvas>
                     </div>
                   </div>
-                  <div class="row mb-4">
+                  <div class="row mb-4" style="display: flex;justify-content: center; font-size: large;">
+                    <div class="col-md-4">
+                      <table class="table table-striped">
+                        <thead style="background-color: rgb(193, 193, 193);">
+                          <tr>
+                            <th scope="col">Día</th>
+                            <th scope="col">Máquina</th>
+                            <th scope="col">Consumo</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for i in range(datosC.valueConsumo | length) %}
+                          {% for j in range(datosC.labelMaquina | length) %}
+                          <tr>
+                            <td>{{ datosC.labelsConsumo[i] }}</td>
+                            <td>{{ datosC.labelMaquina[j] }}</td>
+                            <td>{{ datosC.valueConsumo[i][j] }}</td>
+                          </tr>
+                          {% endfor %}
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="col-md-4">
+                      <table class="table table-striped">
+                        <thead style="background-color: rgb(193, 193, 193);">
+                          <tr>
+                            <th scope="col">Día</th>
+                            <th scope="col">Consumo Sucursal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for i in range(labelsCS | length) %}
+                          <tr>
+                            <td>{{ labelsCS[i] }}</td>
+                            <td>{{ valueCS[i] }}</td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="row">
                     <div class="col">
+                      <h4 style="text-align: center;text-decoration: underline;margin-bottom: 10px;">Consumo diario por
+                        Máquina</h4>
                       <canvas id="gConsumo"></canvas>
                     </div>
                     <div class="col">
-                      <canvas id="gCooler"></canvas>
+                      <h4 style="text-align: center;text-decoration: underline;margin-bottom: 10px;">Consumo diario de
+                        toda la sucursal</h4>
+                      <canvas id="gConsumoSucursal"></canvas>
                     </div>
                   </div>
                 </div>
+              </div>
+              <div style="flex: auto; text-align: center;">
+                <button class="btn-lg btn-primary mt-4 mb-4" id="generate-pdf-btn" onclick="generarPDF()">Generar PDF</button>
               </div>
               {% endif %}
             </div>
@@ -127,6 +179,18 @@
 {% block javascripts %}
 <script>
   const theme = localStorage.getItem("theme"); // Get the theme from darkmode.js
+  const pdfButton = document.getElementById('generate-pdf-btn');
+  if (theme === "dark") {
+    pdfButton.disabled = true;
+    pdfButton.setAttribute("data-toggle", "tooltip");
+    pdfButton.setAttribute("data-placement", "right");
+    pdfButton.setAttribute("title", "Debe estar en modo claro para generar PDF.");
+  } else {
+    pdfButton.disabled = false;
+    pdfButton.removeAttribute("data-toggle");
+    pdfButton.removeAttribute("data-placement");
+    pdfButton.removeAttribute("title");
+  }  
   const textColor = theme === "dark" ? "white" : "dark"; // Set text color based on theme
   var ctx1 = document.getElementById('gNotiGrave').getContext('2d');
   var gNotiGrave = new Chart(ctx1, {
@@ -175,8 +239,76 @@
     }
   }
   });
-
+  var ctx3 = document.getElementById('gConsumo').getContext('2d');
+  var gConsumo = new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels: {{ datosC.labelsConsumo | safe }},
+  datasets: [
+    {% for i in range(datosC.labelMaquina | length) %}
+  {
+      label: '{{ datosC.labelMaquina[i] }}',
+      data: {{ datosC.valueConsumo[i] }},
+  },
+  {% endfor %}
+    ],},
+  options: {
+    plugins: {
+      legend: {
+        labels: {
+          color: textColor,
+        },
+      },
+    },
+    interaction: { intersect: false, axis: 'x' },
+    scales: {
+      x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
+      y: { title: { display: true, color: textColor, text: 'Consumo (Watts)' }, ticks: { color: textColor } }
+    }
+  }
+  });
+  var ctx4 = document.getElementById('gConsumoSucursal').getContext('2d');
+  var gConsumoSucursal = new Chart(ctx4, {
+    type: 'bar',
+    data: {
+      labels: {{ labelsCS | safe }},
+  datasets: [
+    {
+      label: 'Consumo:',
+      data: {{ valueCS }},
+  },
+  ],},
+  options: {
+    plugins: {
+      legend: {
+        labels: {
+          color: textColor,
+        },
+      },
+    },
+    interaction: { intersect: false, axis: 'x' },
+    scales: {
+      x: { ticks: { color: textColor }, grid: { color: '#85929E' } },
+      y: { title: { display: true, color: textColor, text: 'Consumo (Watts)' }, ticks: { color: textColor } }
+    }
+  }
+  });
 
 </script>
+<script>
+  function generarPDF() {
+    // Seleccionar el contenido a convertir en PDF
+    const elemento = document.getElementById('para-pdf');
+    
+    // Configuración de html2pdf.js
+    const opciones = {
+      filename: 'Reporte.pdf',
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
+    };
 
+    // Generar el PDF
+    html2pdf().from(elemento).set(opciones).save();
+  }
+</script>
 {% endblock javascripts %}

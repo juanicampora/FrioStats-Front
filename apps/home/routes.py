@@ -9,6 +9,8 @@ from flask import abort, jsonify, render_template,redirect, request, url_for
 from flask_login import login_required, logout_user
 from jinja2 import Template, TemplateNotFound
 from apps import  login_manager
+# from weasyprint import HTML
+# from bs4 import BeautifulSoup
 
 @blueprint.route('/index')
 @login_required
@@ -358,13 +360,33 @@ def reportes():
         verifSesión(respuestaPie)
         url = f'http://186.13.28.124:3001/graphics/consumptionChart?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idSucursal={idSucursal}'
         respuestaConsum= requests.request("GET", url, headers=headers, data=payload)
+        print(idSucursal)
+        print(respuestaConsum.json())
         verifSesión(respuestaConsum)
         datosP = respuestaPie.json()[0]
         datosC = respuestaConsum.json()[0]
-        print(datosP)
-        print(datosC)
-        return render_template('home/reportes.html', segment='reportes', datosC=datosC, datosP=datosP, idSucursal=idSucursal)
+        
+        sumas=[]
+        for i in range(len(datosC['valueConsumo'])):
+            for j in range(len(datosC['valueConsumo'][i])):
+                if i==0:
+                    sumas.append(datosC['valueConsumo'][i][j])
+                else:
+                    sumas[j]+=datosC['valueConsumo'][i][j]
+        
+        promedios=[]
+        for i in range(len(sumas)):
+            promedios.append(round(sumas[i]/len(datosC['valueConsumo'][0])))
+        valueCS=promedios
+        labelsCS=datosC['labelsConsumo']
+        return render_template('home/reportes.html', segment='reportes', datosC=datosC, datosP=datosP, idSucursal=idSucursal, valueCS=valueCS, labelsCS=labelsCS)
+
+# @blueprint.route('/descargar', methods=['GET'])
+# @login_required
+# @confirm_mail_required()    
+# def descargar():
     
+
 # Errors
 
 @blueprint.route('/error')         #Ruta de Error generico

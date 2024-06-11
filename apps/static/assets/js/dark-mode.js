@@ -69,7 +69,6 @@ themeSwitch.addEventListener('change', function () {
         const desiredPathRegex3 = /^\/reportes\/?$/;
         const isMatchingPath3 = desiredPathRegex3.test(currentPath);
         if (isMatchingPath2 || isMatchingPath3) {
-            console.log('ENTROOOOOOOOOOOOOOOOO');
             location.reload();
         }
     }
