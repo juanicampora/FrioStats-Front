@@ -31,8 +31,6 @@ def login():
         headers = {}
         try:    
             respuesta = requests.request("POST", url, headers=headers, data=payload)
-            print(respuesta.status_code)
-            print(respuesta.json())
         except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
