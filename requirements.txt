@@ -47,3 +47,4 @@ URLObject==2.4.3
 Werkzeug==2.0.3
 WTForms==3.0.0
 xxhash==3.2.0
+python-dateutil==2.9.0

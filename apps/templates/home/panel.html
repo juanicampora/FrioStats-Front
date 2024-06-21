@@ -4,10 +4,8 @@
 {% block stylesheets %}
 <link rel="stylesheet" href="../static/assets/css/tablaalerta.css" />
 <link rel="stylesheet" href="../static/assets/css/maquinasenplano.css" />
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
-/>
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <style>
   .tablaoculta {
     display: none;
@@ -17,14 +15,14 @@
 {% endblock stylesheets %} {% block content %}
 <div class="pcoded-main-container">
   <div class="pcoded-wrapper">
-    <div class="pcoded-content">
+    <div class="pcoded-content" style="padding-top: 10px;">
       <div class="pcoded-inner-content">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
           <div class="page-block">
             <div class="row align-items-center">
               <div class="col-md-12">
-                <ul class="breadcrumb">
+                <ul class="breadcrumb" style="margin-bottom: 0px;">
                   <li class="breadcrumb-item">
                     <a href="/"><i class="feather icon-home"></i></a>
                   </li>
@@ -39,155 +37,252 @@
         <!-- [ breadcrumb ] end -->
         <div class="main-body">
           <div class="page-wrapper">
+            {% if notificaciones['elemts']|length != 0 %}
             <div class="row">
               <div class="col-xl-12 col-md-6">
-                <div class="card Recent-Users">
-                  <div class="card-header">
+                <div class="card Recent-Users" style="margin-bottom: 10px;">
+                  <div class="card-header" style="padding-top: 15px; padding-bottom: 15px;">
                     <h5>Notificaciones</h5>
                   </div>
                   <div class="card-block px-0 py-0">
                     <div class="table-responsive">
                       <table class="table">
                         <tbody>
+                          <tr>
+                            <td style="width:300px"><button type="button" class="btn-sm btn-success"
+                                onclick="marcarLeidoTodas()"> ✔ </button> Marcar todas como leído</td>
+                            <td style="width:300px"><span class="tabla-alerta-rojo"
+                                style="padding:10px; color: black;">Alta importancia</span></td>
+                            <td><span class="tabla-alerta-amarillo" style="padding:10px; color: black;">Baja
+                                importancia</span></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div id="carousel" class="carousel">
+                      {% for maquina in notificaciones['elemts'] %}
+                      {% for noti in maquina['Notificaciones'] %}
+                      {% if noti['Tipo']['id']==2 %}
+                      {% if contador['val'] == 0 %}
+                      <div class="carousel-item">
+                        <div class="table-responsive">
+                          <table class="table">
+                            <tbody>
+                              <thead>
+                                <th style="width:100px">Marcar como leído</th>
+                                <th style="width:100px">Máquina N°</th>
+                                <th style="width:200px">Hora y Fecha</th>
+                                <th>Detalle de la notificación</th>
+                              </thead>
+                              {% endif %}
+
+
+                              <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-rojo">
+                                <td><button type="button" class="btn-sm btn-success"
+                                    onclick="marcarLeido({{ noti['id'] }})"> ✔ </button></td>
+                                <td>{{maquina['idMaqSuc']}}</td>
+                                {% set desc= noti['descripcion'].split('||') %}
+                                <td>{{desc[1]}}</td>
+                                <td>{{desc[0]}}</td>
+                                <!-- <td>{{noti['descripcion']}}</td> -->
+                                <!-- Como el de arriba pero hasta la parte del texto que dice '||' -->
+
+                              </tr>
+                              {% if contador['val'] == 5 %}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      {% set _ = contador.update({'paginas': contador['paginas']+1}) %}
+                      {% set _ = contador.update({'val': 0}) %}
+                      {% else %}
+                      {% set _ = contador.update({'val': contador['val']+1}) %}
+                      {% endif %}
+                      {% endif %}
+                      {% endfor %}
+                      {% endfor %}
+                      {% if contador['val'] > 0 %}
+                      </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  {% set _ = contador.update({'val': 0}) %}
+                  {% set _ = contador.update({'paginas': contador['paginas']+1}) %}
+                  {% endif %}
+                  {% for maquina in notificaciones['elemts'] %}
+                  {% for noti in maquina['Notificaciones'] %}
+                  {% if noti['Tipo']['id']==1 %}
+                  {% if contador2['val'] == 0 %}
+                  <div class="carousel-item">
+                    <div class="table-responsive">
+                      <table class="table">
+                        <tbody>
                           <thead>
-                            <th>Acción</th>
-                            <th>Máquina N°</th>
+                            <th style="width:100px">Marcar como leído</th>
+                            <th style="width:100px">Máquina N°</th>
+                            <th style="width:200px">Hora y Fecha</th>
                             <th>Detalle de la notificación</th>
                           </thead>
-                          {% for maquina in notificaciones['elemts'] %} {% for
-                          noti in maquina['Notificaciones'] %} {% if
-                          noti['Tipo']['id']==1 %}
-                          <tr
-                            id="notificacion-{{ noti['id'] }}"
-                            class="tabla-alerta-amarillo"
-                          >
-                            {% else %}
-                          </tr>
-
-                          <tr
-                            id="notificacion-{{ noti['id'] }}"
-                            class="tabla-alerta-rojo"
-                          >
-                            {% endif %}
-                            <td>
-                              <button
-                                type="button"
-                                class="btn-sm btn-success"
-                                onclick="marcarLeido({{ noti['id'] }})"
-                              >
-                                ✔
-                              </button>
-                            </td>
+                          {% endif %}
+                          <tr id="notificacion-{{ noti['id'] }}" class="tabla-alerta-amarillo">
+                            <td><button type="button" class="btn-sm btn-success"
+                                onclick="marcarLeido({{ noti['id'] }})"> ✔ </button></td>
                             <td>{{maquina['idMaqSuc']}}</td>
-                            <td>{{noti['descripcion']}}</td>
+                            {% set desc2= noti['descripcion'].split('||') %}
+                            <td>{{desc2[1]}}</td>
+                            <td>{{desc2[0]}}</td>
+                            <!-- <td>{{noti['descripcion']}}</td> -->
+                            <!-- Como el de arriba pero hasta la parte del texto que dice '||' -->
+
                           </tr>
-                          {% endfor %} {% endfor %}
+                          {% if contador2['val'] == 5 %}
                         </tbody>
                       </table>
                     </div>
                   </div>
+                  {% set _ = contador2.update({'paginas': contador2['paginas']+1}) %}
+                  {% set _ = contador2.update({'val': 0}) %}
+                  {% else %}
+                  {% set _ = contador2.update({'val': contador2['val']+1}) %}
+                  {% endif %}
+                  {% endif %}
+                  {% endfor %}
+                  {% endfor %}
+                  {% if contador2['val'] > 0 %}
+                  </tbody>
+                  </table>
                 </div>
               </div>
+              {% set _ = contador2.update({'val': 0}) %}
+              {% set _ = contador2.update({'paginas': contador2['paginas']+1}) %}
+              {% endif %}
             </div>
-            <div class="row">
-              <div class="col-xl-12 col-md-6">
-                <div class="card Recent-Users">
-                  <div class="card-header">
-                    <h5>Plano del Supermercado</h5>
-                  </div>
-                  <div id="coordenadas">
-                    <!-- Para ver las coordenadas haciendo click en el plano  -->
-                    <!-- <h3>Coordenadas: <span id="coordenadasVal"></span></h3>  -->
-                  </div>
-
-                  <div class="containerplano">
-                    <div class="card-block px-0 py-0">
-                      <img
-                        id="plano"
-                        src="{{ url_for('static', filename='assets/images/plano.jpg') }}"
-                      />
-                      <div
-                        class="boton-maquina"
-                        id="boton1"
-                        idMaquina="1"
-                        style="left: 130px; top: 085px"
-                      >
-                        <span class="material-symbols-outlined">ac_unit</span>
-                      </div>
-                      <div
-                        class="boton-maquina"
-                        id="boton2"
-                        idMaquina="2"
-                        style="left: 130px; top: 220px"
-                      >
-                        <span class="material-symbols-outlined">ac_unit</span>
-                      </div>
-                      <div
-                        class="boton-maquina"
-                        id="boton3"
-                        idMaquina="3"
-                        style="left: 320px; top: 210px"
-                      >
-                        <span class="material-symbols-outlined">ac_unit</span>
-                      </div>
-                      <div
-                        class="boton-maquina"
-                        id="boton4"
-                        idMaquina="4"
-                        style="left: 586px; top: 171px"
-                      >
-                        <span class="material-symbols-outlined">kitchen</span>
-                      </div>
-                      <div
-                        class="boton-maquina"
-                        id="boton5"
-                        idMaquina="5"
-                        style="left: 668px; top: 046px"
-                      >
-                        <span class="material-symbols-outlined">ac_unit</span>
-                      </div>
-                      <div
-                        class="boton-maquina"
-                        id="boton6"
-                        idMaquina="6"
-                        style="left: 698px; top: 130px"
-                      >
-                        <span class="material-symbols-outlined">blanket</span>
-                      </div>
-                      <div
-                        class="boton-maquina"
-                        id="boton7"
-                        idMaquina="7"
-                        style="left: 703px; top: 227px"
-                      >
-                        <span class="material-symbols-outlined">ac_unit</span>
-                      </div>
-                      <div
-                        class="boton-maquina"
-                        id="boton8"
-                        idMaquina="8"
-                        style="left: 687px; top: 361px"
-                      >
-                        <span class="material-symbols-outlined">ac_unit</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="tablaoculta" id="tablaOcultar">
-              <div id="tabla-container"></div>
+            <div style="text-align: center;" class="mb-4">
+              <button type="button" class="btn btn-primary" id="anterior-btn">Anterior</button>
+              <button type="button" class="btn btn-primary" id="siguiente-btn">Siguiente</button>
+              <h5>Página de notificaciones <span id="pagina-info"></span> de <span id="paginas-info"></span></h5>
             </div>
           </div>
         </div>
       </div>
     </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-xl-12 col-md-6">
+        <div class="card Recent-Users" style="margin-bottom: 10px;">
+          <div class="card-header" style="padding-top: 15px; padding-bottom: 15px;">
+            <h5>Plano del Supermercado</h5>
+          </div>
+          <div id="coordenadas">
+            <!-- Para ver las coordenadas haciendo click en el plano  -->
+            <!-- <h3>Coordenadas: <span id="coordenadasVal"></span></h3>  -->
+          </div>
+          <div
+            style="display: flex; gap: 30px; text-align: center; margin: 0 auto; align-items: center; margin-top: 10px;">
+            <div style="display: flex;flex-direction: column;align-items: center;justify-content: center;">
+              <div class="boton-maquina" style="position: relative; background-color: #10b5ca;"><span
+                  class="material-symbols-outlined">blanket</span></div>
+              <h5>Góndola</h5>
+            </div>
+            <div style="display: flex;flex-direction: column;align-items: center;justify-content: center;">
+              <div class="boton-maquina" style="position: relative; background-color: #2b63ca;"><span
+                  class="material-symbols-outlined">kitchen</span></div>
+              <h5>Heladera</h5>
+            </div>
+            <div style="display: flex;flex-direction: column;align-items: center;justify-content: center;">
+              <div class="boton-maquina" style="position: relative; background-color: #3d3de6;"><span
+                  class="material-symbols-outlined">ac_unit</span></div>
+              <h5>Frigorífico</h5>
+            </div>
+          </div>
+          <div style="position: relative;">
+            <div class="card-block px-4 py-4">
+              <img id="plano" src="http://186.13.28.124/FrioStats/images/{{nombrePlano}}" />
+              {% if maquinas %}
+              {% for maquina in maquinas %}
+              {% if maquina['icono'] == 'blanket' %}
+              {% set color = '#10b5ca' %}
+              {% elif maquina['icono'] == 'kitchen' %}
+              {% set color = '#2b63ca' %}
+              {% elif maquina['icono'] == 'ac_unit' %}
+              {% set color = '#3d3de6' %}
+              {% endif %}
+              <div class="boton-maquina" id="boton{{ maquina['id'] }}" idMaquina="{{ maquina['id'] }}"
+                style="background-color: {{color}}; {{maquina['coords']}}" data-toggle="tooltip" data-placement="top"
+                title="Máquina {{maquina['id']}}"><span class="material-symbols-outlined">{{ maquina['icono'] }}</span>
+              </div>
+              {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tablaoculta" id="tablaOcultar">
+      <div id="tabla-container"></div>
+    </div>
   </div>
+</div>
+</div>
+</div>
+</div>
 </div>
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+<script>
+  // Botones de navegación
+  const anteriorBtn = document.getElementById('anterior-btn');
+  const siguienteBtn = document.getElementById('siguiente-btn');
+
+  // Carrusel
+  const carousel = document.getElementById('carousel');
+  let currentIndex = 0;
+  let cantPaginas = {{ contador['paginas'] }} + {{ contador2['paginas'] }};
+  actualizarPaginaInfo();
+  const items = carousel.querySelectorAll('.carousel-item');
+
+  // Ocultar todos los elementos excepto el primero
+  items.forEach((item, index) => {
+    if (index !== 0) {
+      item.style.display = 'none';
+    }
+    else {
+      item.style.display = 'block';
+    }
+  });
+
+  // Mostrar el índice anterior del carrusel
+  function mostrarAnterior() {
+    if (currentIndex > 0) {
+      items[currentIndex].style.display = 'none';
+      currentIndex--;
+      items[currentIndex].style.display = 'block';
+      actualizarPaginaInfo();
+    }
+  }
+
+  // Mostrar el índice siguiente del carrusel
+  function mostrarSiguiente() {
+    if (currentIndex < items.length - 1) {
+      items[currentIndex].style.display = 'none';
+      currentIndex++;
+      items[currentIndex].style.display = 'block';
+      actualizarPaginaInfo();
+    }
+  }
+
+  // Actualizar información de la página (currentIndex y cantPaginas)
+  function actualizarPaginaInfo() {
+    document.getElementById('pagina-info').textContent = currentIndex + 1;
+    document.getElementById('paginas-info').textContent = cantPaginas;
+  }
+
+  // Asignar eventos a los botones de navegación
+  anteriorBtn.addEventListener('click', mostrarAnterior);
+  siguienteBtn.addEventListener('click', mostrarSiguiente);
+</script>
 <script>
   function marcarLeido(notificacionId) {
     var fila = document.getElementById('notificacion-' + notificacionId);
@@ -205,9 +300,29 @@
     };
 
     fetch(
-      'http://ljragusa.com.ar:3001/notificaciones/' + notificacionId,
+      'http://186.13.28.124:3001/notificaciones/' + notificacionId,
       requestOptions
     );
+  }
+  function marcarLeidoTodas() {
+    var userToken = getCookie('token'); // Obtener el token de la cookie
+    var myHeaders = new Headers();
+    myHeaders.append('user-token', userToken);
+
+    var requestOptions = {
+      method: 'PATCH',
+      headers: myHeaders,
+      redirect: 'follow',
+    };
+
+    fetch(
+      'http://186.13.28.124:3001/notificaciones/checkAll/' + {{ id_super }},
+  requestOptions
+        ).then(response => {
+    if (response.status === 200) {
+      document.location.reload();
+    }
+  })
   }
 
   // Función para obtener el valor de una cookie por su nombre
@@ -223,35 +338,43 @@
   var id_super = {{ id_super }};
   botones.forEach(boton => {
     boton.addEventListener('click', () => {
-      tablaOcultar.style.display = 'block'; // Cambia el estilo para mostrar la tabla oculta
-      tablaOcultar.scrollIntoView({ behavior: 'smooth' }); // Desplaza la página al div con animación suave
+      tablaOcultar.style.display = 'block'; // Cambia el estilo para mostrar la tabla oculta      
       const idMaquina = boton.getAttribute('idMaquina'); // Obtiene el texto del atributo data-boton
-      //ver que hacer despues
       const url = `/medicion/${id_super}/${idMaquina}`;
       const tablaContainer = document.getElementById('tabla-container');
       fetch(url)
         .then(response => response.json())
         .then(data => {
           tablaContainer.innerHTML = data.tablamediciones;
+          tablaOcultar.scrollIntoView({ behavior: 'smooth' }); // Desplaza la página al div con animación suave
         });
     });
   });
 </script>
 
 <script>
-  // Función para manejar el clic en la imagen
-  //  function handleClick(event) {
-  //    const img = document.getElementById('plano');
-  //    const rect = img.getBoundingClientRect(); // Rectángulo que rodea la imagen
-  //    const offsetX = event.clientX - rect.left; // Coordenada x relativa en la imagen
-  //    const offsetY = event.clientY - rect.top;  // Coordenada y relativa en la imagen
-  //
-  //    const coordenadasVal = document.getElementById('coordenadasVal');
-  //    coordenadasVal.textContent = `Left: ${offsetX}px, Top: ${offsetY}px`;
-  //  }
-  //
-  //  // Agregar el evento click al elemento de la imagen
-  //  document.getElementById('plano').addEventListener('click', handleClick);
+  //   // Función para manejar el clic en la imagen
+  // function handleClick(event) {
+  //   const img = document.getElementById('plano');
+  //   const rect = img.getBoundingClientRect(); // Rectángulo que rodea la imagen
+  //   const offsetX = event.clientX - rect.left; // Coordenada x relativa en la imagen
+  //   const offsetY = event.clientY - rect.top;  // Coordenada y relativa en la imagen
+
+  //   // Obtener las dimensiones de la imagen en píxeles
+  //   const width = img.width;
+  //   const height = img.height;
+
+  //   // Convertir las coordenadas a porcentaje
+  //   const offsetXPercent = (offsetX / width) * 100;
+  //   const offsetYPercent = (offsetY / height) * 100;
+
+  //   // Mostrar las coordenadas en porcentaje
+  //   const coordenadasVal = document.getElementById('coordenadasVal');
+  //   coordenadasVal.textContent = `left: ${offsetXPercent.toFixed(2)}%; top: ${offsetYPercent.toFixed(2)}%`;
+  // }
+  // // Agregar el evento click al elemento de la imagen
+  // document.getElementById('plano').addEventListener('click', handleClick);
+
 </script>
 
 {% endblock javascripts %}

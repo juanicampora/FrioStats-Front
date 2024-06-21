@@ -23,7 +23,7 @@ def login():
         email  = request.form['email']
         password = request.form['password']
         
-        url = "http://ljragusa.com.ar:3001/users/login"
+        url = "http://186.13.28.124:3001/users/login"
         payload={
             "email": email,
             "password": password
@@ -31,6 +31,8 @@ def login():
         headers = {}
         try:    
             respuesta = requests.request("POST", url, headers=headers, data=payload)
+            print(respuesta.status_code)
+            print(respuesta.json())
         except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
@@ -45,6 +47,10 @@ def login():
             usuario= User(respuestajson["user"]["id"],respuestajson["user"]["email"],respuestajson["user"]["nombre"],respuestajson["user"]["apellido"],respuestajson["user"]["Rol"]["descripcion"],respuestajson["token"],respuestajson["user"]["emailConfirmado"])
             if User.find_by_id(usuario.id) is None:
                 usuario.save()
+            else:
+                usuarioBorrar= User.find_by_id(usuario.id)
+                usuarioBorrar.delete_from_db()
+                usuario.save()
             login_user(usuario)
             token=respuestajson["token"]
             response = make_response(redirect('/index'))    
@@ -55,7 +61,7 @@ def login():
                                     msg='No confirmó su mail, por favor revise su casilla de correo',
                                     form=login_form)
         else:
-            print("El error obtenido es distinto a 200,401,403 y es:"+ respuesta.status_code)
+            print("El error obtenido es distinto a 200,401,403 y es:"+ str(respuesta.status_code))
             return abort(500)
 
     if not current_user.is_authenticated:
@@ -75,7 +81,7 @@ def register():
         nombre = request.form['name']
         apellido = request.form['surname']
         token = request.cookies.get('token')
-        url = "http://ljragusa.com.ar:3001/users/"
+        url = "http://186.13.28.124:3001/users/"
         payload={
                 "email": email,
                 "password": password,
@@ -119,17 +125,9 @@ def register():
 @login_required
 @confirm_mail_required()
 @role_required('Admin')
-def roles(exito=None):
-    if exito=='si':
-        return render_template('accounts/roles.html', segment='roles',
-                            msg='Rol asignado correctamente.',
-                            success=True)
-    elif exito=='no':
-        return render_template('accounts/roles.html', segment='roles',
-                            msg='Hubo un error intente nuevamente.',
-                            success=False)
-    else:
-        return render_template('accounts/roles.html', segment='roles')
+def roles():
+    return render_template('accounts/roles.html', segment='roles')
+        
 
 @blueprint.route('/roles/email_conocido', methods=['GET', 'POST'])
 @login_required
@@ -137,31 +135,31 @@ def roles(exito=None):
 @role_required('Admin')
 def roles_email_conocido(): 
     email_empleado = request.args.get('email_empleado')
-
+    rol_actual = request.args.get('rol_actual')
     if (request.method == 'GET'):
         data_roles=getRoles()   
         if email_empleado != None:
-            return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles,email_empleado=email_empleado)        
+            return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles,email_empleado=email_empleado,rol_actual=rol_actual)        
         return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles)
         
-    elif (request.method == 'POST'):
-        
+    elif (request.method == 'POST'):        
         email = request.form['email']
-        url = "http://ljragusa.com.ar:3001/users/checkEmail"
+        url = "http://186.13.28.124:3001/users/checkEmail"
         payload={
             "email": email
         }
         headers = { 'user-token': request.cookies.get('token') }
         try:
-            respuesta = requests.request("POST", url, headers=headers, data=payload)
+            respuesta = requests.request("GET", url, headers=headers, data=payload)
         except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
         if respuesta.status_code == 200:
-            idUsuario=email
+            idUsuario=respuesta.json()['elemt']['id']
             idRol = request.form['rolSeleccionado']
-            asignarRol(idUsuario,idRol)
-            redirect(url_for('authentication_blueprint.roles',exito='si'))
+            respuestaActualizacion=asignarRol(idUsuario,idRol)
+            mensaje=respuestaActualizacion.json()['message']
+            return render_template('accounts/roles.html', segment='roles', msg=mensaje, success=True)
         else:
             data_roles=getRoles()  
             return render_template('accounts/roles_email_conocido.html', segment='roles', data_roles=data_roles, msg=respuesta.json()['message'])
@@ -171,19 +169,79 @@ def roles_email_conocido():
 @confirm_mail_required()
 @role_required('Admin')
 def roles_lista():
-    url = "http://ljragusa.com.ar:3001/users/getEmployees"
+    url = "http://186.13.28.124:3001/users/getEmployees"
+    payload={}
+    headers = { 'user-token': request.cookies.get('token') }
+    respuesta = requests.request("GET", url, headers=headers, data=payload)
+    empleados=respuesta.json()['empleados']
+    return render_template('accounts/roles_lista.html', segment='roles', empleados=empleados)
+
+@blueprint.route('/roles/lista/<string:email_empleado>/<string:rol_actual>', methods=['GET'])
+@login_required
+@confirm_mail_required()
+@role_required('Admin')
+def roles_lista_seleccionado(email_empleado,rol_actual):
+    return redirect(url_for('authentication_blueprint.roles_email_conocido',email_empleado=email_empleado,rol_actual=rol_actual))
+
+@blueprint.route('/baja', methods=['GET'])
+@login_required
+@confirm_mail_required()
+@role_required('Admin')
+def baja_usuario():
+    url = "http://186.13.28.124:3001/users/getEmployees"
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     empleados=respuesta.json()
-    return render_template('accounts/roles_lista.html', segment='roles', empleados=empleados)
+    return render_template('accounts/baja.html', segment='baja', empleados=empleados['empleados'], empleadosBaja=empleados['empleadosBaja'])
 
-@blueprint.route('/roles/lista/<string:email_empleado>', methods=['GET'])
+@blueprint.route('/baja/<string:idUsuario>', methods=['GET'])
 @login_required
 @confirm_mail_required()
 @role_required('Admin')
-def roles_lista_seleccionado(email_empleado):
-    return redirect(url_for('authentication_blueprint.roles_email_conocido',email_empleado=email_empleado))
+def baja_usuario_accion(idUsuario):
+    url = "http://186.13.28.124:3001/users/"+idUsuario
+    payload={}
+    headers = { 'user-token': request.cookies.get('token') }
+    try:
+        respuesta = requests.request("DELETE", url, headers=headers, data=payload)
+    except requests.exceptions.RequestException as e:
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
+    if respuesta.status_code == 200:
+        url = "http://186.13.28.124:3001/users/getEmployees"
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta2 = requests.request("GET", url, headers=headers, data=payload)
+        empleados=respuesta2.json()
+        return render_template('accounts/baja.html', segment='baja', empleados=empleados['empleados'], empleadosBaja=empleados['empleadosBaja'], msg=respuesta.json()['message'], success=True)
+    else:
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
+    
+@blueprint.route('/alta/<string:idUsuario>', methods=['GET'])
+@login_required
+@confirm_mail_required()
+@role_required('Admin')
+def alta_usuario_accion(idUsuario):
+    url = "http://186.13.28.124:3001/users/restore/"+idUsuario
+    payload={}
+    headers = { 'user-token': request.cookies.get('token') }
+    try:
+        respuesta = requests.request("PATCH", url, headers=headers, data=payload)
+    except requests.exceptions.RequestException as e:
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
+    if respuesta.status_code == 200:
+        url = "http://186.13.28.124:3001/users/getEmployees"
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta2 = requests.request("GET", url, headers=headers, data=payload)
+        empleados=respuesta2.json()
+        return render_template('accounts/baja.html', segment='baja', empleados=empleados['empleados'], empleadosBaja=empleados['empleadosBaja'], msg=respuesta.json()['message'], success=True)
+    else:
+        print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
+        return abort(500)
 
 @blueprint.route('/mailconfirmation')
 def mailconfirmation():
@@ -194,12 +252,12 @@ def mailconfirmation():
 @confirm_mail_required()
 @role_required('Admin')
 def asignar_sucursales(): 
-    url = "http://ljragusa.com.ar:3001/users/getEmployees"
+    url = "http://186.13.28.124:3001/users/getEmployees"
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     empleados=respuesta.json()
-    return render_template('accounts/sucursales_lista_emails.html', segment='asignacionsucursales', empleados=empleados)
+    return render_template('accounts/sucursales_lista_emails.html', segment='asignacionsucursales', empleados=empleados['empleados'])
     
 @blueprint.route('/asignar_sucursales/<string:email_empleado>', methods=['GET'])
 @login_required
@@ -207,7 +265,7 @@ def asignar_sucursales():
 @role_required('Admin')
 def asignar_sucursales_email_seleccionado(email_empleado): 
     if (request.method == 'GET'):
-        url = "http://ljragusa.com.ar:3001/sucursales/"+email_empleado
+        url = "http://186.13.28.124:3001/sucursales/email/"+email_empleado
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         try:
@@ -223,7 +281,7 @@ def asignar_sucursales_email_seleccionado(email_empleado):
 @confirm_mail_required()
 @role_required('Admin')
 def actualizar_sucursal(email_empleado,sucursalId,estado):
-    url = "http://ljragusa.com.ar:3001/sucursales/"
+    url = "http://186.13.28.124:3001/sucursales/"
     payload={
         "email": email_empleado,
         "idSucursal": sucursalId,
@@ -241,7 +299,7 @@ def actualizar_sucursal(email_empleado,sucursalId,estado):
 
 @blueprint.route('/confirmEmail/<string:token>', methods=['GET'])
 def confirmEmail(token):
-    url = "http://ljragusa.com.ar:3001/users/confirmEmail/"+token
+    url = "http://186.13.28.124:3001/users/confirmEmail/"+token
     payload={}
     headers = {}
     try:
@@ -250,9 +308,11 @@ def confirmEmail(token):
         print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
         return abort(500)
     if respuesta.status_code == 200:
-        return render_template('accounts/mail_confirmed',email=respuesta.json()['email'])
-    # else:   
-    #     return errorGenerico(respuesta)
+        return render_template('accounts/mail_confirmed.html',mensaje=respuesta.json()['message'])
+    elif respuesta.status_code == 409:
+        return render_template('accounts/mail_confirmed.html',mensaje=respuesta.json()['message'])
+    else:   
+         return abort(500)
 
 @blueprint.route('/logout')
 def logout():
@@ -282,7 +342,7 @@ def internal_error(error):
 
     
 # Funciones utilizadas varias veces
-def verifSesión(respuesta):
+def verifSesion(respuesta):
     if respuesta.status_code==200:
         return True
     elif respuesta.status_code==403:
@@ -296,7 +356,7 @@ def verifSesión(respuesta):
         return abort(500)
 
 def getRoles():
-    url = "http://ljragusa.com.ar:3001/roles/"
+    url = "http://186.13.28.124:3001/roles/"
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     try:
@@ -308,22 +368,22 @@ def getRoles():
     return data_roles
 
 def asignarRol(idUsuario,idRol):
-    url = "http://ljragusa.com.ar:3001/users/"+idUsuario
+    idUsuarioStr=str(idUsuario)
+    url = "http://186.13.28.124:3001/users/"+idUsuarioStr
     payload={
-            "idUsuario": idUsuario,
             "idRol": idRol,
         }
     headers = { 'user-token': request.cookies.get('token') }
     try:
-        respuesta = requests.request("POST", url, headers=headers, data=payload)
+        respuesta = requests.request("PATCH", url, headers=headers, data=payload)
     except requests.exceptions.RequestException as e:
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
-    verifSesión(respuesta)
+    verifSesion(respuesta)
     return respuesta
 
 def getSucursales():
-    url = "http://ljragusa.com.ar:3001/sucursales/"
+    url = "http://186.13.28.124:3001/sucursales/"
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     try:

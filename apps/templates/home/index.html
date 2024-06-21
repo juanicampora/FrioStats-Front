@@ -16,19 +16,19 @@
     <div class="pcoded-main-container">
         <div class="pcoded-wrapper">
 
-            <div class="pcoded-content">
+            <div class="pcoded-content" style="padding: 20px; padding-right: 10px;">
                 <div class="pcoded-inner-content">
                     <!-- [ breadcrumb ] start -->
 
                     <!-- [ breadcrumb ] end -->
                     <div class="main-body">
                         <div class="page-wrapper">    
-                            {% if supermercados and 'elemts' in supermercados and supermercados['elemts'] %}
+                            {% if supermercados %}
                             <div id="mapa">
                                 <div class="col-xl-12">
-                                    <div class="card">
-                                        <div class="card-header"> <h5>Mapa Supermercados</h5> </div>
-                                        <div class="card-block">
+                                    <div class="card" style="margin-bottom: 10px;">
+                                        <div class="card-header" style="padding-top: 10px; padding-bottom: 10px;"><h5>Empresa: '{{ nombreEmpresa['razonSocial'] }}'</h5></div>
+                                        <div class="card-block" style="padding: 10px;">
                                             <div id="map" style="height: 500px;"></div>
                                         </div>
                                     </div>
@@ -36,57 +36,51 @@
                             </div>                            
                             <div id="tabla">
                                 <div class="col-xl-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Tablero Supermercados</h5>
-                                        </div>                                        
-                                            <div class="card-block table-border-style">
-                                                <div class="table-responsive">
-                                                    <table class="table table-hover tabla-con-mano">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Acción</th>
-                                                                <th>ID</th>
-                                                                <th>Nombre</th>
-                                                                <th>Localidad</th>
-                                                                <th>Dirección</th>
-                                                                <th>Teléfono</th>
-                                                                <th>Notificaciones</th>
+                                    <div class="card">                                                                                
+                                        <div class="card-block table-border-style" style="padding: 10px;">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover tabla-con-mano">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Acción</th>
+                                                            <th>ID</th>
+                                                            <th>Nombre</th>
+                                                            <th>Localidad</th>
+                                                            <th>Dirección</th>
+                                                            <th>Teléfono</th>
+                                                            <th>Notificaciones</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>                                                      
+                                                        {% for super in supermercados %}
+                                                            <tr class="tabla-con-mano" data-id="{{ super['id'] | safe }}">
+                                                                <td class="align-middle" style="padding: 0px;"><a href="/panel/{{super['id']}}"><button type="button" class="btn-sm btn-primary" style="width: 100%; height: 100%; cursor: pointer;">Abrir en Panel</button></a></td>
+                                                                <td class="align-middle">{{ super['id'] }}</td>
+                                                                <td class="align-middle">{{ super['nombre'] }}</td>
+                                                                <td class="align-middle">{{ super['ciudad'] }} , {{ super['provincia'] }}</td>
+                                                                <td class="align-middle">{{ super['direccion'] }}</td>
+                                                                <td class="align-middle">{{ super['telefono'] }}</td>
+                                                                {% for noti in notificaciones %}
+                                                                        {% if noti['id'] == super['id'] %}                                                                                                                                                        
+                                                                            <td class="align-middle">
+                                                                                {% if noti['cantGraves'] != 0 %}
+                                                                                <span id="notiGrave" class="badge badge-pill bg-danger text-dark">{{ noti['cantGraves'] }}</span>
+                                                                                {% endif %}
+                                                                                {% if noti['cantLeves'] != 0 %}
+                                                                                <span id="notiLeve" class="badge badge-pill bg-warning text-dark">{{ noti['cantLeves'] }}</span>
+                                                                                {% endif %}
+                                                                                {% if noti['cantGraves'] == 0 and noti['cantLeves'] == 0 %}
+                                                                                <span id="sinNoti" class="badge badge-pill bg-success text-dark">✔</span>
+                                                                                {% endif %}
+                                                                            </td>                                                                            
+                                                                        {% endif %}
+                                                                {% endfor %}
                                                             </tr>
-                                                        </thead>
-                                                        <tbody>     
-                                                            {{notificaciones['elemts']}}                                                   
-                                                            {% for super in supermercados['elemts'] %}
-                                                                <tr class="tabla-con-mano" data-id="{{ super['id'] | safe }}">
-                                                                    <td class="align-middle"><a href="/panel/{{super['id']}}"><button type="button" class="btn-sm btn-primary">Abrir en Panel</button></a></td>
-                                                                    <td class="align-middle">{{ super['id'] }}</td>
-                                                                    <td class="align-middle">{{ super['nombre'] }}</td>
-                                                                    <td class="align-middle">{{ super['ciudad'] }} , {{ super['provincia'] }}</td>
-                                                                    <td class="align-middle">{{ super['direccion'] }}</td>
-                                                                    <td class="align-middle">{{ super['telefono'] }}</td>
-                                                                    {% for noti in notificaciones %}
-                                                                            {% if noti['id'] == super['id'] %}                                                                                                                                                        
-                                                                                <td class="align-middle">
-                                                                                    {% if noti['cantGraves'] != 0 %}
-                                                                                    <span id="notiGrave" class="badge badge-pill bg-danger text-dark">{{ noti['cantGraves'] }}</span>
-                                                                                    {% endif %}
-                                                                                    {% if noti['cantLeves'] != 0 %}
-                                                                                    <span id="notiLeve" class="badge badge-pill bg-warning text-dark">{{ noti['cantLeves'] }}</span>
-                                                                                    {% endif %}
-                                                                                    {% if noti['cantGraves'] == 0 and noti['cantLeves'] == 0 %}
-                                                                                    <span id="sinNoti" class="badge badge-pill bg-success text-dark">✔</span>
-                                                                                    {% endif %}
-                                                                                </td>                                                                            
-                                                                            {% endif %}
-                                                                    {% endfor %}
-                                                                </tr>
-                                                            {% endfor %}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
                                             </div>
-                                        
-
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -115,8 +109,8 @@
 
 <script>
     // Agregar pines de ubicación
-    {% if supermercados and 'elemts' in supermercados and supermercados['elemts'] %}
-        {% for super in supermercados['elemts'] %}
+    {% if supermercados %}
+        {% for super in supermercados %}
         var coordenadas = "{{ super['coordenadas'] }}";
         var coordenadas_array = coordenadas.split(', ');
         var latitude = parseFloat(coordenadas_array[0]);
@@ -153,7 +147,7 @@
                 });
         }
 
-        var supermercadosList = {{ supermercados['elemts'] | tojson | safe }};
+        var supermercadosList = {{ supermercados | tojson | safe }};
         function getCoordinatesById(id) {
             for (var i = 0; i < supermercadosList.length; i++) {
                 if (supermercadosList[i].id === id) {
@@ -184,7 +178,7 @@
                 if (mapaElement) {
                     mapaElement.scrollIntoView({ behavior: 'smooth' });
                 }
-                map.flyTo([latitud, longitud], 15,{ duration: 2 });
+                map.flyTo([latitud, longitud], 18,{ duration: 2 });
             });
         });
     {% endif %}

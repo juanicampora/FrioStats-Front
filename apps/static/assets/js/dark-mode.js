@@ -60,36 +60,52 @@ if (currentTheme === themeStates[1]) {
 
 //We handle our user interaction here.
 themeSwitch.addEventListener('change', function () {
+    const currentPath = window.location.pathname;
+    const desiredPathRegex = /^\/index\/?$/;
+    const isMatchingPath = desiredPathRegex.test(currentPath);
+    if (!(isMatchingPath)) {
+        const desiredPathRegex2 = /^\/graficos\/.*/;
+        const isMatchingPath2 = desiredPathRegex2.test(currentPath);
+        const desiredPathRegex3 = /^\/reportes\/?$/;
+        const isMatchingPath3 = desiredPathRegex3.test(currentPath);
+        if (isMatchingPath2 || isMatchingPath3) {
+            location.reload();
+        }
+    }
     if (this.checked) {
         setTheme(0);
         setIndicator(0);
         setPage(0);
-        // Remueve la capa existente del mapa
-        map.eachLayer(function (layer) {
-            if (layer instanceof L.TileLayer) {
-                map.removeLayer(layer);
-            }
-        });
-        // Agrega la nueva capa con el modo claro al mapa
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
+        if (isMatchingPath) {
+            // Remueve la capa existente del mapa
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.TileLayer) {
+                    map.removeLayer(layer);
+                }
+            });
+            // Agrega la nueva capa con el modo claro al mapa
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+        }
     } else {
         setTheme(1);
         setIndicator(1);
         setPage(1);
-        // Remueve la capa existente del mapa
-        map.eachLayer(function (layer) {
-            if (layer instanceof L.TileLayer) {
-                map.removeLayer(layer);
-            }
-        });
-        // Agrega la nueva capa con el modo oscuro al mapa
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            className: 'map-tiles'
-        }).addTo(map);
+        if (isMatchingPath) {
+            // Remueve la capa existente del mapa
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.TileLayer) {
+                    map.removeLayer(layer);
+                }
+            });
+            // Agrega la nueva capa con el modo oscuro al mapa
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                className: 'map-tiles'
+            }).addTo(map);
+        }
     }
 });

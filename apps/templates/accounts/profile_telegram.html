@@ -31,7 +31,7 @@
                                                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                                                         <strong>{{ msg | safe }}</strong>
                                                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
+                                                            <span aria-hidden="true" style="color: #299b85;">&times;</span>
                                                         </button>
                                                     </div>
                                                 {% else %}
@@ -45,8 +45,8 @@
                                                 {% endif %}
                                             </span>
 
-                                            <div class="row mt-4">
-                                                <div class="card-block border-bottom">
+                                            <div class="row">
+                                                <div class="card-block border-bottom" style="width: 600px;">
                                                     <div class="row d-flex align-items-center">
                                                         <div class="col-auto">
                                                             <i class="feather icon-edit-1 f-30 text-c-green"></i>
@@ -56,16 +56,18 @@
                                                             <a href="https://t.me/FrioStats_bot" target="_blank"><button type="button" class="btn btn-primary"
                                                                     data-toggle="tooltip">Abrir chat con el bot de Telegram</button></a>
                                                         </div>
-                                                    </div>
+                                                    </div>                                                    
                                                 </div>
-                                                <div class="card-block">
+                                                <div class="card-block border-bottom" style="width: 600px;">
                                                     <div class="row d-flex align-items-center">
                                                         <div class="col-auto">
                                                             <i class="feather icon-at-sign f-30 text-c-blue"></i>
                                                         </div>                                                        
                                                         <div class="col">
                                                             <h4 class="f-w-300">Ingrese ID obtenido a través del chatbot de Telegram</h4>
-                                                            <form role="form" method="POST" action="/profile/telegram">                                                                
+                                                            <form role="form" method="POST" action="/profile/telegram">  
+                                                                <input type="hidden" id="recibirTelegram" name="recibirTelegram" value="{{ recibirTelegram }}">
+                                                                <input type="hidden" id="recibirEmail" name="recibirEmail" value="{{ recibirEmail }}">                                                              
                                                                 <div class="input-group mt-3">
                                                                     <input type="text" class="form-control" id="idTelegram" name="idTelegram" placeholder="idTelegram" aria-describedby="basic-addon2">
                                                                     <div class="input-group-append">
@@ -76,6 +78,28 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="card-block">
+                                                    <div class="row d-flex align-items-center" style="width: 600px;">
+                                                        <div class="col-auto">
+                                                            <i class="feather icon-help-circle f-30 text-c-blue"></i>
+                                                        </div>                                                        
+                                                        <div class="col">                                              
+                                                            <a class="btn btn-secondary m-t-5" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true" aria-controls="collapseExample">Ayuda con Telegram</a>                             
+                                                        </div>
+                                                    </div>
+                                                    <div class="collapse" id="collapseExample">
+                                                        <div class="card-body"> 
+                                                            <p class="mb-0">1- Click en el botón "Abrir chat con el bot de Telegram"
+                                                                <br>2- Click en "Iniciar" en el chat de Telegram
+                                                                <br>3- Enviar "/start" al bot
+                                                                <br>4- Copiar el ID que le envía el bot
+                                                                <br>5- Pegar el ID en el campo "Ingrese ID obtenido a través del chatbot de Telegram"
+                                                                <br>6- Su telegram personal esta correctamente vinculado con el sistema de alertas
+                                                            </p> 
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
                                             </div>
                                         </div>
                                     </div>

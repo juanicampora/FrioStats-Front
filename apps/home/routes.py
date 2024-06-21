@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import requests
 from apps.authentication import confirm_mail_required
 from apps.authentication.forms import ProfileForm
@@ -7,30 +9,31 @@ from flask import abort, jsonify, render_template,redirect, request, url_for
 from flask_login import login_required, logout_user
 from jinja2 import Template, TemplateNotFound
 from apps import  login_manager
-
-@blueprint.route('/prueba',methods=['GET', 'POST'])     #borrar
-def prueba():
-    return render_template('home/prueba.html', segment='prueba')
+# from weasyprint import HTML
+# from bs4 import BeautifulSoup
 
 @blueprint.route('/index')
 @login_required
 @confirm_mail_required()
 def index():
     token = request.cookies.get('token')
-    url = "http://ljragusa.com.ar:3001/sucursales"
+    url = "http://186.13.28.124:3001/home"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
-    supermercados = respuesta.json()
-    url = "http://ljragusa.com.ar:3001/notificaciones/getCantNoti"
+    dataHome = respuesta.json()['elemts']
+    ## verificar si supermercados['message'] existe
+    if dataHome['Sucursals']==[]:
+        return render_template('home/index.html', segment='index',supermercados=dataHome['Sucursals'],nombreEmpresa=dataHome['Empresa'])
+    url = "http://186.13.28.124:3001/notificaciones/getCantNoti"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
     notificaciones = respuesta.json()['elemts']
     sucursalNotificacion=[]
-    for sucursal in supermercados['elemts']:
+    for sucursal in dataHome['Sucursals']:
         sucuNoti = {
             'id': sucursal['id'],
             'cantLeves': 0, 
@@ -43,7 +46,7 @@ def index():
                     sucuNoti['cantGraves'] = notificacion['cantGraves']
                     break
         sucursalNotificacion.append(sucuNoti)      
-    return render_template('home/index.html', segment='index',supermercados=supermercados,notificaciones=sucursalNotificacion)  #segment se usa en sidebar.html
+    return render_template('home/index.html', segment='index',supermercados=dataHome['Sucursals'],nombreEmpresa=dataHome['Empresa'],notificaciones=sucursalNotificacion)  #segment se usa en sidebar.html
 
 @blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -51,16 +54,24 @@ def index():
 def profile():
     profile_form = ProfileForm(request.form)
     if request.method=='POST': 
-        if request.form.get('recibirTelegram') == None: recibirTelegram='false' 
-        else: recibirTelegram='true'
-        if request.form.get('recibirEmail') == None: recibirEmail = 'false' 
-        else: recibirEmail = 'true'
+        if request.form.get('recibirTelegram') == None: recibirTelegram='False' 
+        else: recibirTelegram='True'
+        if request.form.get('recibirEmail') == None: recibirEmail = 'False' 
+        else: recibirEmail = 'True'
+        telegramId = request.form.get('idTelegram')
         token = request.cookies.get('token')
-        url = "http://ljragusa.com.ar:3001/users"
-        payload={
-            "recibeNotiTelegram": recibirTelegram,
-            "recibeNotiMail": recibirEmail
-        }
+        url = "http://186.13.28.124:3001/users"
+        if telegramId == 'None':
+            payload={
+                "recibeNotiTelegram": recibirTelegram,
+                "recibeNotiMail": recibirEmail,
+            }
+        else:    
+            payload={
+                "recibeNotiTelegram": recibirTelegram,
+                "recibeNotiMail": recibirEmail,
+                "telegramId": telegramId
+            }
         headers = { 'user-token': token }
         try:
             respuesta = requests.request("PATCH", url, headers=headers, data=payload)
@@ -74,7 +85,7 @@ def profile():
             recibirTelegram = datos[1]
             recibirEmail = datos[2]
             if recibirTelegram == True and idTelegram == None:
-                return render_template('accounts/profile_telegram.html', segment='profile')
+                return render_template('accounts/profile_telegram.html', segment='profile', recibirTelegram=recibirTelegram, recibirEmail=recibirEmail, form=profile_form,)
             else:    
                 return render_template('accounts/profile.html', segment='profile', idTelegram=idTelegram, recibirTelegram=recibirTelegram, recibirEmail=recibirEmail, form=profile_form,
                                 msg='Datos actualizados correctamente.',
@@ -110,11 +121,11 @@ def profile_telegram():
             print("\033[1;37;41mHUBO UN ERROR CON EL API\033[0m")
             return abort(500)
         token = request.cookies.get('token')
-        url = "http://ljragusa.com.ar:3001/users"
+        url = "http://186.13.28.124:3001/users/"
         payload={
-            "telegramId": idTelegram,
             "recibeNotiTelegram": recibirTelegram,
-            "recibeNotiMail": recibirEmail
+            "recibeNotiMail": recibirEmail,
+            "telegramId": idTelegram
         }
         headers = { 'user-token': token }
         try:
@@ -129,7 +140,7 @@ def profile_telegram():
                                 success=True, form=profile_form)
         else:
             return render_template('accounts/profile_telegram.html', segment='profile', idTelegram=idTelegram, recibirTelegram=recibirTelegram, recibirEmail=recibirEmail,
-                                msg=respuesta.json()['message'],
+                                msg=respuesta.json()['error']['errors'][0]['message'],
                                 success=False)
     else:
         return render_template('accounts/profile_telegram.html', segment='profile')
@@ -139,19 +150,28 @@ def profile_telegram():
 @confirm_mail_required()
 def panel(id_super):
     token = request.cookies.get('token')
-    url = f'http://ljragusa.com.ar:3001/notificaciones/getNotificaciones/{id_super}'
+    url = f'http://186.13.28.124:3001/notificaciones/getNotificaciones/{id_super}'
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)
     verifSesión(respuesta)
+    url = f'http://186.13.28.124:3001/sucursales/{id_super}'
+    respuesta2 = requests.request("GET", url, headers=headers, data=payload)
+    verifSesión(respuesta2)
+    nombrePlano = respuesta2.json()['nombrePlano']
+    url = f'http://186.13.28.124:3001/maquina/{id_super}'
+    respuesta3 = requests.request("GET", url, headers=headers, data=payload)
+    maquinas = respuesta3.json()
     notificaciones = respuesta.json()
-    return render_template('home/panel.html', segment='panel', id_super=id_super, notificaciones=notificaciones)
+    contador = {'val': 0, 'paginas': 0}
+    contador2 = {'val': 0, 'paginas': 0}
+    return render_template('home/panel.html', segment='index', id_super=id_super, notificaciones=notificaciones,contador = contador,contador2=contador2, nombrePlano=nombrePlano, maquinas=maquinas)
 
 @blueprint.route('/medicion/<int:idSucursal>/<int:idMaquina>', methods=['GET','POST'])
 @login_required
 @confirm_mail_required()
 def devMediciones(idSucursal,idMaquina):
-    url = f'http://ljragusa.com.ar:3001/mediciones/{idMaquina}'
+    url = f'http://186.13.28.124:3001/mediciones/{idMaquina}'
     payload={}
     headers = { 'user-token': request.cookies.get('token') }
     respuesta= requests.request("GET", url, headers=headers, data=payload)
@@ -168,7 +188,7 @@ def devMediciones(idSucursal,idMaquina):
 @confirm_mail_required()
 def parametro(idSucursal,idMaquina,parametro):
     if request.method=='GET':
-        url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}'
+        url = f'http://186.13.28.124:3001/parameters/{idMaquina}'
         payload={}
         headers = { 'user-token': request.cookies.get('token') }
         respuesta= requests.request("GET", url, headers=headers, data=payload)
@@ -188,7 +208,7 @@ def parametro(idSucursal,idMaquina,parametro):
         elif parametro == 'sensorConsumo':
             parametros = ['Nada',respuesta.json()['elemts']['maxConsumo']]
             descripcionParametro='Consumo'
-        return render_template('home/editarparametro.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
+        return render_template('home/editarparametro.html', segment='index', idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
     elif request.method=='POST':
         minimobody=parametro.replace('sensor','min')
         maximobody=parametro.replace('sensor','max')
@@ -196,7 +216,7 @@ def parametro(idSucursal,idMaquina,parametro):
         else: minimo=request.form.get('minimo')
         if request.form.get('maximo') == None: maximo='null' 
         else: maximo=request.form.get('maximo')
-        url = f'http://ljragusa.com.ar:3001/parameters/{idMaquina}'
+        url = f'http://186.13.28.124:3001/parameters/{idMaquina}'
         payload={
             minimobody: minimo,
             maximobody: maximo
@@ -208,57 +228,164 @@ def parametro(idSucursal,idMaquina,parametro):
             return redirect(url_for('home_blueprint.panel',id_super=idSucursal))
         else:
             return abort(500)
-
-@blueprint.route('/graficos/<int:idSucursal>/<int:idMaquina>/<string:parametro>', methods=['GET'])
+        
+@blueprint.route('/importancia/<int:idSucursal>/<int:idMaquina>/<string:parametro>', methods=['GET','POST'])
 @login_required
 @confirm_mail_required()
-def graficos(idSucursal,idMaquina,parametro):
+def importancia(idSucursal,idMaquina,parametro):
     if request.method=='GET':
-        # url = f'http://ljragusa.com.ar:3001/graficos/{idSucursal}/{idMaquina}/{parametro}'   ## VER SI CON idMaquina y parametro solamente alcanza
-        # payload={}
-        # headers = { 'user-token': request.cookies.get('token') }
-        # respuesta= requests.request("GET", url, headers=headers, data=payload)
-        # verifSesión(respuesta)
-        # print(respuesta.json())
-        descParametro='Temperatura Interna'
-        datos = [('15-44-23-04', 12), ('15-49-23-04', 13.01), ('15-54-23-04', 13.12), ('15-59-23-04', 12.02), ('16-04-23-04', 13.56), ('16-09-23-04', 14.11), ('16-14-23-04', 16.73), ('16-19-23-04', 15.43), ('16-24-23-04', 16.13), ('16-29-23-04', 16.83), ('16-34-23-04', 15.53), ('16-39-23-04', 14.23), ('16-44-23-04', 14.93), ('16-49-23-04', 13.93), ('16-54-23-04', 14.63), ('16-59-23-04', 15.22), ('17-04-23-04', 16.03), ('17-09-23-04', 16.73), ('17-14-23-04', 16.43)]
-        labels = [dato[0] for dato in datos]
-        values = [dato[1] for dato in datos]
-        return render_template('home/graficos.html', segment='panel', idSucursal=idSucursal ,idMaquina=idMaquina, descParametro=descParametro, labels=labels, values=values)
+        url = f'http://186.13.28.124:3001/importanciaParametro/{idMaquina}'
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta= requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuesta)
+        idAlgo=respuesta.json()['elemts']['id']
+        if parametro == 'sensorTempInterna':
+            parametros = respuesta.json()['elemts']['idTipoTempInterna']
+            tipoImportancia='idTipoTempInterna'
+            descripcionParametro='Temperatura Interna'
+        elif parametro == 'sensorTempTrabajoYBulbo':
+            parametros = respuesta.json()['elemts']['idTipoTempTrabajoYBulbo']
+            tipoImportancia='idTipoTempTrabajoYBulbo'
+            descripcionParametro='Temperatura de Trabajo y Bulbo'
+        elif parametro == 'sensorPuerta':
+            parametros = respuesta.json()['elemts']['idTipoEstadoPuerta']
+            tipoImportancia='idTipoEstadoPuerta'
+            descripcionParametro='Puerta'
+        elif parametro == 'sensorRpmCooler':
+            parametros = respuesta.json()['elemts']['idTipoCooler']
+            tipoImportancia='idTipoCooler'
+            descripcionParametro='Cooler'
+        elif parametro == 'sensorPuntoRocio':
+            parametros = respuesta.json()['elemts']['idTipoPuntoRocio']
+            tipoImportancia='idTipoPuntoRocio'
+            descripcionParametro='Punto de Rocío'
+        elif parametro == 'sensorConsumo':
+            parametros = respuesta.json()['elemts']['idConsumo']
+            tipoImportancia='idConsumo'
+            descripcionParametro='Consumo'
+        return render_template('home/editarimportancia.html', segment='index', idAlgo=idAlgo, tipoImportancia=tipoImportancia, idSucursal=idSucursal ,idMaquina=idMaquina, parametro=parametro ,descParametro=descripcionParametro, parametros=parametros)
+    elif request.method=='POST':
+        url = f'http://186.13.28.124:3001/importanciaParametro/{idMaquina}'
+        payload={
+            'id': request.form.get('idAlgo'),
+            'idMaquina': idMaquina,
+            parametro: request.form.get('importancia')
+        }
+        print(payload)
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta = requests.request("PATCH", url, headers=headers, data=payload)
+        verifSesión(respuesta)
+        if respuesta.status_code == 200:
+            return redirect(url_for('home_blueprint.panel',id_super=idSucursal))
+        else:
+            return abort(500)
 
+@blueprint.route('/graficos/<int:idSucursal>/<int:idMaquina>', methods=['GET','POST'])
+@login_required
+@confirm_mail_required()
+def graficos(idSucursal,idMaquina):
+    if request.method=='GET':
+        return render_template('home/pre-graficos.html', segment='index', idSucursal=idSucursal ,idMaquina=idMaquina)
+    if request.method=='POST':
+        periodo_seleccionado = request.form.get('periodo')
+        hoy = datetime.now().strftime("%Y-%m-%d")
+        if periodo_seleccionado == '1':
+            fechaInicio = (datetime.now() - relativedelta(days=7)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '2':           
+            fechaInicio = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '3':
+            fechaInicio = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+            fechaFin = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m-%d")
+        elif periodo_seleccionado == '4':
+            fechaInicio = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '5':
+            fechaInicio = (datetime.now() - relativedelta(months=4)).strftime("%Y-%m-%d")
+            fechaFin = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+        url = f'http://186.13.28.124:3001/graphics/?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idMaquina={idMaquina}'
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta= requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuesta)
+        datos = respuesta.json()
+        # Guardar en la variable datosJuntos lo mismo que datos pero en "valuesSensorRpmCooler":{ x,x,x,...} y "valuesSensorConsumo":{ x,x,x,...} los x dividirlos por 100
+        datosJuntos = datos
+        for key in datosJuntos:
+            if key == 'valuesSensorRpmCooler':
+                for i in range(len(datosJuntos[key])):
+                    datosJuntos[key][i] = datosJuntos[key][i]/100
+            if key == 'valuesSensorConsumo':
+                for i in range(len(datosJuntos[key])):
+                    datosJuntos[key][i] = datosJuntos[key][i]/100
+        return render_template('home/graficos.html', segment='index', idSucursal=idSucursal ,idMaquina=idMaquina, datos=datos, datosJuntos=datosJuntos)
 
-@blueprint.route('/<template>')         #Cuando termine la etapa development borrar este route
-def route_template(template):
-    try:
-        if not template.endswith('.html'):
-            template += '.html'
+@blueprint.route('/reportes', methods=['GET','POST'])
+@login_required
+@confirm_mail_required()
+def reportes():
+    if request.method=='GET':
+        url = "http://186.13.28.124:3001/sucursales/token"
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        respuesta = requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuesta)
+        sucursales = respuesta.json()
+        return render_template('home/pre-reportes.html', segment='reportes',sucursales=sucursales)
+    if request.method=='POST':
+        idSucursal = request.form.get('idSucursalElegida')
+        periodo_seleccionado = request.form.get('periodo')
+        hoy = datetime.now().strftime("%Y-%m-%d")
+        if periodo_seleccionado == '1':
+            fechaInicio = (datetime.now() - relativedelta(days=7)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '2':           
+            fechaInicio = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '3':
+            fechaInicio = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+            fechaFin = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m-%d")
+        elif periodo_seleccionado == '4':
+            fechaInicio = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+            fechaFin = hoy
+        elif periodo_seleccionado == '5':
+            fechaInicio = (datetime.now() - relativedelta(months=4)).strftime("%Y-%m-%d")
+            fechaFin = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m-%d")
+        payload={}
+        headers = { 'user-token': request.cookies.get('token') }
+        url = f'http://186.13.28.124:3001/graphics/pieChart?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idSucursal={idSucursal}'
+        respuestaPie= requests.request("GET", url, headers=headers, data=payload)
+        verifSesión(respuestaPie)
+        url = f'http://186.13.28.124:3001/graphics/consumptionChart?fechaInicio={fechaInicio}&fechaFin={fechaFin}&idSucursal={idSucursal}'
+        respuestaConsum= requests.request("GET", url, headers=headers, data=payload)
+        print(idSucursal)
+        print(respuestaConsum.json())
+        verifSesión(respuestaConsum)
+        datosP = respuestaPie.json()[0]
+        datosC = respuestaConsum.json()[0]
+        
+        sumas=[]
+        for i in range(len(datosC['valueConsumo'])):
+            for j in range(len(datosC['valueConsumo'][i])):
+                if i==0:
+                    sumas.append(datosC['valueConsumo'][i][j])
+                else:
+                    sumas[j]+=datosC['valueConsumo'][i][j]
+        
+        promedios=[]
+        for i in range(len(sumas)):
+            promedios.append(round(sumas[i]/len(datosC['valueConsumo'][0])))
+        valueCS=promedios
+        labelsCS=datosC['labelsConsumo']
+        return render_template('home/reportes.html', segment='reportes', datosC=datosC, datosP=datosP, idSucursal=idSucursal, valueCS=valueCS, labelsCS=labelsCS)
 
-        # Detect the current page
-        segment = get_segment(request)
-
-        # Serve the file (if exists) from app/templates/home/FILE.html
-        return render_template("home/" + template, segment=segment)
-    except TemplateNotFound:
-        return render_template('home/page-404.html'), 404
-    except:
-        return render_template('home/page-500.html'), 500
-
-
-# Helper - Extract current page name from request
-def get_segment(request):
-
-    try:
-
-        segment = request.path.split('/')[-1]
-
-        if segment == '':
-            segment = 'index'
-
-        return segment
-
-    except:
-        return None
-
+# @blueprint.route('/descargar', methods=['GET'])
+# @login_required
+# @confirm_mail_required()    
+# def descargar():
+    
 
 # Errors
 
@@ -302,7 +429,7 @@ def verifSesión(respuesta):
 
 
 def getOne(token):
-    url = "http://ljragusa.com.ar:3001/users/"
+    url = "http://186.13.28.124:3001/users/"
     payload={}
     headers = { 'user-token': token }
     respuesta = requests.request("GET", url, headers=headers, data=payload)

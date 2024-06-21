@@ -6,7 +6,10 @@
       </div>
       <div class="card-block px-0 py-3">
         <div class="card-block table-border-style">
-          <table class="table table-striped">
+          <div class="text-center">
+            <a href="/graficos/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}"><button type="button" class="btn-lg btn-info mb-4"><i class="feather icon-bar-chart-2"></i>  Visualizar Gr&aacute;ficos</button></a>            
+          </div>
+            <table class="table table-striped">
             <thead>
               <tr>
                 <th>Acci&oacute;n</th>
@@ -19,33 +22,44 @@
               {% for maquina in maquinas['elemts'] %}
               <tr>
                 <td>
+                  <a href="/importancia/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-warning"> Editar importancia</button></a>
                   <a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-primary"> Editar par&aacute;metro</button></a>
-                  <a href="/graficos/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempInterna"><button type="button" class="btn-sm btn-success"> Gr&aacute;fico</button></a>
                 </td>
                 <td>Sensor Temperatura Interna</td>
                 <td>{{maquina['sensorTempInterna']}}</td>
                 <td>&deg;C</td>
               </tr>
               <tr>
-                <td><a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempTrabajoYBulbo"><button type="button"class="btn-sm btn-primary">Editar par&aacute;metro</button></a></td>
+                <td>
+                  <a href="/importancia/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempTrabajoYBulbo"><button type="button" class="btn-sm btn-warning"> Editar importancia</button></a>
+                  <a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorTempTrabajoYBulbo"><button type="button"class="btn-sm btn-primary">Editar par&aacute;metro</button></a>
+                </td>
                 <td>Sensor Temperatura Trabajo y Bulbo</td>
                 <td>{{maquina['sensorTempTrabajoYBulbo']}}</td>
                 <td>&deg;C</td>
               </tr>
               <tr>
-                <td></td>
+                <td>
+                  <a href="/importancia/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorPuerta"><button type="button" class="btn-sm btn-warning"> Editar importancia</button></a>
+                </td>
                 <td>Sensor Puerta</td>
                 <td>{% if maquina['sensorPuerta']==true %}Abierta{% else %}Cerrada{% endif %}</td>
                 <td></td>
               </tr>
               <tr>
-                <td><a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorRpmCooler"><button type="button" class="btn-sm btn-primary">Editar par&aacute;metro</button></a></td>
+                <td>
+                  <a href="/importancia/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorCooler"><button type="button" class="btn-sm btn-warning"> Editar importancia</button></a>
+                  <a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorCooler"><button type="button" class="btn-sm btn-primary">Editar par&aacute;metro</button></a>
+                </td>
                 <td>Sensor Cooler</td>
-                <td>{{maquina['sensorRpmCooler']}}</td>
+                <td>{{maquina['sensorCooler']}}</td>
                 <td>RPM</td>
               </tr>
               <tr>
-                <td><a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorPuntoRocio"><button type="button" class="btn-sm btn-primary">Editar par&aacute;metro</button></a></td>
+                <td>
+                  <a href="/importancia/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorPuntoRocio"><button type="button" class="btn-sm btn-warning"> Editar importancia</button></a>
+                  <a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorPuntoRocio"><button type="button" class="btn-sm btn-primary">Editar par&aacute;metro</button></a>
+                </td>
                 <td>Sensor Punto de Rocio</td>
                 <td>{{maquina['sensorPuntoRocio']}}</td>
                 <td>&deg;C</td>
@@ -57,7 +71,10 @@
                 <td></td>
               </tr>
               <tr>
-                <td><a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorConsumo"><button type="button" class="btn-sm btn-primary">Editar par&aacute;metro</button></a></td>
+                <td>
+                  <a href="/importancia/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorConsumo"><button type="button" class="btn-sm btn-warning"> Editar importancia</button></a>
+                  <a href="/parametro/{{idSucursal}}/{{maquinas['elemts'][0]['idMaquina']}}/sensorConsumo"><button type="button" class="btn-sm btn-primary">Editar par&aacute;metro</button></a>
+                </td>
                 <td>Consumo</td>
                 <td>{{maquina['consumo']}}</td>
                 <td>Kw/h</td>

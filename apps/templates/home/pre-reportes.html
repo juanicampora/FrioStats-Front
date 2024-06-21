@@ -1,0 +1,172 @@
+{% extends "layouts/base.html" %} {% block title %} Reportes {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+<style>
+  .card-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .card-col {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .card-col-full {
+    flex-basis: 100%;
+  }
+</style>
+
+{% endblock stylesheets %} {% block content %}
+<div class="pcoded-main-container">
+  <div class="pcoded-wrapper">
+    <div class="pcoded-content">
+      <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col-md-12">
+                <ul class="breadcrumb">
+                  <li class="breadcrumb-item">
+                    <a href="/"><i class="feather icon-home"></i></a>
+                  </li>
+                  <li class="breadcrumb-item">Período y Sucursal Reporte</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+          <div class="page-wrapper">
+            <form method="POST" action="/reportes" id="seleccionReporte">
+              <div class="row">
+                <div class="col-xl-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5>Seleccione el período del Reporte</h5>
+                    </div>
+                    <div class="card-block">
+                      <div class="form-group">
+                        <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="1" id="p1"
+                            checked><label for="p1" class="cr"> Ultima Semana</label></div>
+                        <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="2"
+                            id="p2"><label for="p2" class="cr"> Ultimo Mes</label></div>
+                        <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="3"
+                            id="p3"><label for="p3" class="cr"> Mes anterior</label></div>
+                        <div class="checkbox checkbox-fill"><input type="checkbox" name="periodo" value="4"
+                            id="p4"><label for="p4" class="cr"> Ultimo Bimestre</label></div>
+                        <div class="checkbox checkbox-fill mb-2"><input type="checkbox" name="periodo" value="5"
+                            id="p5"><label for="p5" class="cr"> Bimestre anterior</label></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-6">
+                  <div class="card">
+                    <div class="card-header">
+                      <h5>Seleccione Sucursal del Reporte</h5>
+                    </div>
+                    <div class="card-block">
+                      <div class="form-group">
+                        {% for sucursal in sucursales %}
+                        <div class="checkbox checkbox-fill">
+                          <input type="checkbox" name="idSucursalElegida" value="{{sucursal['idSucursal']}}"
+                            id="i{{sucursal['idSucursal']}}">
+                          <label for="i{{sucursal['idSucursal']}}" class="cr">{{sucursal['idSucursal']}} -
+                            {{sucursal['Sucursal']['nombre']}} - {{sucursal['Sucursal']['direccion']}}
+                            ({{sucursal['Sucursal']['ciudad']}} -
+                            {{sucursal['Sucursal']['provincia']}})</label>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xl-10">
+                  <div class="card">
+                    <div class="card-block">
+                      <div style="text-align: center;">
+                        <button type="submit" id="generateReportButton" class="btn-lg btn btn-primary"
+                          style="height: 70px; width: 250px; font-size: x-large;">Generar
+                          reporte</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{% block javascripts %}
+<script>
+  const checkboxesPeriod = document.querySelectorAll('input[type="checkbox"][name="periodo"]');
+  const checkboxesSucursal = document.querySelectorAll('input[type="checkbox"][name="idSucursalElegida"]');
+  const generateReportButton = document.getElementById('generateReportButton');
+
+  function toggleButtonState() {
+    const isAnyPeriodChecked = Array.from(checkboxesPeriod).some(checkbox => checkbox.checked);
+    const isAnySucursalChecked = Array.from(checkboxesSucursal).some(checkbox => checkbox.checked);
+    console.log(isAnyPeriodChecked, isAnySucursalChecked);
+    if (isAnyPeriodChecked && isAnySucursalChecked) {
+      generateReportButton.removeAttribute("data-toggle");
+      generateReportButton.removeAttribute("data-placement");
+      generateReportButton.removeAttribute("title");
+      $(generateReportButton).tooltip('dispose');
+    } else {
+      generateReportButton.setAttribute("data-toggle", "tooltip");
+      generateReportButton.setAttribute("data-placement", "right");
+      generateReportButton.setAttribute("title", "Debe seleccionar un período y sucursal.");
+      $(generateReportButton).tooltip('show');
+    }
+    generateReportButton.disabled = !(isAnyPeriodChecked && isAnySucursalChecked);
+  }
+
+  checkboxesPeriod.forEach((checkbox) => {
+    checkbox.addEventListener('change', function () {
+      // Si el checkbox actual está marcado
+      if (this.checked) {
+        // Desmarcar los otros checkboxes
+        checkboxesPeriod.forEach((otherCheckbox) => {
+          if (otherCheckbox !== this) {
+            otherCheckbox.checked = false;
+          }
+        });
+      }
+      toggleButtonState();
+    });
+  });
+
+  checkboxesSucursal.forEach((checkbox) => {
+    checkbox.addEventListener('change', function () {
+      // Si el checkbox actual está marcado
+      if (this.checked) {
+        // Desmarcar los otros checkboxes
+        checkboxesSucursal.forEach((otherCheckbox) => {
+          if (otherCheckbox !== this) {
+            otherCheckbox.checked = false;
+          }
+        });
+      }
+      toggleButtonState();
+    });
+  });
+
+  // Inicializar el estado del botón al cargar la página
+  toggleButtonState();
+</script>
+{% endblock javascripts %}

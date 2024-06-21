@@ -1,0 +1,85 @@
+{% extends "layouts/base.html" %} {% block title %} Parametro {% endblock %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+/>
+{% endblock stylesheets %} {% block content %}
+<div class="pcoded-main-container">
+  <div class="pcoded-wrapper">
+    <div class="pcoded-content">
+      <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+          <div class="page-block">
+            <div class="row align-items-center">
+              <div class="col-md-12">
+                <ul class="breadcrumb">
+                  <li class="breadcrumb-item">
+                    <a href="/"><i class="feather icon-home"></i></a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="/panel/{{idSucursal}}">Panel</a>
+                  </li>
+                  <li class="breadcrumb-item">Editar Importancia</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+          <div class="page-wrapper">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card Recent-Users">
+                  <div class="card-header">
+                    <h5>Editar Importancia del Parámetro: "{{descParametro}}"</h5>
+                  </div>
+                  <div class="card-block px-0 py-0">
+                    <form method="POST" action="/importancia/{{idSucursal}}/{{idMaquina}}/{{tipoImportancia}}" id="importanciaForm">
+                      <div class="form-group">
+                          <input type="hidden" id="idAlgo" name="idAlgo" value="{{idAlgo}}">
+                          <h4 class="mt-4" style="text-align: center;">Seleccione la importancia a asignar</h4>
+                          {% if parametros == 1 %}
+                            <div class="checkbox checkbox-fill ml-4"><input type="checkbox" name="importancia" value="1" id="p1" checked><label for="p1" class="cr">Leve</label></div>
+                            <div class="checkbox checkbox-fill ml-4"><input type="checkbox" name="importancia" value="2" id="p2"><label for="p2" class="cr">Grave</label></div>                          
+                            {% else %}
+                            <div class="checkbox checkbox-fill ml-4"><input type="checkbox" name="importancia" value="1" id="p1"><label for="p1" class="cr">Leve</label></div>
+                            <div class="checkbox checkbox-fill ml-4"><input type="checkbox" name="importancia" value="2" id="p2" checked><label for="p2" class="cr">Grave</label></div>                          
+                          {% endif %}
+                          <div style="text-align: center;"><button class="btn btn-primary">Guardar</button></div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %} {% block javascripts %}
+
+<script>
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', function() {
+      // Si el checkbox actual está marcado
+      if (this.checked) {
+        // Desmarcar los otros checkboxes
+        checkboxes.forEach((otherCheckbox) => {
+          if (otherCheckbox !== this) {
+            otherCheckbox.checked = false;
+          }
+        });
+      }
+    });
+  });
+</script>
+
+{% endblock javascripts %}

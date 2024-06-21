@@ -1,12 +1,3 @@
-.containerplano {
-  position: relative;
-  width: 800px;
-  /* Ancho fijo del contenedor según tu plano */
-  height: 600px;
-  /* Alto fijo del contenedor según tu plano */
-  margin: 0 auto;
-}
-
 #plano {
   width: 100%;
   height: 100%;

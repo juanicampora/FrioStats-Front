@@ -4,13 +4,13 @@
         <div class="navbar-brand header-logo">
             <a href="/" class="b-brand" style="margin-left: 5px;">
                 <div class="b-bg">
-                    <i class="feather icon-aperture"></i>                    
+                    <i class="feather icon-aperture"></i>
                 </div>
                 <span class="b-title">FrioStats</span>
             </a>
             <a class="mobile-menu" id="mobile-collapse" href="javascript:"><span></span></a>
         </div>
-        
+
         <div class="navbar-content scroll-div">
             <ul class="nav pcoded-inner-navbar">
                 <div class="text-center">
@@ -22,40 +22,52 @@
                 <li class="nav-item pcoded-menu-caption">
                     <label>Navegación</label>
                 </li>
-                <li data-username="Inicio" 
-                    class="nav-item {% if 'index' in segment %} active {% endif %}">
-                    <a href="/" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span
-                            class="pcoded-mtext">Inicio</span></a>
+                <li data-username="Inicio" class="nav-item {% if 'index' in segment %} active {% endif %}">
+                    <a href="/" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-home"></i></span><span class="pcoded-mtext">Inicio</span></a>
                 </li>
-                <li data-username="Perfil" 
-                    class="nav-item {% if 'profile' in segment %} active {% endif %}">
+                <li data-username="Perfil" class="nav-item {% if 'profile' in segment %} active {% endif %}">
                     <a href="/profile" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-user"></i></span>
-                            <span class="pcoded-mtext">Página de Perfil</span></a>
-                </li>                
+                        <span class="pcoded-mtext">Página de Perfil</span></a>
+                </li>
+                <li data-username="Reportes" class="nav-item {% if 'reportes' in segment %} active {% endif %}">
+                    <a href="/reportes" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-file-text"></i></span>
+                        <span class="pcoded-mtext">Reportes</span></a>
+                </li>
                 {% if current_user.rol=='Admin' %}
-                    <li class="nav-item pcoded-menu-caption">
-                        <label>Administración</label>
-                    </li>
-                    <li data-username="Registrar"
-                        class="nav-item {% if 'register' in segment %} active {% endif %}">
-                        <a href="/register" class="nav-link "><span class="pcoded-micon"><i class="feather icon-user-plus"></i></span><span
-                                class="pcoded-mtext">Registrar Usuario</span></a>
-                    </li>
-                    <li data-username="Roles" class="nav-item {% if 'roles' in segment %} active {% endif %}">
-                        <a href="/roles" class="nav-link "><span class="pcoded-micon"><i class="feather icon-users"></i></span><span
-                                class="pcoded-mtext">Asignar Roles</span></a>
-                    </li>
-                    <li data-username="Sucursales" class="nav-item {% if 'asignacionsucursales' in segment %} active {% endif %}">
-                        <a href="/asignar_sucursales" class="nav-link "><span class="pcoded-micon"><i class="feather icon-shopping-cart"></i></span><span
-                                class="pcoded-mtext">Asignación Sucursales</span></a>
-                    </li>
+                <li class="nav-item pcoded-menu-caption">
+                    <label>Administración</label>
+                </li>
+                <li data-username="Registrar" class="nav-item {% if 'register' in segment %} active {% endif %}">
+                    <a href="/register" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-user-plus"></i></span><span class="pcoded-mtext">Registrar
+                            Usuario</span></a>
+                </li>
+                <li data-username="Baja" class="nav-item {% if 'baja' in segment %} active {% endif %}">
+                    <a href="/baja" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-user-minus"></i></span><span class="pcoded-mtext">Gestionar
+                            Usuarios</span></a>
+                </li>
+                <li data-username="Roles" class="nav-item {% if 'roles' in segment %} active {% endif %}">
+                    <a href="/roles" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-users"></i></span><span class="pcoded-mtext">Asignar
+                            Roles</span></a>
+                </li>
+                <li data-username="Sucursales"
+                    class="nav-item {% if 'asignacionsucursales' in segment %} active {% endif %}">
+                    <a href="/asignar_sucursales" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-shopping-cart"></i></span><span class="pcoded-mtext">Asignación
+                            Sucursales</span></a>
+                </li>
                 {% endif %}
                 <li data-username="Logout" class="nav-item mt-5">
                     <a href="{{ url_for('authentication_blueprint.logout') }}" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-power"></i></span><span class="pcoded-mtext">Logout</span>
+                        <span class="pcoded-micon"><i class="feather icon-power"></i></span><span
+                            class="pcoded-mtext">Logout</span>
                     </a>
-                </li>                                
+                </li>
             </ul>
         </div>
     </div>
