@@ -96,7 +96,9 @@
                   <div class="card">
                     <div class="card-block">
                       <div style="text-align: center;">
-                        <button type="submit" class="btn-lg btn-primary">Generar reporte</button>
+                        <button type="submit" id="generateReportButton" class="btn-lg btn btn-primary"
+                          style="height: 70px; width: 250px; font-size: x-large;">Generar
+                          reporte</button>
                       </div>
                     </div>
                   </div>
@@ -112,35 +114,59 @@
 {% endblock content %}
 {% block javascripts %}
 <script>
-  const checkboxes = document.querySelectorAll('input[type="checkbox"][name="periodo"]');
-  checkboxes.forEach((checkbox) => {
+  const checkboxesPeriod = document.querySelectorAll('input[type="checkbox"][name="periodo"]');
+  const checkboxesSucursal = document.querySelectorAll('input[type="checkbox"][name="idSucursalElegida"]');
+  const generateReportButton = document.getElementById('generateReportButton');
+
+  function toggleButtonState() {
+    const isAnyPeriodChecked = Array.from(checkboxesPeriod).some(checkbox => checkbox.checked);
+    const isAnySucursalChecked = Array.from(checkboxesSucursal).some(checkbox => checkbox.checked);
+    console.log(isAnyPeriodChecked, isAnySucursalChecked);
+    if (isAnyPeriodChecked && isAnySucursalChecked) {
+      generateReportButton.removeAttribute("data-toggle");
+      generateReportButton.removeAttribute("data-placement");
+      generateReportButton.removeAttribute("title");
+      $(generateReportButton).tooltip('dispose');
+    } else {
+      generateReportButton.setAttribute("data-toggle", "tooltip");
+      generateReportButton.setAttribute("data-placement", "right");
+      generateReportButton.setAttribute("title", "Debe seleccionar un período y sucursal.");
+      $(generateReportButton).tooltip('show');
+    }
+    generateReportButton.disabled = !(isAnyPeriodChecked && isAnySucursalChecked);
+  }
+
+  checkboxesPeriod.forEach((checkbox) => {
     checkbox.addEventListener('change', function () {
       // Si el checkbox actual está marcado
       if (this.checked) {
         // Desmarcar los otros checkboxes
-        checkboxes.forEach((otherCheckbox) => {
+        checkboxesPeriod.forEach((otherCheckbox) => {
           if (otherCheckbox !== this) {
             otherCheckbox.checked = false;
           }
         });
       }
+      toggleButtonState();
     });
   });
-</script>
-<script>
-  const checkboxes2 = document.querySelectorAll('input[type="checkbox"][name="idSucursalElegida"]');
-  checkboxes2.forEach((checkbox2) => {
-    checkbox2.addEventListener('change', function () {
+
+  checkboxesSucursal.forEach((checkbox) => {
+    checkbox.addEventListener('change', function () {
       // Si el checkbox actual está marcado
       if (this.checked) {
         // Desmarcar los otros checkboxes
-        checkboxes2.forEach((otherCheckbox2) => {
-          if (otherCheckbox2 !== this) {
-            otherCheckbox2.checked = false;
+        checkboxesSucursal.forEach((otherCheckbox) => {
+          if (otherCheckbox !== this) {
+            otherCheckbox.checked = false;
           }
         });
       }
+      toggleButtonState();
     });
   });
+
+  // Inicializar el estado del botón al cargar la página
+  toggleButtonState();
 </script>
 {% endblock javascripts %}

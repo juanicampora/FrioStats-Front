@@ -59,7 +59,7 @@
                 <div class="container">
                   <h1 style="text-align: center;margin-bottom: 20px;"> Reporte de la Sucursal {{idSucursal}}</h1>
                   <div class="row mb-4" style="display: flex;justify-content: center; font-size: large;">
-                    <div class="col-md-3">
+                    <div class="col">
                       <table class="table table-striped">
                         <thead style="background-color: rgb(193, 193, 193);">
                           <tr>
@@ -77,7 +77,7 @@
                         </tbody>
                       </table>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col">
                       <table class="table table-striped">
                         <thead style="background-color: rgb(193, 193, 193);">
                           <tr>
@@ -109,7 +109,7 @@
                     </div>
                   </div>
                   <div class="row mb-4" style="display: flex;justify-content: center; font-size: large;">
-                    <div class="col-md-4">
+                    <div class="col">
                       <table class="table table-striped">
                         <thead style="background-color: rgb(193, 193, 193);">
                           <tr>
@@ -131,7 +131,7 @@
                         </tbody>
                       </table>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col">
                       <table class="table table-striped">
                         <thead style="background-color: rgb(193, 193, 193);">
                           <tr>
@@ -165,7 +165,7 @@
                 </div>
               </div>
               <div style="flex: auto; text-align: center;">
-                <button class="btn-lg btn-primary mt-4 mb-4" id="generate-pdf-btn" onclick="generarPDF()">Generar PDF</button>
+                <button class="btn-lg btn btn-primary mt-4 mb-4" style="height: 70px; width: 250px; font-size: x-large;" id="generate-pdf-btn" onclick="generarPDF()">Generar PDF</button>
               </div>
               {% endif %}
             </div>
@@ -297,12 +297,25 @@
 </script>
 <script>
   function generarPDF() {
+    //a todos los etiqueta canvas agregar estilo con tamaño 60%
+    const canvas = document.querySelectorAll('canvas');
+    canvas.forEach((c) => {
+      c.style.width = '520px';
+      c.style.height = '520px';
+    });
+
+    //a todos los h4 sacar el text-decoration: underline
+    const h4 = document.querySelectorAll('h4');
+    h4.forEach((h) => {
+      h.style.textDecoration = 'none';
+    });
     // Seleccionar el contenido a convertir en PDF
     const elemento = document.getElementById('para-pdf');
     
     // Configuración de html2pdf.js
     const opciones = {
       filename: 'Reporte.pdf',
+      pagebreak: { mode: 'avoid-all', before: '#canvas' },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'A4', orientation: 'portrait' }
     };
