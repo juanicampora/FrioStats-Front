@@ -85,16 +85,12 @@
     var myHeaders = new Headers();
     var userToken = getCookie('token'); // Obtener el token de la cookie
     myHeaders.append('user-token', userToken);
-    console.log(bodyData);
-    console.log(myHeaders.get('user-token'));
     fetch('http://186.13.28.124:3001/parameters/{{idMaquina}}', {
       method: 'PATCH',
       headers: myHeaders,
       body: bodyData,
     })
       .then((response) => {
-        console.log(response);
-        console.log('Guardadooooooooooooo');
         //                                                                  MANDAR A PANEL
         //window.location.href = '/panel/{{idSucursal}}';
       })

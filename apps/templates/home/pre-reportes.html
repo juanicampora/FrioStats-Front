@@ -121,7 +121,6 @@
   function toggleButtonState() {
     const isAnyPeriodChecked = Array.from(checkboxesPeriod).some(checkbox => checkbox.checked);
     const isAnySucursalChecked = Array.from(checkboxesSucursal).some(checkbox => checkbox.checked);
-    console.log(isAnyPeriodChecked, isAnySucursalChecked);
     if (isAnyPeriodChecked && isAnySucursalChecked) {
       generateReportButton.removeAttribute("data-toggle");
       generateReportButton.removeAttribute("data-placement");
