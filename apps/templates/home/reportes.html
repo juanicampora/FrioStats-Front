@@ -13,6 +13,9 @@
     height: 1.5rem;
     /* Reduce row height */
   }
+  body {
+    color: black !important;
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"
   integrity="sha512-YcsIPGdhPK4P/uRW6/sruonlYj+Q7UHWeKfTAkBW+g83NKM+jMJFJ4iAPfSnVp7BKD4dKMHmVSvICUbE/V1sSw=="
@@ -181,11 +184,15 @@
   const theme = localStorage.getItem("theme"); // Get the theme from darkmode.js
   const pdfButton = document.getElementById('generate-pdf-btn');
   if (theme === "dark") {
+    // Transforma todo el texto de la pagina a color negro
+    document.body.style.color = "black";   
+
     pdfButton.disabled = true;
     pdfButton.setAttribute("data-toggle", "tooltip");
     pdfButton.setAttribute("data-placement", "right");
     pdfButton.setAttribute("title", "Debe estar en modo claro para generar PDF.");
   } else {
+    document.body.style.color = ""; // reset color
     pdfButton.disabled = false;
     pdfButton.removeAttribute("data-toggle");
     pdfButton.removeAttribute("data-placement");
